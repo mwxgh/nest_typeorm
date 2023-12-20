@@ -18,8 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-commonjs -d dist/database/data-source/data-source.js",
-    "cli:create:db": "ts-node ./src/commands/create-database.command.ts"
+    "cli:create:db": "ts-node ./src/commands/create-database.command.ts",
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
+    "migration:run": "npm run typeorm migration:run -- -d ./src/database/data-source/data-source.ts",
+    "migration:generate": "npm run typeorm -- -d ./src/database/data-source/data-source.ts migration:generate ./src/database/migrations/$npm_config_name",
+    "migration:create": "npm run typeorm -- migration:create ./src/database/migrations/$npm_config_name",
+    "migration:revert": "npm run typeorm -- -d ./src/database/data-source/data-source.ts migration:revert"
   },
   "dependencies": {
     "@fastify/multipart": "^8.0.0",
