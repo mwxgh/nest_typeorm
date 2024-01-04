@@ -1,35 +1,28 @@
-import { config as configEnv } from 'dotenv';
-import { DataSource } from 'typeorm';
+import { registerAs } from '@nestjs/config';
+import { config as dotenvConfig } from 'dotenv';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
-import config from '@/config/config';
+dotenvConfig({ path: '.env' });
 
-configEnv();
-const dbOption = config().database;
-
-export const AppDataSource = new DataSource({
-  type: dbOption.driver,
-  host: dbOption.host,
-  username: dbOption.username,
-  port: dbOption.port,
-  password: dbOption.password,
-  database: dbOption.db,
+const dbConfig = {
+  type: `${process.env.DATABASE_DRIVER}`,
+  host: `${process.env.DATABASE_HOST}`,
+  port: `${process.env.DATABASE_PORT}`,
+  username: `${process.env.DATABASE_USER}`,
+  password: `${process.env.DATABASE_PW}`,
+  database: `${process.env.DATABASE_DB}`,
+  autoLoadEntities: true,
   synchronize: false,
-  logging: false,
-  entities: [
-    process.env.NODE_ENV === 'test'
-      ? 'src/modules/**/entities/*.entity.ts'
-      : 'dist/modules/**/entities/*.entity.js',
-  ],
-  subscribers: [],
-  migrations: [
-    process.env.NODE_ENV === 'test'
-      ? 'src/database/migrations/*.ts'
-      : 'dist/database/migrations/*.js',
-  ],
-  extra: {
-    charset: 'utf8mb4_general_ci',
-  },
   charset: 'utf8mb4_general_ci',
   supportBigNumbers: true,
   bigNumberStrings: false,
-});
+  subscribers: [],
+  extra: {
+    charset: 'utf8mb4_general_ci',
+  },
+  entities: ['dist/**/*.entity{.ts,.js}'],
+  migrations: ['dist/database/migrations/*{.ts,.js}'],
+};
+
+export default registerAs('typeorm', () => dbConfig);
+export const connectionSource = new DataSource(dbConfig as DataSourceOptions);

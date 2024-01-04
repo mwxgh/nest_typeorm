@@ -1,0 +1,119 @@
+version: '3.8'
+
+networks:
+  backend:
+    driver: bridge
+
+# volumes:
+#   mailcatcher-data:
+#     driver: local
+
+services:
+  ### App ##################################
+  app:
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    container_name: "nest_typeorm"
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DD_AGENT_HOST=datadog_agent
+    # NODE_ENV: "dev"
+    env_file: ./.env
+    networks:
+      - backend
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+  ### Mailcatcher ##################################
+  # mailcatcher:
+  #   image: schickling/mailcatcher
+  #   ports:
+  #     - "1090:1080"
+  #     - "1025:1025"
+  #   networks:
+  #     - backend
+
+  ### Redis ##################################
+  # redis:
+  #   image: redis:latest
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #     - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+  #   labels:
+  #     kompose.service.type: nodeport
+  #   ports:
+  #     - "6679:6379"
+  #   volumes:
+  #     - ./.docker/redis/data:/data
+  #   networks:
+  #     - backend
+
+  # redis-ui:
+  #   image: erikdubbelboer/phpredisadmin
+  #   environment:
+  #     - ADMIN_USER=admin
+  #     - ADMIN_PASS=admin
+  #     - REDIS_1_HOST=redis
+  #     - REDIS_1_PORT=6379
+  #     - REDIS_1_AUTH=
+  #   ports:
+  #     - "6380:80"
+  #   volumes:
+  #     - ./.docker/redis/data:/data
+  #   networks:
+  #     - backend
+
+  ### Mysql ##################################
+  mysql:
+    image: mysql:8.0.32
+    ports:
+      - 13306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 01110100
+      MYSQL_DATABASE: nest_typeorm
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 01110100
+    volumes:
+      - ./.docker/mysql/data:/var/lib/mysql
+      - ./.docker/mysql/conf.d:/etc/mysql/mysql.conf.d/
+    networks:
+      - backend
+
+  ### Localstack ##################################
+  # localstack:
+  #   image: localstack/localstack
+  #   ports:
+  #     - "4566-4599:4566-4599"
+  #   environment:
+  #     - SERVICES=s3,lambda,sns,cloudwatch
+  #     - DEFAULT_REGION=eu-west-1
+  #     - AWS_DEFAULT_REGION=eu-west-1
+  #     - HOSTNAME_EXTERNAL=localhost
+  #     - USE_SSL=false
+  #     - DEBUG=1
+  #     - LOCALSTACK_PERSISTENCE=1
+  #   volumes:
+  #     - .docker/localstack/data:/tmp/localstack
+  #     # - .docker/localstack/aws:/docker-entrypoint-initaws.d
+  #     - .docker/localstack/aws:/etc/localstack/init/ready.d/
+
+  # datadog_agent:
+  #   image: gcr.io/datadoghq/agent:latest
+  #   ports:
+  #     - 8126:8126
+  #   env_file: ./.datadog
+  #   environment:
+  #     - DD_APM_ENABLED=true
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /proc/:host/proc/:ro
+  #     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+  #   networks:
+  #     - backend
