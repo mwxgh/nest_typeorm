@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync } from 'fs'
 import { resolve } from 'path'
 import { createDatabase, DatabaseCreateContext } from 'typeorm-extension'

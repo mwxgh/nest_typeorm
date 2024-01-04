@@ -54,6 +54,4 @@ gkc_*
 
 # NPM
 yarn.lock
-yarn-debug.log*
-yarn-error.log*
 package-lock.json
