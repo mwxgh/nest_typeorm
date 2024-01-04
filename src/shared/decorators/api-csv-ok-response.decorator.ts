@@ -1,5 +1,5 @@
-import type { Type } from '@nestjs/common';
-import { applyDecorators, HttpCode, HttpStatus } from '@nestjs/common';
+import type { Type } from '@nestjs/common'
+import { applyDecorators, HttpCode, HttpStatus } from '@nestjs/common'
 import {
   ApiExtraModels,
   ApiForbiddenResponse,
@@ -7,20 +7,20 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+} from '@nestjs/swagger'
 
-import { getSchema } from './http.decorator';
+import { getSchema } from './http.decorator'
 
 export const ApiCsvOkResponse: <T extends Type<object>>(options: {
-  type: T;
-  description?: string;
-  summary?: string;
-  example?: string;
+  type: T
+  description?: string
+  summary?: string
+  example?: string
 }) => MethodDecorator = <T extends Type<object>>(options: {
-  type: T;
-  description?: string;
-  summary?: string;
-  example?: string;
+  type: T
+  description?: string
+  summary?: string
+  example?: string
 }) => {
   return applyDecorators(
     ApiExtraModels(options.type),
@@ -50,5 +50,5 @@ export const ApiCsvOkResponse: <T extends Type<object>>(options: {
       description: 'Internal Server Error',
     }),
     HttpCode(HttpStatus.OK),
-  );
-};
+  )
+}

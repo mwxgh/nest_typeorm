@@ -1,4 +1,4 @@
-export const IS_PUBLIC = 'isPublic';
+export const IS_PUBLIC = 'isPublic'
 
 export const AppConstant = {
   dev: 'dev',
@@ -24,4 +24,4 @@ export const AppConstant = {
   awsS3PresignedExpiresIn: 1800,
   maxParamLength: 1000,
   maxRecordHandleOnce: 1000,
-};
+}

@@ -293,28 +293,28 @@ export const ScreenList = {
   [Screens.S005]: '005',
   [Screens.S007]: '007',
   [Screens.S059]: '059',
-};
+}
 
 export const RoleList = {
   [RoleEnum.BaseAdmin]: '拠点管理者',
   [RoleEnum.Supervisor]: 'スーパーバイザー',
   [RoleEnum.Operator]: 'オペレーター',
-};
+}
 
 export const DepartmentList = {
   [BusinessEnum.BPO_Center]: '事務センター',
   [BusinessEnum.Call_Center]: 'コールセンター',
-};
+}
 
 export const UserStatusList = {
   [UserStatusEnum.Active]: '在籍',
   [UserStatusEnum.Inactive]: '退職',
-};
+}
 
 export const UserLockedList = {
   [UserLockedEnum.Unlocked]: '付与',
   [UserLockedEnum.Locked]: '停止',
-};
+}
 
 export const CallTypeList = {
   [CallTypeEnum.ConfirmBenefit]: '制度の確認',
@@ -324,7 +324,7 @@ export const CallTypeList = {
   [CallTypeEnum.ConfirmReasonForTransferMoneyFailure]: '振込不能理由の確認',
   [CallTypeEnum.Claim]: 'クレーム',
   [CallTypeEnum.Other]: 'その他',
-};
+}
 
 export const FormPropertyFieldCodeEnumList = {
   [FormPropertyFieldCodeEnum.FullName]: '氏名',
@@ -342,7 +342,7 @@ export const FormPropertyFieldCodeEnumList = {
   [FormPropertyFieldCodeEnum.OtherCheckboxButton]: 'その他　チェックボタン',
   [FormPropertyFieldCodeEnum.SubHeading]: '中見出し',
   [FormPropertyFieldCodeEnum.StringDisplay]: '表示テキスト',
-};
+}
 
 export const FormPropertyFieldTypeEnumList = Object.freeze({
   [FormPropertyFieldTypeEnum.TextInput]: 'text',
@@ -353,7 +353,7 @@ export const FormPropertyFieldTypeEnumList = Object.freeze({
   [FormPropertyFieldTypeEnum.File]: 'file',
   [FormPropertyFieldTypeEnum.Email]: 'email',
   [FormPropertyFieldTypeEnum.EmailConfirm]: 'email_confirm',
-});
+})
 
 export const FailedTransferStatusEnumList = Object.freeze({
   [FailedTransferStatusEnum.DeterminedContent]: '入力不備確認済み',
@@ -373,7 +373,7 @@ export const FailedTransferStatusEnumList = Object.freeze({
   [FailedTransferStatusEnum.SendingErrorReport]: '振込不能通知書再送中',
   [FailedTransferStatusEnum.Solved]: '振込不能解消済み',
   [FailedTransferStatusEnum.Determined]: '申請の振込不能確定',
-});
+})
 
 export const FailedTransferReasonEnumList = Object.freeze({
   [FailedTransferReasonEnum.WrongAccountNumber]: '口座番号相違',
@@ -382,7 +382,7 @@ export const FailedTransferReasonEnumList = Object.freeze({
   [FailedTransferReasonEnum.BankIssue]: '受取口座側事由',
   [FailedTransferReasonEnum.WrongSubject]: '科目相違',
   [FailedTransferReasonEnum.Other]: 'その他',
-});
+})
 
 export enum ActionUpdateProjectStatus {
   Submit = '申請',
@@ -411,7 +411,7 @@ export const MistakeApplicationStatusEnumList = {
   [MistakeApplicationStatusEnum.ResponsePaperShipping]: '不備通知書再送中',
   [MistakeApplicationStatusEnum.IssueResolved]: '不備解消済み',
   [MistakeApplicationStatusEnum.IssueConfirmed]: '申請の不備確定',
-};
+}
 
 export enum MistakeApplicationReasonEnum {
   Duplicated = 1,
@@ -419,7 +419,7 @@ export enum MistakeApplicationReasonEnum {
 
 export const MistakeApplicationReasonEnumList = {
   [MistakeApplicationReasonEnum.Duplicated]: '重複申請',
-};
+}
 
 export const RequestStatusAcronymEnumList = {
   [RequestStatusEnum.FirstInput]: 'firstInput',
@@ -436,4 +436,4 @@ export const RequestStatusAcronymEnumList = {
   [RequestStatusEnum.Delivered]: 'delivered',
   [RequestStatusEnum.PaymentAccepted]: 'paymentAccepted',
   [RequestStatusEnum.PaymentNotAccepted]: 'paymentNotAccepted',
-};
+}

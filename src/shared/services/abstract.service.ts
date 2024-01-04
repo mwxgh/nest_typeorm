@@ -7,8 +7,8 @@ import {
   Repository,
   SaveOptions,
   UpdateResult,
-} from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+} from 'typeorm'
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 
 export abstract class AbstractService<TEntity extends ObjectLiteral> {
   constructor(protected readonly repository: Repository<TEntity>) {}
@@ -16,21 +16,21 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
   async findOneBy(
     where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[],
   ): Promise<TEntity | null> {
-    return this.repository.findOneBy(where);
+    return this.repository.findOneBy(where)
   }
 
   async findOne(options: FindOneOptions<TEntity>): Promise<TEntity | null> {
-    return this.repository.findOne(options);
+    return this.repository.findOne(options)
   }
 
   async findOneByOrFail(where: FindOptionsWhere<TEntity>): Promise<TEntity> {
-    return await this.repository.findOneByOrFail(where);
+    return await this.repository.findOneByOrFail(where)
   }
 
   async findOneOrFail(
     options: FindOneOptions<TEntity>,
   ): Promise<TEntity | null> {
-    return this.repository.findOneOrFail(options);
+    return this.repository.findOneOrFail(options)
   }
 
   async updateBy(
@@ -46,7 +46,7 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
       | FindOptionsWhere<TEntity>,
     partialEntity: QueryDeepPartialEntity<TEntity>,
   ): Promise<UpdateResult> {
-    return this.repository.update(criteria, partialEntity);
+    return this.repository.update(criteria, partialEntity)
   }
 
   save<T extends DeepPartial<TEntity>>(
@@ -56,8 +56,8 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     return this.repository.save(
       Array.isArray(entities) ? entities : [entities],
       options,
-    );
+    )
   }
 }
 
-export default AbstractService;
+export default AbstractService

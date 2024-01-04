@@ -1,4 +1,5 @@
-import { Transform } from 'class-transformer';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Transform } from 'class-transformer'
 
 export const Default = (defaultValue: any) =>
   Transform(
@@ -7,4 +8,4 @@ export const Default = (defaultValue: any) =>
     {
       toClassOnly: true,
     },
-  );
+  )

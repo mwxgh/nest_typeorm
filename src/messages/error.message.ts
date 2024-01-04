@@ -5,4 +5,4 @@ export const ErrorMessage = {
   404: 'Not Found',
   422: 'Unprocessable Content',
   500: 'Internal Server Error',
-};
+}

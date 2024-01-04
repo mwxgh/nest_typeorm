@@ -1,9 +1,9 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 
 export const CurrentUserId = createParamDecorator(
-  (_, ctx: ExecutionContext): any => {
-    const req = ctx.switchToHttp().getRequest();
+  (_, ctx: ExecutionContext): unknown => {
+    const req = ctx.switchToHttp().getRequest()
 
-    return req.user?.id;
+    return req.user?.id
   },
-);
+)

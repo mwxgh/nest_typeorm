@@ -4,22 +4,22 @@ import {
   DeleteDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from 'typeorm'
 
-import { EntityConstant } from '@/constants/entity.constant';
+import { EntityConstant } from '@/constants/entity.constant'
 
-import { AbstractDto, AbstractDtoWithCU } from './dto/abstract.dto';
-import { Constructor } from './type/constructor';
+import { AbstractDto, AbstractDtoWithCU } from './dto/abstract.dto'
+import { Constructor } from './type/constructor'
 
-export interface IAbstractEntity<DTO extends AbstractDto, O = never> {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date;
-  createdBy?: number;
-  updatedBy?: number;
+export type IAbstractEntity<DTO extends AbstractDto, O = never> = {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date
+  createdBy?: number
+  updatedBy?: number
 
-  toDto(options?: O): DTO;
+  toDto(options?: O): DTO
 }
 
 export abstract class AbstractEntity<
@@ -28,7 +28,7 @@ export abstract class AbstractEntity<
 > implements IAbstractEntity<DTO, O>
 {
   @PrimaryGeneratedColumn('increment', { type: 'int', unsigned: true })
-  id: number;
+  id: number
 
   @CreateDateColumn({
     name: 'created_at',
@@ -36,7 +36,7 @@ export abstract class AbstractEntity<
     precision: EntityConstant.TimePrecision,
     default: () => 'NOW()',
   })
-  createdAt: Date;
+  createdAt: Date
 
   @UpdateDateColumn({
     name: 'updated_at',
@@ -45,27 +45,27 @@ export abstract class AbstractEntity<
     onUpdate: 'NOW()',
     default: () => 'NOW()',
   })
-  updatedAt: Date;
+  updatedAt: Date
 
   @DeleteDateColumn({
     name: 'deleted_at',
     type: 'datetime',
     precision: EntityConstant.TimePrecision,
   })
-  deletedAt: Date;
+  deletedAt: Date
 
-  private dtoClass?: Constructor<DTO, [AbstractEntity, O?]>;
+  private dtoClass?: Constructor<DTO, [AbstractEntity, O?]>
 
   toDto(options?: O): DTO {
-    const dtoClass = this.dtoClass;
+    const dtoClass = this.dtoClass
 
     if (!dtoClass) {
       throw new Error(
         `You need to use @UseDto on class (${this.constructor.name}) be able to call toDto function`,
-      );
+      )
     }
 
-    return new dtoClass(this, options);
+    return new dtoClass(this, options)
   }
 }
 
@@ -79,7 +79,7 @@ export abstract class AbstractEntityWithCU<
     nullable: true,
     unsigned: true,
   })
-  createdBy: number;
+  createdBy: number
 
   @Column({
     name: 'updated_by',
@@ -87,5 +87,5 @@ export abstract class AbstractEntityWithCU<
     nullable: true,
     unsigned: true,
   })
-  updatedBy: number;
+  updatedBy: number
 }

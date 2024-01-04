@@ -1,9 +1,9 @@
-import * as Joi from 'hapi__joi';
-import { config as configEnv } from 'dotenv';
-import config from '@/config/config';
+import * as Joi from 'hapi__joi'
+import { config as configEnv } from 'dotenv'
+import config from '@/config/config'
 
-configEnv();
-const dbOption = config().database;
+configEnv()
+const dbOption = config().database
 
 const validationSchema = Joi.object({
   APP_NAME: Joi.string().default('NEST_TS'),
@@ -52,6 +52,6 @@ const validationSchema = Joi.object({
   MAIL_FROM_ADDRESS: Joi.string().email().allow('').allow('null').optional(),
   MAIL_FROM_NAME: Joi.string().allow('').optional(),
   PORT: Joi.number().default(3000),
-});
+})
 
-export default validationSchema;
+export default validationSchema

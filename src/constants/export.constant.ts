@@ -8,4 +8,4 @@ export const ExportConstant = {
   downloadFolder: 'downloads',
   timeFormat: 'HH:mm',
   dateWithHyphenFormat: 'YYYY-MM-DD',
-};
+}

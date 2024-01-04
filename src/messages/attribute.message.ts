@@ -10,4 +10,4 @@ export const Attributes = {
     nameKana: '氏名（カナ）',
     icCardUid: 'ICカード番号',
   },
-};
+}

@@ -9,4 +9,4 @@ export const RegexConstant = {
     /^(?:\d{4}(-|\/)\d{2}(-|\/)\d{2}|\d{2}(-|\/)\d{2}(-|\/)\d{4})$/,
   dateForwardSlashFormatWithYearStart: /^\d{4}(\/)\d{2}(\/)\d{2}$/,
   hexColorFormat: /^#(?:[0-9a-fA-F]{3,4}){1,2}$/,
-};
+}

@@ -1,8 +1,8 @@
-import { registerAs } from '@nestjs/config';
-import { config as dotenvConfig } from 'dotenv';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { registerAs } from '@nestjs/config'
+import { config as dotenvConfig } from 'dotenv'
+import { DataSource, DataSourceOptions } from 'typeorm'
 
-dotenvConfig({ path: '.env' });
+dotenvConfig({ path: '.env' })
 
 const dbConfig = {
   type: `${process.env.DATABASE_DRIVER}`,
@@ -22,7 +22,7 @@ const dbConfig = {
   },
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
-};
+}
 
-export default registerAs('typeorm', () => dbConfig);
-export const connectionSource = new DataSource(dbConfig as DataSourceOptions);
+export default registerAs('typeorm', () => dbConfig)
+export const connectionSource = new DataSource(dbConfig as DataSourceOptions)

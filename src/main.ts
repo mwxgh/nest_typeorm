@@ -1,31 +1,32 @@
-import * as fastifyMultipart from '@fastify/multipart';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as fastifyMultipart from '@fastify/multipart'
 import {
   ClassSerializerInterceptor,
   HttpStatus,
   UnprocessableEntityException,
   ValidationPipe,
-} from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+} from '@nestjs/common'
+import { NestFactory, Reflector } from '@nestjs/core'
 import {
   FastifyAdapter,
   NestFastifyApplication,
-} from '@nestjs/platform-fastify';
+} from '@nestjs/platform-fastify'
 // import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-import { AppModule } from './app.module';
-import { AppConstant } from '@constants/app.constant';
-import { setupSwagger } from './shared/utils/setup.swagger';
-import config from '@/config/config';
+import { AppModule } from './app.module'
+import { AppConstant } from '@constants/app.constant'
+import { setupSwagger } from './shared/utils/setup.swagger'
+import config from '@/config/config'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ maxParamLength: AppConstant.maxParamLength }),
-  );
-  app.register(fastifyMultipart);
+  )
+  app.register(fastifyMultipart)
 
   // Get config of app.
-  const appConfig = config().app;
+  const appConfig = config().app
 
   // Enable CORS
   app.enableCors({
@@ -42,12 +43,12 @@ async function bootstrap() {
       'x-xsrf-token',
     ],
     credentials: true,
-  });
+  })
 
   // Set global prefix for app.
   app.setGlobalPrefix('api/v1', {
     // exclude: [{ path: 'health', method: RequestMethod.GET }],
-  });
+  })
 
   // Apply winston logger for app.
   // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
@@ -56,7 +57,7 @@ async function bootstrap() {
     new ClassSerializerInterceptor(app.get(Reflector), {
       excludeExtraneousValues: true,
     }),
-  );
+  )
 
   // Use global pipes
   app.useGlobalPipes(
@@ -66,12 +67,12 @@ async function bootstrap() {
       transform: true,
       exceptionFactory: (errors) => new UnprocessableEntityException(errors),
     }),
-  );
+  )
 
   // Setup swagger
-  setupSwagger(app);
+  setupSwagger(app)
 
   // Run app with port
-  await app.listen(appConfig.port, '0.0.0.0');
+  await app.listen(appConfig.port, '0.0.0.0')
 }
-bootstrap();
+bootstrap()

@@ -5,8 +5,8 @@ import {
   Param,
   ParseUUIDPipe,
   PipeTransform,
-} from '@nestjs/common';
-import type { Type } from '@nestjs/common/interfaces';
+} from '@nestjs/common'
+import type { Type } from '@nestjs/common/interfaces'
 import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
@@ -15,11 +15,11 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
-} from '@nestjs/swagger';
-import { ErrorMessage } from '@/messages';
+} from '@nestjs/swagger'
+import { ErrorMessage } from '@/messages'
 
 export const getSchema = (statusCode: string | number, message?: string) => {
-  const code = statusCode as keyof typeof ErrorMessage;
+  const code = statusCode as keyof typeof ErrorMessage
 
   return {
     schema: {
@@ -30,11 +30,11 @@ export const getSchema = (statusCode: string | number, message?: string) => {
       },
     },
     description: message ?? ErrorMessage[code],
-  };
-};
+  }
+}
 
 export const ApiValidateResponse: (options?: {
-  description?: string;
+  description?: string
 }) => MethodDecorator = (options?: { description?: string }) => {
   return applyDecorators(
     ApiUnprocessableEntityResponse({
@@ -53,36 +53,36 @@ export const ApiValidateResponse: (options?: {
       },
       description: options?.description,
     }),
-  );
-};
+  )
+}
 
 export const ApiBadRequestResponseWrap: (options?: {
-  description?: string;
-  message?: string;
+  description?: string
+  message?: string
 }) => MethodDecorator = (options?: {
-  description?: string;
-  message?: string;
+  description?: string
+  message?: string
 }) => {
   return applyDecorators(
     ApiBadRequestResponse({
       ...getSchema(HttpStatus.BAD_REQUEST, options?.message),
       description: options?.description,
     }),
-  );
-};
+  )
+}
 
 export const ApiAuth: (
   type?: Type<object>,
   options?: {
-    summary: string;
-    description?: string;
+    summary: string
+    description?: string
   },
   statusCode?: number,
 ) => MethodDecorator = (
   type?: Type<object>,
   options?: {
-    summary: string;
-    description?: string;
+    summary: string
+    description?: string
   },
   statusCode = HttpStatus.OK,
 ) => {
@@ -100,30 +100,30 @@ export const ApiAuth: (
       description: 'Internal Server Error',
     }),
     ApiOperation({ summary: options?.summary }),
-  ];
+  ]
 
   arrDecorator.push(
     ApiOkResponse({
       type: type,
       description: options?.description ?? 'OK',
     }),
-  );
+  )
 
-  return applyDecorators(...arrDecorator, HttpCode(statusCode));
-};
+  return applyDecorators(...arrDecorator, HttpCode(statusCode))
+}
 
 export const ApiPublic: (
   type?: Type<object>,
   options?: {
-    summary: string;
-    description?: string;
+    summary: string
+    description?: string
   },
   statusCode?: number,
 ) => MethodDecorator = (
   type?: Type<object>,
   options?: {
-    summary: string;
-    description?: string;
+    summary: string
+    description?: string
   },
   statusCode = HttpStatus.OK,
 ) => {
@@ -137,8 +137,8 @@ export const ApiPublic: (
     }),
     ApiOperation({ summary: options?.summary }),
     HttpCode(statusCode),
-  );
-};
+  )
+}
 
 export const UUIDParam: (
   property: string,
@@ -147,5 +147,5 @@ export const UUIDParam: (
   property: string,
   ...pipes: Array<Type<PipeTransform> | PipeTransform>
 ) => {
-  return Param(property, new ParseUUIDPipe({ version: '4' }), ...pipes);
-};
+  return Param(property, new ParseUUIDPipe({ version: '4' }), ...pipes)
+}

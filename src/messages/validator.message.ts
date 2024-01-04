@@ -36,4 +36,4 @@ export const ValidationMessage = {
   UntilCurrentTime: 'Input is possible up to the current time',
   MaxUploadFile: 'Only 10 file upload buttons are available',
   EmailMatchWith: 'Does not match the email address entered',
-};
+}

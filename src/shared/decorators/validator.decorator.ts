@@ -1,4 +1,5 @@
-import { arrayUnique, isArray, ValidationOptions } from 'class-validator';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { arrayUnique, isArray, ValidationOptions } from 'class-validator'
 import {
   ArrayMaxSize as _ArrayMaxSize,
   ArrayMinSize as _ArrayMinSize,
@@ -22,13 +23,13 @@ import {
   MinLength as _MinLength,
   registerDecorator,
   ValidateIf,
-} from 'class-validator';
-import * as moment from 'moment-timezone';
-import Validator from 'validator';
+} from 'class-validator'
+import * as moment from 'moment-timezone'
+import Validator from 'validator'
 
-import { AppConstant, ExportConstant, RegexConstant } from '@/constants';
-import { ValidationMessage } from '@/messages';
-import { FormPropertyFieldCodeEnum } from '@/constants/enum.constant';
+import { AppConstant, ExportConstant, RegexConstant } from '@/constants'
+import { ValidationMessage } from '@/messages'
+import { FormPropertyFieldCodeEnum } from '@/constants/enum.constant'
 
 export const IsPassword = (
   validationOptions?: ValidationOptions,
@@ -45,45 +46,45 @@ export const IsPassword = (
       },
       validator: {
         validate(value: string) {
-          return /^[\d!#$%&*@A-Z^a-z]*$/.test(value);
+          return /^[\d!#$%&*@A-Z^a-z]*$/.test(value)
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const IsPhoneNumber = (
   validationOptions?: ValidationOptions & {
-    region?: Parameters<typeof isPhoneNumber>[0];
+    region?: Parameters<typeof isPhoneNumber>[0]
   },
 ): PropertyDecorator => {
   return isPhoneNumber(validationOptions?.region, {
     message: ValidationMessage.PhoneRule,
     ...validationOptions,
-  });
-};
+  })
+}
 
 export const IsUndefinable = (
   options?: ValidationOptions,
 ): PropertyDecorator => {
-  return ValidateIf((obj, value) => value !== undefined, options);
-};
+  return ValidateIf((obj, value) => value !== undefined, options)
+}
 
 export const IsNullable = (options?: ValidationOptions): PropertyDecorator => {
-  return ValidateIf((obj, value) => value !== null, options);
-};
+  return ValidateIf((obj, value) => value !== null, options)
+}
 
 export const AllowBlank = (options?: ValidationOptions): PropertyDecorator => {
   return ValidateIf(
     (obj, value) => ![null, undefined, ''].includes(value),
     options,
-  );
-};
+  )
+}
 
 export const IsInt = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsInt({ message: ValidationMessage.IsInt, ...makeOption(options) });
+  _IsInt({ message: ValidationMessage.IsInt, ...makeOption(options) })
 
 export const IsNotEmpty = (
   options?: string | ValidationOptions,
@@ -91,12 +92,12 @@ export const IsNotEmpty = (
   _IsNotEmpty({
     message: ValidationMessage.IsNotEmpty,
     ...makeOption(options),
-  });
+  })
 
 export const IsBoolean = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsBoolean({ message: ValidationMessage.isBoolean, ...makeOption(options) });
+  _IsBoolean({ message: ValidationMessage.isBoolean, ...makeOption(options) })
 
 export const IsDate = (
   options?: string | ValidationOptions,
@@ -105,12 +106,12 @@ export const IsDate = (
     message:
       (options as ValidationOptions)?.message || ValidationMessage.isDate,
     ...makeOption(options),
-  });
+  })
 
 export const IsString = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsString({ message: ValidationMessage.isString, ...makeOption(options) });
+  _IsString({ message: ValidationMessage.isString, ...makeOption(options) })
 
 export const IsNumberString = (
   options?: Validator.IsNumericOptions,
@@ -119,7 +120,7 @@ export const IsNumberString = (
   _IsNumberString(
     { ...options },
     { message: ValidationMessage.isNumberString, ...makeOption(validOptions) },
-  );
+  )
 
 export const IsAlphanumeric = (
   options?: string | ValidationOptions,
@@ -127,15 +128,12 @@ export const IsAlphanumeric = (
   _IsAlphanumeric('en-US', {
     message: ValidationMessage.IsAlphaNumeric,
     ...makeOption(options),
-  });
+  })
 
 export const IsNumber = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsNumber(
-    {},
-    { message: ValidationMessage.IsNumber, ...makeOption(options) },
-  );
+  _IsNumber({}, { message: ValidationMessage.IsNumber, ...makeOption(options) })
 
 export const IsPositive = (
   options?: string | ValidationOptions,
@@ -143,7 +141,7 @@ export const IsPositive = (
   _IsPositive({
     message: ValidationMessage.IsPositive,
     ...makeOption(options),
-  });
+  })
 
 export const IsArray = (
   options?: string | ValidationOptions,
@@ -151,14 +149,14 @@ export const IsArray = (
   _IsArray({
     message: ValidationMessage.isArray,
     ...makeOption(options),
-  });
+  })
 
 export const IsTime = (validationOptions?: ValidationOptions) => {
   return Matches(RegexConstant.isTime, {
     ...validationOptions,
     message: ValidationMessage.IsTime,
-  });
-};
+  })
+}
 
 export const ArrayMinSize = (
   minValue: number,
@@ -171,7 +169,7 @@ export const ArrayMinSize = (
         ? options
         : { ...options, ...{ context: { value: minValue } } },
     ),
-  });
+  })
 
 export const ArrayMaxSize = (
   maxValue: number,
@@ -184,7 +182,7 @@ export const ArrayMaxSize = (
         ? options
         : { ...options, ...{ context: { value: maxValue } } },
     ),
-  });
+  })
 
 export const ArrayUnique = (property?: string): PropertyDecorator => {
   return (object, propertyName: string) => {
@@ -202,14 +200,14 @@ export const ArrayUnique = (property?: string): PropertyDecorator => {
             ? value
                 .filter((entity) => !entity?.isDeleted)
                 .map((e) => e[property])
-            : value;
+            : value
 
-          return arrayUnique(arrValue);
+          return arrayUnique(arrValue)
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const Max = (
   maxValue: number,
@@ -223,7 +221,7 @@ export const Max = (
         ? options
         : { ...options, ...{ context: { value: maxValue } } },
     ),
-  });
+  })
 
 export const Min = (
   minValue: number,
@@ -237,7 +235,7 @@ export const Min = (
         ? options
         : { ...options, ...{ context: { value: minValue } } },
     ),
-  });
+  })
 
 export const MaxLength = (
   maxValue: number,
@@ -250,7 +248,7 @@ export const MaxLength = (
         ? options
         : { ...options, ...{ context: { value: maxValue } } },
     ),
-  });
+  })
 
 export const MinLength = (
   minValue: number,
@@ -263,7 +261,7 @@ export const MinLength = (
         ? options
         : { ...options, ...{ context: { value: minValue } } },
     ),
-  });
+  })
 
 export const IsEnum = (
   enumValue: object,
@@ -272,8 +270,8 @@ export const IsEnum = (
   return _IsEnum(enumValue, {
     message: ValidationMessage.Invalid,
     ...makeOption(options),
-  });
-};
+  })
+}
 
 export const IsLessOrEqual =
   (argument: any, validationOptions?: ValidationOptions): PropertyDecorator =>
@@ -292,20 +290,20 @@ export const IsLessOrEqual =
       },
       validator: {
         validate(value: any, args: any) {
-          const field2 = args.object[argument];
+          const field2 = args.object[argument]
 
-          return value <= field2;
+          return value <= field2
         },
       },
-    });
-  };
+    })
+  }
 
 export const IsGreaterOrEqual =
   (
     targetOptions: {
-      targetFieldName: any;
-      skipIfNull?: boolean;
-      skipIfTargetValueNull?: boolean;
+      targetFieldName: any
+      skipIfNull?: boolean
+      skipIfTargetValueNull?: boolean
     },
     validationOptions?: ValidationOptions,
   ): PropertyDecorator =>
@@ -322,21 +320,21 @@ export const IsGreaterOrEqual =
       validator: {
         validate(value: any, args: any) {
           const { targetFieldName, skipIfNull, skipIfTargetValueNull } =
-            targetOptions;
-          const targetValue = args.object[targetFieldName];
+            targetOptions
+          const targetValue = args.object[targetFieldName]
 
           if (
             (skipIfNull && value == undefined) ||
             (skipIfTargetValueNull && targetValue == undefined)
           ) {
-            return true;
+            return true
           }
 
-          return value >= targetValue;
+          return value >= targetValue
         },
       },
-    });
-  };
+    })
+  }
 
 export const IsLaterWithDateOrTimeOnly =
   (
@@ -356,28 +354,28 @@ export const IsLaterWithDateOrTimeOnly =
       },
       validator: {
         validate(value: any, args: any) {
-          const startTimeValue = args.object[startTimeField];
+          const startTimeValue = args.object[startTimeField]
           if (skipIfNull && value == undefined) {
-            return true;
+            return true
           }
 
-          return value >= startTimeValue;
+          return value >= startTimeValue
         },
       },
-    });
-  };
+    })
+  }
 
 export const IsEarlierWithDateOrTimeOnly = (
   targetOptions: {
-    targetField: any;
-    targetFieldName?: any;
-    skipIfTargetValueNull?: boolean;
-    skipIfNull?: boolean;
+    targetField: any
+    targetFieldName?: any
+    skipIfTargetValueNull?: boolean
+    skipIfNull?: boolean
   },
   validationOptions?: ValidationOptions,
 ): PropertyDecorator => {
   const { targetField, targetFieldName, skipIfNull, skipIfTargetValueNull } =
-    targetOptions;
+    targetOptions
   return (object, propertyName: string) => {
     registerDecorator({
       propertyName,
@@ -393,20 +391,20 @@ export const IsEarlierWithDateOrTimeOnly = (
       },
       validator: {
         validate(value: any, args: any) {
-          const targetValue = args.object[targetField];
+          const targetValue = args.object[targetField]
           if (
             (skipIfNull && value == undefined) ||
             (skipIfTargetValueNull && targetValue == undefined)
           ) {
-            return true;
+            return true
           }
 
-          return value < targetValue;
+          return value < targetValue
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const IsLaterWithDateTimeConcat = (
   startDateField: any,
@@ -427,22 +425,22 @@ export const IsLaterWithDateTimeConcat = (
       },
       validator: {
         validate(_value: any, args: any) {
-          const startDateValue = args.object[startDateField];
-          const endDateValue = args.object[endDateField];
+          const startDateValue = args.object[startDateField]
+          const endDateValue = args.object[endDateField]
 
           if (startDateValue < endDateValue) {
-            return true;
+            return true
           }
           if (startDateValue > endDateValue) {
-            return false;
+            return false
           }
 
-          return args.object[startTimeField] <= args.object[endTimeField];
+          return args.object[startTimeField] <= args.object[endTimeField]
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const IsTimeString = (
   format: string,
@@ -452,8 +450,8 @@ export const IsTimeString = (
   return Matches(regex, {
     ...validationOptions,
     message: ValidationMessage.TimeStringFormat.replace('$format', format),
-  });
-};
+  })
+}
 
 export const IsPhoneString = (
   regex: RegExp,
@@ -462,8 +460,8 @@ export const IsPhoneString = (
   return Matches(regex, {
     ...validationOptions,
     message: ValidationMessage.ValidPhoneDigit,
-  });
-};
+  })
+}
 
 export const IsConstraintField = (
   fieldConstraint: string,
@@ -487,12 +485,12 @@ export const IsConstraintField = (
           return (
             args.object[fieldConstraint] &&
             args.object[fieldConstraint] !== null
-          );
+          )
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const IsUntilCurrentTime = (
   fieldDateCompare?: string,
@@ -510,34 +508,32 @@ export const IsUntilCurrentTime = (
       },
       validator: {
         validate(value: any, args: any) {
-          const momentTimezone = moment().tz(
-            AppConstant.locationMomentTimezone,
-          );
+          const momentTimezone = moment().tz(AppConstant.locationMomentTimezone)
           const dateString = momentTimezone.format(
             ExportConstant.dateWithHyphenFormat,
-          );
-          const timeString = momentTimezone.format(ExportConstant.timeFormat);
+          )
+          const timeString = momentTimezone.format(ExportConstant.timeFormat)
 
           if (!fieldDateCompare) {
-            const fieldDateValue = new Date(value).toISOString().split('T')[0];
+            const fieldDateValue = new Date(value).toISOString().split('T')[0]
 
-            return fieldDateValue <= dateString;
+            return fieldDateValue <= dateString
           }
 
           const fieldDateCompareValue = new Date(args.object[fieldDateCompare])
             .toISOString()
-            .split('T')[0];
+            .split('T')[0]
 
           if (fieldDateCompareValue < dateString) {
-            return true;
+            return true
           }
 
-          return value <= timeString;
+          return value <= timeString
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const IsValidDayOff = (
   validationOptions?: ValidationOptions,
@@ -554,14 +550,14 @@ export const IsValidDayOff = (
       },
       validator: {
         validate(value: Date) {
-          const twoYearsAgo = moment().add(-2, 'years').startOf('day').toDate();
+          const twoYearsAgo = moment().add(-2, 'years').startOf('day').toDate()
 
-          return value.valueOf() >= twoYearsAgo.valueOf();
+          return value.valueOf() >= twoYearsAgo.valueOf()
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 export const MaxUploadFileFormSection = (
   validationOptions?: ValidationOptions,
@@ -579,19 +575,19 @@ export const MaxUploadFileFormSection = (
       validator: {
         validate(value: any) {
           if (!isArray(value)) {
-            return true;
+            return true
           }
 
           return (
             value.filter(
               (fp) => fp.fieldCode === FormPropertyFieldCodeEnum.UploadFile,
             ).length <= 20
-          );
+          )
         },
       },
-    });
-  };
-};
+    })
+  }
+}
 
 const makeOption = (
   options?: string | ValidationOptions,
@@ -602,8 +598,8 @@ const makeOption = (
           name: options,
         },
       }
-    : options;
-};
+    : options
+}
 
 export const IsValidContentType =
   (contentTypes: string[], errorMessage: string): PropertyDecorator =>
@@ -618,11 +614,11 @@ export const IsValidContentType =
       },
       validator: {
         validate(value: any): boolean {
-          return !!contentTypes.find((f) => value === f);
+          return !!contentTypes.find((f) => value === f)
         },
       },
-    });
-  };
+    })
+  }
 
 export const IsHexColorString = (
   regex: RegExp,
@@ -631,8 +627,8 @@ export const IsHexColorString = (
   return Matches(regex, {
     ...validationOptions,
     message: ValidationMessage.HexColorStringFormat,
-  });
-};
+  })
+}
 
 export const IsJSON = (
   options?: string | ValidationOptions,
@@ -640,8 +636,8 @@ export const IsJSON = (
   return _IsJSON({
     ...makeOption(options),
     message: ValidationMessage.isJsonString,
-  });
-};
+  })
+}
 
 export const IsEmailMatchWith = (
   field: string,
@@ -659,11 +655,11 @@ export const IsEmailMatchWith = (
       },
       validator: {
         validate(value: any, args: any) {
-          const data = args.object[field];
+          const data = args.object[field]
 
-          return data && data === value;
+          return data && data === value
         },
       },
-    });
-  };
-};
+    })
+  }
+}

@@ -1,23 +1,23 @@
-import { Direction } from '@/constants';
+import { Direction } from '@/constants'
 import {
   EnumFieldOptional,
   EscapeString,
   NumberFieldOptional,
   StringFieldOptional,
-} from '@shared/decorators';
+} from '@shared/decorators'
 
 export class PageOptionsDto {
   @EnumFieldOptional(() => Direction, {
     default: Direction.ASC,
   })
-  readonly order: Direction = Direction.ASC;
+  readonly order: Direction = Direction.ASC
 
   @NumberFieldOptional({
     minimum: 1,
     default: 1,
     int: true,
   })
-  readonly page: number = 1;
+  readonly page: number = 1
 
   @NumberFieldOptional({
     minimum: 1,
@@ -25,13 +25,13 @@ export class PageOptionsDto {
     default: 50,
     int: true,
   })
-  readonly take: number = 50;
+  readonly take: number = 50
 
   @StringFieldOptional()
   @EscapeString()
-  readonly q?: string;
+  readonly q?: string
 
   @StringFieldOptional()
   @EscapeString()
-  readonly orderBy?: string;
+  readonly orderBy?: string
 }

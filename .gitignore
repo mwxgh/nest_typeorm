@@ -29,7 +29,7 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode/*
-!.vscode/settings.json
+.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -51,3 +51,9 @@ tmp/*
 
 # GKC
 gkc_*
+
+# NPM
+yarn.lock
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
