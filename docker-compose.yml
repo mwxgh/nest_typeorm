@@ -1,21 +1,13 @@
-version: '3.8'
-
-networks:
-  backend:
-    driver: bridge
-
-# volumes:
-#   mailcatcher-data:
-#     driver: local
+version: '3'
 
 services:
-  ### App ##################################
+  # app
   app:
     build:
       context: .
       target: development
       dockerfile: ./Dockerfile
-    container_name: "nest_typeorm"
+    container_name: 'nest_typeorm'
     command: npm run start:dev
     ports:
       - 3000:3000
@@ -28,92 +20,42 @@ services:
     env_file: ./.env
     networks:
       - backend
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
 
-  ### Mailcatcher ##################################
-  # mailcatcher:
-  #   image: schickling/mailcatcher
-  #   ports:
-  #     - "1090:1080"
-  #     - "1025:1025"
-  #   networks:
-  #     - backend
-
-  ### Redis ##################################
-  # redis:
-  #   image: redis:latest
-  #   environment:
-  #     - ALLOW_EMPTY_PASSWORD=yes
-  #     - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-  #   labels:
-  #     kompose.service.type: nodeport
-  #   ports:
-  #     - "6679:6379"
-  #   volumes:
-  #     - ./.docker/redis/data:/data
-  #   networks:
-  #     - backend
-
-  # redis-ui:
-  #   image: erikdubbelboer/phpredisadmin
-  #   environment:
-  #     - ADMIN_USER=admin
-  #     - ADMIN_PASS=admin
-  #     - REDIS_1_HOST=redis
-  #     - REDIS_1_PORT=6379
-  #     - REDIS_1_AUTH=
-  #   ports:
-  #     - "6380:80"
-  #   volumes:
-  #     - ./.docker/redis/data:/data
-  #   networks:
-  #     - backend
-
-  ### Mysql ##################################
+  # Database
   mysql:
-    image: mysql:8.0.32
-    ports:
-      - 13306:3306
+    platform: linux/x86_64
+    image: mysql:8.0
+    container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 01110100
+      MYSQL_ROOT_PASSWORD: 0111mvtT
       MYSQL_DATABASE: nest_typeorm
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 01110100
+    ports:
+      - '3306:3306'
+    command: --default-authentication-plugin=caching_sha2_password
     volumes:
-      - ./.docker/mysql/data:/var/lib/mysql
-      - ./.docker/mysql/conf.d:/etc/mysql/mysql.conf.d/
+      - db_data:/var/lib/mysql
+    restart: always
     networks:
       - backend
 
-  ### Localstack ##################################
-  # localstack:
-  #   image: localstack/localstack
-  #   ports:
-  #     - "4566-4599:4566-4599"
-  #   environment:
-  #     - SERVICES=s3,lambda,sns,cloudwatch
-  #     - DEFAULT_REGION=eu-west-1
-  #     - AWS_DEFAULT_REGION=eu-west-1
-  #     - HOSTNAME_EXTERNAL=localhost
-  #     - USE_SSL=false
-  #     - DEBUG=1
-  #     - LOCALSTACK_PERSISTENCE=1
-  #   volumes:
-  #     - .docker/localstack/data:/tmp/localstack
-  #     # - .docker/localstack/aws:/docker-entrypoint-initaws.d
-  #     - .docker/localstack/aws:/etc/localstack/init/ready.d/
+  # phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - '8081:80'
+    networks:
+      - backend
 
-  # datadog_agent:
-  #   image: gcr.io/datadoghq/agent:latest
-  #   ports:
-  #     - 8126:8126
-  #   env_file: ./.datadog
-  #   environment:
-  #     - DD_APM_ENABLED=true
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /proc/:host/proc/:ro
-  #     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-  #   networks:
-  #     - backend
+networks:
+  backend:
+    driver: bridge
+volumes:
+  db_data:
