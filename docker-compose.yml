@@ -18,6 +18,8 @@ services:
       - DD_AGENT_HOST=datadog_agent
     # NODE_ENV: "dev"
     env_file: ./.env
+    depends_on:
+      - mysql
     networks:
       - backend
 
@@ -59,3 +61,4 @@ networks:
     driver: bridge
 volumes:
   db_data:
+    driver: local
