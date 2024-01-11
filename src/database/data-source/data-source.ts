@@ -20,7 +20,7 @@ const dbConfig = {
   extra: {
     charset: 'utf8mb4_general_ci',
   },
-  entities: ['dist/**/*.entity{.ts,.js}'],
+  entities: ['dist/modules/**/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
 }
 

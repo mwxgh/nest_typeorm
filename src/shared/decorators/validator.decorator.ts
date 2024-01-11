@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { arrayUnique, isArray, ValidationOptions } from 'class-validator'
+import { arrayUnique, ValidationOptions } from 'class-validator'
 import {
   ArrayMaxSize as _ArrayMaxSize,
   ArrayMinSize as _ArrayMinSize,
@@ -29,7 +29,6 @@ import Validator from 'validator'
 
 import { AppConstant, ExportConstant, RegexConstant } from '@/constants'
 import { ValidationMessage } from '@/messages'
-import { FormPropertyFieldCodeEnum } from '@/constants/enum.constant'
 
 export const IsPassword = (
   validationOptions?: ValidationOptions,
@@ -553,36 +552,6 @@ export const IsValidDayOff = (
           const twoYearsAgo = moment().add(-2, 'years').startOf('day').toDate()
 
           return value.valueOf() >= twoYearsAgo.valueOf()
-        },
-      },
-    })
-  }
-}
-
-export const MaxUploadFileFormSection = (
-  validationOptions?: ValidationOptions,
-): PropertyDecorator => {
-  return (object, propertyName: string) => {
-    registerDecorator({
-      propertyName,
-      name: 'MaxUploadFileFormSection',
-      target: object.constructor,
-      constraints: [],
-      options: {
-        ...validationOptions,
-        message: ValidationMessage.MaxUploadFile,
-      },
-      validator: {
-        validate(value: any) {
-          if (!isArray(value)) {
-            return true
-          }
-
-          return (
-            value.filter(
-              (fp) => fp.fieldCode === FormPropertyFieldCodeEnum.UploadFile,
-            ).length <= 20
-          )
         },
       },
     })

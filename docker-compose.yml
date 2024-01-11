@@ -50,13 +50,6 @@ services:
     depends_on:
       - mysql
     env_file: ./.env
-    environment:
-      - DATABASE_DRIVER=$DATABASE_DRIVER
-      - DATABASE_HOST=$DATABASE_HOST
-      - DATABASE_PORT=$DATABASE_PORT
-      - DATABASE_USER=$DATABASE_USER
-      - DATABASE_PW=$DATABASE_PW
-      - DATABASE_DB=$DATABASE_DB
     networks:
       - backend
 
