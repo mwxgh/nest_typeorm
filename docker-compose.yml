@@ -1,36 +1,15 @@
 version: '3'
 
 services:
-  # app
-  app:
-    build:
-      context: .
-      target: development
-      dockerfile: ./Dockerfile
-    container_name: 'nest_typeorm'
-    command: npm run start:dev
-    ports:
-      - 3000:3000
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - DD_AGENT_HOST=datadog_agent
-    # NODE_ENV: "dev"
-    env_file: ./.env
-    depends_on:
-      - mysql
-    networks:
-      - backend
-
   # Database
   mysql:
     platform: linux/x86_64
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 0111mvtT
-      MYSQL_DATABASE: nest_typeorm
+      MYSQL_ROOT_PASSWORD: $DATABASE_PW
+      MYSQL_DATABASE: $DATABASE_DB
+    env_file: ./.env
     ports:
       - '3306:3306'
     command: --default-authentication-plugin=caching_sha2_password
@@ -55,10 +34,36 @@ services:
       - '8081:80'
     networks:
       - backend
+  # App
+  app:
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    container_name: 'nest_typeorm'
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mysql
+    env_file: ./.env
+    environment:
+      - DATABASE_DRIVER=$DATABASE_DRIVER
+      - DATABASE_HOST=$DATABASE_HOST
+      - DATABASE_PORT=$DATABASE_PORT
+      - DATABASE_USER=$DATABASE_USER
+      - DATABASE_PW=$DATABASE_PW
+      - DATABASE_DB=$DATABASE_DB
+    networks:
+      - backend
 
 networks:
   backend:
     driver: bridge
+
 volumes:
   db_data:
     driver: local
