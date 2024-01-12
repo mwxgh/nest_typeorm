@@ -1,9 +1,7 @@
 import * as Joi from 'hapi__joi'
-import { config as configEnv } from 'dotenv'
 import config from '@/config/config'
 
-configEnv()
-const dbOption = config().database
+const { database: dbOption, jwt: jwtOption } = config()
 
 const validationSchema = Joi.object({
   APP_NAME: Joi.string().default('NEST_TS'),
@@ -16,8 +14,8 @@ const validationSchema = Joi.object({
   FILE_UPLOAD_DESTINATION: Joi.string().required(),
   FILE_UPLOAD_MAX_SIZE: Joi.number().required(),
 
-  JWT_TTL: Joi.number().required(),
-  JWT_REFRESH_TTL: Joi.number().required(),
+  JWT_TTL: Joi.number().required().default(jwtOption.ttl),
+  JWT_REFRESH_TTL: Joi.number().required().default(jwtOption.refreshTtl),
 
   DATABASE_DRIVER: Joi.string()
     .valid(

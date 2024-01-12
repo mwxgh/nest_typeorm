@@ -4,10 +4,8 @@ export const Attributes = {
     firstName: 'First name',
     lastName: 'Last name',
     username: 'ID',
-    password: 'パスワード',
-    role: '職位',
-    department: '所属',
-    nameKana: '氏名（カナ）',
-    icCardUid: 'ICカード番号',
+    password: 'Password',
+    role: 'Role',
+    email: 'Email',
   },
 }

@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fastifyMultipart from '@fastify/multipart'
 import {
   ClassSerializerInterceptor,
   HttpStatus,
+  RequestMethod,
   UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common'
@@ -11,8 +11,6 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
-// import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-
 import { AppModule } from './app.module'
 import { AppConstant } from '@constants/app.constant'
 import { setupSwagger } from './shared/utils/setup.swagger'
@@ -47,11 +45,8 @@ async function bootstrap() {
 
   // Set global prefix for app.
   app.setGlobalPrefix('api/v1', {
-    // exclude: [{ path: 'health', method: RequestMethod.GET }],
+    exclude: [{ path: 'health', method: RequestMethod.GET }],
   })
-
-  // Apply winston logger for app.
-  // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector), {
