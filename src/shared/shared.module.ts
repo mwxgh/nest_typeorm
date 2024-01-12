@@ -11,37 +11,8 @@ import dbConfig from '@/database/data-source/data-source'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async () => {
-        const {
-          type,
-          host,
-          port,
-          username,
-          password,
-          database,
-          entities,
-          charset,
-          synchronize,
-          autoLoadEntities,
-          supportBigNumbers,
-          bigNumberStrings,
-        } = dbConfig()
-        return {
-          type: type as 'mysql' | undefined,
-          host,
-          port: Number(port),
-          username,
-          password,
-          database,
-          entities,
-          logging: 'all',
-          synchronize,
-          autoLoadEntities,
-          charset,
-          supportBigNumbers,
-          bigNumberStrings,
-        }
-      },
+      useFactory: async (configService: ConfigService) =>
+        await configService.get('typeorm')!,
       inject: [ConfigService],
     }),
   ],

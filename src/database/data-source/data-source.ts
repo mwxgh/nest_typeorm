@@ -22,6 +22,7 @@ const dbConfig = {
   },
   entities: ['dist/modules/**/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
+  logging: 'all',
 }
 
 export default registerAs('typeorm', () => dbConfig)
