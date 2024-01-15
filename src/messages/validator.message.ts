@@ -36,6 +36,7 @@ export const ValidationMessage = {
   maxUploadFile: 'Only 10 file upload buttons are available',
   emailMatchWith: 'Does not match the email address entered',
   loginFail: 'Your ID or password is incorrect',
+  signUpFail: 'Your ID is exist in system',
   invalidFileType: 'Invalid file format selected',
   cannotCreateOrUpdate:
     '$field could not be completed because it was updated by another user',

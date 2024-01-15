@@ -9,6 +9,7 @@ export class AuthDto {
 
   @ApiProperty()
   @Expose()
+  @Transform((value) => parseInt(value.value))
   role: number
 
   @ApiProperty()

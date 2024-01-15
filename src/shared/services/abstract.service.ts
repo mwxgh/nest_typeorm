@@ -58,6 +58,10 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
       options,
     )
   }
+
+  create(entityLike: DeepPartial<TEntity>): TEntity {
+    return this.repository.create(entityLike)
+  }
 }
 
 export default AbstractService

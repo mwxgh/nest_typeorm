@@ -8,6 +8,7 @@ export enum RoleEnum {
   BaseAdmin = 1,
   Supervisor,
   Operator,
+  NormalUser,
 }
 
 export enum RoleAcronymEnum {
@@ -36,6 +37,7 @@ export const RoleList = {
   [RoleEnum.BaseAdmin]: 'Base Admin',
   [RoleEnum.Supervisor]: 'Supervisor',
   [RoleEnum.Operator]: 'Operator',
+  [RoleEnum.NormalUser]: 'NormalUser',
 }
 
 export const UserStatusList = {

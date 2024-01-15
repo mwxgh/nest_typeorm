@@ -1,11 +1,11 @@
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '../guards/jwt-auth.guard'
 import { RolesGuard } from '../guards/roles.guard'
 import { ROLES } from '@/constants'
+import { LocalAuthGuard } from '../guards/local-auth.guard'
 
-export function Auth(...roles: string[]) {
+export function Auth(...roles: number[]) {
   return applyDecorators(
     SetMetadata(ROLES, roles),
-    UseGuards(JwtAuthGuard, RolesGuard),
+    UseGuards(LocalAuthGuard, RolesGuard),
   )
 }

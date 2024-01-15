@@ -1,40 +1,52 @@
 import { Body, Controller, Post } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiTags } from '@nestjs/swagger'
 import { UserLoginDto } from '../dto/user-login.dto'
 import { UserService } from '@/modules/user/services/user.service'
-import * as bcrypt from 'bcrypt'
-import { LoginFailException } from '@/exceptions'
-import { JwtService } from '@nestjs/jwt'
-import { pick } from 'lodash'
+import { SignUpFailException } from '@/exceptions'
+import { AuthService } from '../services/auth.service'
+import { LoginResponseDto } from '../dto/login-response.dto'
+import { UserSignUpDto } from '../dto/user-sign-up.dto'
+import { Public } from '@/shared/decorators'
+import {
+  ApiBadRequestResponseWrap,
+  ApiPublic,
+} from '@/shared/decorators/http.decorator'
+import { ValidationMessage } from '@/messages'
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
+    private readonly authService: AuthService,
     private readonly userService: UserService,
-    private jwtService: JwtService,
   ) {}
 
-  @Post('/login')
-  async login(@Body() data: UserLoginDto): Promise<any> {
-    const { username, password } = data
-
+  @Post('/sign-up')
+  @Public()
+  @ApiPublic(LoginResponseDto, { summary: 'Sign up' })
+  @ApiBody({ type: UserSignUpDto })
+  @ApiBadRequestResponseWrap({ message: ValidationMessage.signUpFail })
+  async signUp(@Body() data: UserSignUpDto): Promise<LoginResponseDto> {
+    const { username } = data
     const user = await this.userService.findUserActive({ username })
 
-    if (!user) {
-      throw new LoginFailException()
+    if (user) {
+      throw new SignUpFailException()
     }
 
-    const passwordValid = await bcrypt.compare(password, user.password)
+    return this.authService.signUp(data)
+  }
 
-    if (!passwordValid) {
-      throw new LoginFailException()
-    }
+  @Post('/login')
+  @Public()
+  @ApiPublic(LoginResponseDto, { summary: 'Login' })
+  @ApiBody({ type: UserLoginDto })
+  @ApiBadRequestResponseWrap({ message: ValidationMessage.loginFail })
+  async login(@Body() data: UserLoginDto): Promise<LoginResponseDto> {
+    const { username, password } = data
 
-    console.log(passwordValid, 'here___________', this.jwtService)
+    const user = await this.authService.validateUser(username, password)
 
-    return {
-      token: this.jwtService.sign(pick(user, ['id', 'username'])),
-    }
+    return this.authService.login(user)
   }
 }
