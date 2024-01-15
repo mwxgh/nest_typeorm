@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-
 import type { PageOptionsDto } from './page-options.dto'
 
 type IPageMetaDtoParameters = {

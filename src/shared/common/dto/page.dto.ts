@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-
 import { PageMetaDto } from './page-meta.dto'
 
 export class PageDto<T> {

@@ -35,4 +35,8 @@ export const ValidationMessage = {
   untilCurrentTime: 'Input is possible up to the current time',
   maxUploadFile: 'Only 10 file upload buttons are available',
   emailMatchWith: 'Does not match the email address entered',
+  loginFail: 'Your ID or password is incorrect',
+  invalidFileType: 'Invalid file format selected',
+  cannotCreateOrUpdate:
+    '$field could not be completed because it was updated by another user',
 }

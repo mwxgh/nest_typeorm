@@ -1,4 +1,6 @@
 export const IS_PUBLIC = 'isPublic'
+export const CSRF_PROPERTY = '_csrf'
+export const ROLES = 'roles'
 
 export const AppConstant = {
   dev: 'dev',

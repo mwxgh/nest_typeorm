@@ -5,9 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-
 import { EntityConstant } from '@/constants/entity.constant'
-
 import { AbstractDto, AbstractDtoWithCU } from './dto/abstract.dto'
 import { Constructor } from './type/constructor'
 

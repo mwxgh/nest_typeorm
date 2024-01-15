@@ -15,6 +15,10 @@ export class UserDto extends AbstractDtoWithCU {
 
   @Expose()
   @ApiProperty()
+  email: string
+
+  @Expose()
+  @ApiProperty()
   role: string
 
   @Expose()
@@ -28,10 +32,6 @@ export class UserDto extends AbstractDtoWithCU {
   @Expose()
   @ApiProperty()
   createdAt: Date
-
-  @Expose()
-  @ApiProperty()
-  email: string
 
   constructor(user: User) {
     super(user)

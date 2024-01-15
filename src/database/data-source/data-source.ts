@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config'
-import config from '@/config/config'
+import config from '../../config/config'
 import { DataSource, DataSourceOptions } from 'typeorm'
+
 const dbOption = config().database
 
 const dbConfig = {
@@ -22,6 +23,7 @@ const dbConfig = {
   entities: ['dist/modules/**/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
   logging: 'all',
+  logger: dbOption.logger,
 }
 
 export default registerAs('typeorm', () => dbConfig)

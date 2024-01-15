@@ -1,3 +1,6 @@
+import { config as dotenvConfig } from 'dotenv'
+dotenvConfig({ path: '.env' })
+
 export default () => ({
   app: {
     port: process.env.APP_PORT || 3000,
@@ -20,6 +23,7 @@ export default () => ({
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PW,
     db: process.env.DATABASE_DB,
+    logger: process.env.DATABASE_LOGGER,
   },
 
   redis: {
