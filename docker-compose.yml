@@ -57,6 +57,37 @@ services:
     networks:
       - backend
 
+  # redis
+  redis:
+    image: redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - "6679:6379"
+    volumes:
+      - ./.docker/redis/data:/data
+    networks:
+      - backend
+
+  # redis-ui
+  redis-ui:
+    image: erikdubbelboer/phpredisadmin
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin
+      - REDIS_1_HOST=redis
+      - REDIS_1_PORT=6379
+      - REDIS_1_AUTH=
+    ports:
+      - "6380:81"
+    volumes:
+      - ./.docker/redis/data:/data
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

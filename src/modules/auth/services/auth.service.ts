@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   login(user: User): LoginResponseDto {
-    const payload = { name: user.username, sub: user.id, role: user.role }
+    const payload = { username: user.username, sub: user.id, role: user.role }
     const token = this.jwtService.sign(payload, {
       privateKey: 'secret',
       algorithm: 'HS256',
