@@ -1,17 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import { ApiBody, ApiTags } from '@nestjs/swagger'
-import { UserLoginDto } from '../dto/user-login.dto'
 import { UserService } from '@/modules/user/services/user.service'
 import { SignUpFailException } from '@/exceptions'
 import { AuthService } from '../services/auth.service'
-import { LoginResponseDto } from '../dto/login-response.dto'
-import { UserSignUpDto } from '../dto/user-sign-up.dto'
-import { Public } from '@/shared/decorators'
 import {
   ApiBadRequestResponseWrap,
   ApiPublic,
-} from '@/shared/decorators/http.decorator'
+  Public,
+} from '@/shared/decorators'
 import { ValidationMessage } from '@/messages'
+import { LocalAuthGuard } from '../guards/local-auth.guard'
+import { LoginResponseDto, UserLoginDto, UserSignUpDto } from '../dto'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -40,6 +39,7 @@ export class AuthController {
   @Post('/login')
   @Public()
   @ApiPublic(LoginResponseDto, { summary: 'Login' })
+  @UseGuards(LocalAuthGuard)
   @ApiBody({ type: UserLoginDto })
   @ApiBadRequestResponseWrap({ message: ValidationMessage.loginFail })
   async login(@Body() data: UserLoginDto): Promise<LoginResponseDto> {

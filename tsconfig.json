@@ -15,7 +15,8 @@
       "@config/*": ["src/config/*"],
       "@constants/*": ["src/constants/*"],
       "@messages/*": ["src/messages/*"],
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@exceptions": ["scr/exceptions/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

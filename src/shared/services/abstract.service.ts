@@ -1,5 +1,6 @@
 import {
   DeepPartial,
+  FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
   ObjectId,
@@ -12,6 +13,10 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 
 export abstract class AbstractService<TEntity extends ObjectLiteral> {
   constructor(protected readonly repository: Repository<TEntity>) {}
+
+  async find(options?: FindManyOptions<TEntity>): Promise<TEntity[]> {
+    return this.repository.find(options)
+  }
 
   async findOneBy(
     where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[],

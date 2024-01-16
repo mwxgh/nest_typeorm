@@ -1,13 +1,22 @@
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModuleAsyncOptions } from '@nestjs/jwt'
+import { ExtractJwt } from 'passport-jwt'
+import config from './config'
+
+const jwtOption = config().jwt
 
 export const jwtConfig: JwtModuleAsyncOptions = {
-  imports: [ConfigModule],
-  useFactory: async (configService: ConfigService) => ({
-    secret: configService.get('JWT_SECRET'),
+  useFactory: async () => ({
+    secret: jwtOption.secret,
+    privateKey: jwtOption.privateKey,
     signOptions: {
-      expiresIn: configService.get('JWT_TTL'),
+      expiresIn: jwtOption.ttl,
+      algorithm: 'HS256',
     },
   }),
-  inject: [ConfigService],
+}
+
+export const jwtStrategyConfig = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  ignoreExpiration: false,
+  secretOrKey: jwtOption.secret,
 }

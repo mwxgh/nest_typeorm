@@ -11,9 +11,11 @@ export default () => ({
   },
 
   jwt: {
+    privateKey: process.env.JWT_PRIVATE_KEY,
     secret: process.env.JWT_SECRET,
     ttl: process.env.JWT_TTL,
     refreshTtl: process.env.JWT_REFRESH_TTL,
+    algorithm: process.env.JWT_ALGORITHM || 'HS256',
   },
 
   database: {

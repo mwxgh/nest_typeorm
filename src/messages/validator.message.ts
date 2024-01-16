@@ -37,6 +37,7 @@ export const ValidationMessage = {
   emailMatchWith: 'Does not match the email address entered',
   loginFail: 'Your ID or password is incorrect',
   signUpFail: 'Your ID is exist in system',
+  forceLogoutWhenLoginLater: 'Login by another user',
   invalidFileType: 'Invalid file format selected',
   cannotCreateOrUpdate:
     '$field could not be completed because it was updated by another user',
