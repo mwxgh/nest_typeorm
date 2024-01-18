@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 import { EntityConstant } from '@/constants/entity.constant'
-import { AbstractDto, AbstractDtoWithCU } from './dto/abstract.dto'
 import { Constructor } from './type/constructor'
+import { AbstractDto, AbstractDtoWithCU } from './dto'
 
 export type IAbstractEntity<DTO extends AbstractDto, O = never> = {
   id: number

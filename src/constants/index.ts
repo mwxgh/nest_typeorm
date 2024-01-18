@@ -5,4 +5,4 @@ export * from './enum.constant'
 export * from './export.constant'
 export * from './logger.constant'
 export * from './regex.constant'
-
+export * from './pagination.constant'

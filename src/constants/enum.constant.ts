@@ -15,7 +15,15 @@ export enum RoleAcronymEnum {
   A = RoleEnum.BaseAdmin,
   S = RoleEnum.Supervisor,
   O = RoleEnum.Operator,
+  N = RoleEnum.NormalUser,
 }
+
+export const AllRoles: RoleEnum[] = [
+  RoleEnum.BaseAdmin,
+  RoleEnum.Supervisor,
+  RoleEnum.Operator,
+  RoleEnum.NormalUser,
+]
 
 export enum UserStatusEnum {
   Inactive,
@@ -25,12 +33,6 @@ export enum UserStatusEnum {
 export enum UserLockedEnum {
   Unlocked,
   Locked,
-}
-
-export enum LabelStatusEnum {
-  A = 1,
-  B,
-  C,
 }
 
 export const RoleList = {

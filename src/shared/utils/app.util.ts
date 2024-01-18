@@ -31,3 +31,40 @@ export const generatePassword = (): string => {
 
 export const hashMD5 = (data: string): string =>
   crypto.createHash('md5').update(data).digest('hex')
+
+export const promiseAllConcurrency = async <T>(
+  collection: Array<() => Promise<T>>,
+  concurrency = 3,
+): Promise<T[]> => {
+  const head = collection.slice(0, concurrency)
+  const tail = collection.slice(concurrency)
+  const result: T[] = []
+  const errors: any[] = []
+  const execute = async (
+    promise: () => Promise<T>,
+    i: number,
+    next: () => Promise<void>,
+  ) => {
+    try {
+      result[i] = await promise()
+      if (!errors.length) {
+        await next()
+      }
+    } catch (error) {
+      errors.push(error)
+    }
+  }
+  const runNext = async () => {
+    const i = collection.length - tail.length
+    const promise = tail.shift()
+    if (promise !== undefined) {
+      await execute(promise, i, runNext)
+    }
+  }
+  await Promise.all(head.map((promise, i) => execute(promise, i, runNext)))
+
+  if (errors.length) {
+    throw errors[0]
+  }
+  return result
+}

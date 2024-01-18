@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
 import { RoleList, UserLockedEnum, UserStatusEnum } from '@/constants'
-import { AbstractDtoWithCU } from '@/shared/common/dto/abstract.dto'
 import { User } from '../entities/user.entity'
+import { AbstractDtoWithCU } from '@/shared/common/dto'
 
 export class UserDto extends AbstractDtoWithCU {
   @Expose()
