@@ -5,7 +5,7 @@ import {
   UserLockedEnum,
   UserStatusEnum,
 } from '@/constants'
-import { EnumField, StringField } from '@/shared/decorators'
+import { EnumField, EnumFieldOptional, StringField } from '@/shared/decorators'
 
 export class CreateUserDto {
   @StringField({ maxLength: EntityConstant.EntityUserNameLength })
@@ -14,13 +14,16 @@ export class CreateUserDto {
   @StringField({ maxLength: EntityConstant.EntityUserNameLength })
   readonly firstName: string
 
+  @StringField({ maxLength: EntityConstant.EntityUserNameLength })
+  readonly username: string
+
   @EnumField(() => RoleEnum)
   readonly role: RoleEnum
 
-  @EnumField(() => UserStatusEnum)
+  @EnumFieldOptional(() => UserStatusEnum)
   readonly status: UserStatusEnum
 
-  @EnumField(() => UserLockedEnum)
+  @EnumFieldOptional(() => UserLockedEnum)
   @Transform(({ obj }) =>
     obj.status === UserStatusEnum.Inactive
       ? UserLockedEnum.Locked

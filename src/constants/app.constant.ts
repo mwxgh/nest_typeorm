@@ -21,6 +21,8 @@ export const AppConstant = {
     removeOnComplete: true,
     removeOnFail: true,
   },
+  defaultPassword: 'Aa@123456',
+  defaultUserId: 0,
   saltOrRounds: 10,
   retryAttempts: 3,
   awsS3PresignedExpiresIn: 1800,

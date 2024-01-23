@@ -8,10 +8,8 @@ import * as bcrypt from 'bcrypt'
 import {
   AppConstant,
   RoleEnum,
-  UserLockedEnum,
-  UserStatusEnum,
 } from '@/constants'
-import { LoginResponseDto, UserSignUpDto } from '../dto'
+import { JwtStrategyDto, LoginResponseDto, UserSignUpDto } from '../dto'
 
 @Injectable()
 export class AuthService {
@@ -37,24 +35,29 @@ export class AuthService {
   }
 
   async signUp(data: UserSignUpDto): Promise<LoginResponseDto> {
-    const user: User = this.userService.create({
+    const user: User = this.userService.createEntity({
       ...data,
       password: bcrypt.hashSync(
         data.password,
         bcrypt.genSaltSync(AppConstant.saltOrRounds),
       ),
-      isDeleted: false,
-      isLocked: UserLockedEnum.Unlocked,
-      status: UserStatusEnum.Active,
       role: RoleEnum.NormalUser,
-    })
+      createdBy: AppConstant.defaultUserId,
+      updatedBy: AppConstant.defaultUserId,
+    }) as User
+
     await this.userService.save(user)
 
     return this.login(user)
   }
 
   login(user: User): LoginResponseDto {
-    const payload = { username: user.username, sub: user.id, role: user.role }
+    const payload: JwtStrategyDto = {
+      username: user.username,
+      sub: user.id,
+      role: user.role,
+      email: user.email,
+    }
     const token = this.jwtService.sign(payload, {
       privateKey: 'secret',
       algorithm: 'HS256',

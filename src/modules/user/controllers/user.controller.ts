@@ -1,11 +1,11 @@
-import { Controller, Get, Param, Query } from '@nestjs/common'
-import { ApiParam, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
+import { ApiBody, ApiCreatedResponse, ApiParam, ApiTags } from '@nestjs/swagger'
 import { UserService } from '../services/user.service'
-import { UserDto, UsersPageOptionsDto } from '../dto'
-import { AllRoles } from '@/constants'
+import { CreateUserDto, UserDto, UsersPageOptionsDto } from '../dto'
+import { AllRoles, RoleEnum } from '@/constants'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
 import { Auth } from '@/modules/auth/decorators/auth.decorator'
-import { ApiAuth } from '@/shared/decorators'
+import { ApiAuth, ApiPageOkResponse, CurrentUserId } from '@/shared/decorators'
 import { PageDto } from '@/shared/common/dto/page.dto'
 
 @ApiTags('Users')
@@ -13,10 +13,28 @@ import { PageDto } from '@/shared/common/dto/page.dto'
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post()
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiCreatedResponse({
+    description: 'Create user successfully',
+  })
+  @ApiAuth(undefined, { summary: 'Create new user' })
+  @ApiBody({ type: CreateUserDto })
+  async create(
+    @CurrentUserId() userId: number,
+    @Body() body: CreateUserDto,
+  ): Promise<void> {
+    return this.userService.createUser(userId, body)
+  }
+
   @Get()
   @Auth(...AllRoles)
-  @ApiParam({ name: 'id', type: 'number' })
-  @ApiAuth(UserDto, { summary: 'Find user by id' })
+  @ApiAuth(PageDto<UserDto>, { summary: 'Find user with pagination' })
+  @ApiPageOkResponse({
+    description: 'Get user list',
+    summary: 'Get user list',
+    type: PageDto<UserDto>,
+  })
   getAll(@Query() query: UsersPageOptionsDto): Promise<PageDto<UserDto>> {
     return this.userService.getUsersPaginate(query)
   }

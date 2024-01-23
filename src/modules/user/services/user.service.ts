@@ -1,11 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from '../entities/user.entity'
 import { FindOptionsWhere, Repository, SelectQueryBuilder } from 'typeorm'
-import { Direction, UserLockedEnum, UserStatusEnum } from '@/constants'
+import {
+  AppConstant,
+  Direction,
+  UserLockedEnum,
+  UserStatusEnum,
+} from '@/constants'
 import { AbstractService } from '@/shared/services/abstract.service'
-import { UserDto, UsersPageOptionsDto } from '../dto'
+import { CreateUserDto, UserDto, UsersPageOptionsDto } from '../dto'
 import { PageDto } from '@/shared/common/dto'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService extends AbstractService<User> {
@@ -14,6 +24,26 @@ export class UserService extends AbstractService<User> {
     private readonly userRepository: Repository<User>,
   ) {
     super(userRepository)
+  }
+
+  async createUser(userId: number, body: CreateUserDto) {
+    const existUser = await this.findOneBy({
+      username: body.username,
+    })
+
+    if (existUser) {
+      throw new ConflictException('ID exist in system')
+    }
+
+    await this.save({
+      ...body,
+      password: bcrypt.hashSync(
+        AppConstant.defaultPassword,
+        bcrypt.genSaltSync(AppConstant.saltOrRounds),
+      ),
+      createdBy: userId,
+      updatedBy: userId,
+    })
   }
 
   async findUserActive(

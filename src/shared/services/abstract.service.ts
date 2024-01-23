@@ -54,7 +54,7 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     return this.repository.update(criteria, partialEntity)
   }
 
-  save<T extends DeepPartial<TEntity>>(
+  async save<T extends DeepPartial<TEntity>>(
     entities: T[] | T,
     options?: SaveOptions,
   ): Promise<T[]> {
@@ -64,8 +64,14 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     )
   }
 
-  create(entityLike: DeepPartial<TEntity>): TEntity {
-    return this.repository.create(entityLike)
+  createEntity(
+    entityLike?: DeepPartial<TEntity> | DeepPartial<TEntity>[],
+  ): TEntity | TEntity[] {
+    return Array.isArray(entityLike)
+      ? this.repository.create(entityLike)
+      : entityLike
+        ? this.repository.create(entityLike)
+        : this.repository.create()
   }
 }
 

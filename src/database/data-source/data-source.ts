@@ -1,5 +1,3 @@
-import 'reflect-metadata'
-import '../../declare'
 import { registerAs } from '@nestjs/config'
 import config from '../../config/config'
 import { DataSource, DataSourceOptions } from 'typeorm'

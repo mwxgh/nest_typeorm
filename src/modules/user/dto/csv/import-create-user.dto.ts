@@ -4,7 +4,7 @@ import {
   UserLockedEnum,
   UserStatusEnum,
 } from '@/constants'
-import { BooleanField, EnumField, StringField } from '@/shared/decorators'
+import { EnumField, StringField } from '@/shared/decorators'
 
 export class ImportCreateUserDto {
   @StringField({ maxLength: EntityConstant.EntityUserNameLength })
@@ -21,7 +21,4 @@ export class ImportCreateUserDto {
 
   @EnumField(() => UserLockedEnum)
   readonly isLocked: UserLockedEnum
-
-  @BooleanField()
-  isDeleted: boolean
 }

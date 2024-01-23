@@ -72,6 +72,7 @@ export class User
   @Column({
     type: 'tinyint',
     unsigned: true,
+    default: UserStatusEnum.Active,
   })
   status: UserStatusEnum
 
@@ -79,13 +80,7 @@ export class User
     name: 'is_locked',
     type: 'tinyint',
     unsigned: true,
+    default: UserLockedEnum.Unlocked,
   })
   isLocked: UserLockedEnum
-
-  @Column({
-    name: 'is_deleted',
-    type: 'tinyint',
-    unsigned: true,
-  })
-  isDeleted: boolean
 }
