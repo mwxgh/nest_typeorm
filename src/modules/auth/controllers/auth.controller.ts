@@ -1,7 +1,5 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import { ApiBody, ApiTags } from '@nestjs/swagger'
-import { UserService } from '@/modules/user/services/user.service'
-import { SignUpFailException } from '@/exceptions'
 import { AuthService } from '../services/auth.service'
 import {
   ApiBadRequestResponseWrap,
@@ -15,10 +13,7 @@ import { LoginResponseDto, UserLoginDto, UserSignUpDto } from '../dto'
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/sign-up')
   @Public()
@@ -26,13 +21,6 @@ export class AuthController {
   @ApiBody({ type: UserSignUpDto })
   @ApiBadRequestResponseWrap({ message: ValidationMessage.signUpFail })
   async signUp(@Body() data: UserSignUpDto): Promise<LoginResponseDto> {
-    const { username } = data
-    const user = await this.userService.findUserActive({ username })
-
-    if (user) {
-      throw new SignUpFailException()
-    }
-
     return this.authService.signUp(data)
   }
 
@@ -43,10 +31,6 @@ export class AuthController {
   @ApiBody({ type: UserLoginDto })
   @ApiBadRequestResponseWrap({ message: ValidationMessage.loginFail })
   async login(@Body() data: UserLoginDto): Promise<LoginResponseDto> {
-    const { username, password } = data
-
-    const user = await this.authService.validateUser(username, password)
-
-    return this.authService.login(user)
+    return this.authService.login(data)
   }
 }

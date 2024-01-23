@@ -1,15 +1,17 @@
-import { LoginFailException } from '@/exceptions'
+import { LoginFailException, SignUpFailException } from '@/exceptions'
 import { User } from '@/modules/user/entities/user.entity'
 import { UserService } from '@/modules/user/services/user.service'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { plainToInstance } from 'class-transformer'
 import * as bcrypt from 'bcrypt'
+import { AppConstant, RoleEnum } from '@/constants'
 import {
-  AppConstant,
-  RoleEnum,
-} from '@/constants'
-import { JwtStrategyDto, LoginResponseDto, UserSignUpDto } from '../dto'
+  JwtStrategyDto,
+  LoginResponseDto,
+  UserLoginDto,
+  UserSignUpDto,
+} from '../dto'
 
 @Injectable()
 export class AuthService {
@@ -35,6 +37,14 @@ export class AuthService {
   }
 
   async signUp(data: UserSignUpDto): Promise<LoginResponseDto> {
+    const existUser = await this.userService.findOneBy({
+      username: data.username,
+    })
+
+    if (existUser) {
+      throw new SignUpFailException()
+    }
+
     const user: User = this.userService.createEntity({
       ...data,
       password: bcrypt.hashSync(
@@ -48,10 +58,18 @@ export class AuthService {
 
     await this.userService.save(user)
 
-    return this.login(user)
+    return this.generateToken(user)
   }
 
-  login(user: User): LoginResponseDto {
+  async login(data: UserLoginDto): Promise<LoginResponseDto> {
+    const { username, password } = data
+
+    const user = await this.validateUser(username, password)
+
+    return this.generateToken(user)
+  }
+
+  generateToken(user: User): LoginResponseDto {
     const payload: JwtStrategyDto = {
       username: user.username,
       sub: user.id,
