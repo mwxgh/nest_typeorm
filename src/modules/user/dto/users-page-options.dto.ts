@@ -7,4 +7,8 @@ export class UsersPageOptionsDto extends PageOptionsDto {
   @StringFieldOptional()
   @EscapeString()
   readonly email?: string
+
+  @StringFieldOptional()
+  @EscapeString()
+  readonly role?: string
 }

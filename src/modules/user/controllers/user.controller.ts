@@ -13,7 +13,7 @@ import { PageDto } from '@/shared/common/dto/page.dto'
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(':id')
+  @Get()
   @Auth(...AllRoles)
   @ApiParam({ name: 'id', type: 'number' })
   @ApiAuth(UserDto, { summary: 'Find user by id' })

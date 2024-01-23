@@ -39,14 +39,25 @@ declare module 'typeorm' {
       distinct?: boolean,
     ): Promise<[Entity[], PageMetaDto]>
   }
+}
 
-  interface SelectQueryBuilder<Entity> {
-    paginateSub(
-      this: SelectQueryBuilder<Entity>,
-      pageOptionsDto: PageOptionsDto,
-      distinct?: boolean,
-    ): Promise<[Entity[], PageMetaDto]>
-  }
+QueryBuilder.prototype.searchByString = function (
+  q: string,
+  columnNames: string[],
+  parameterName = 'q',
+) {
+  if (!q) return this
+  this.andWhere(
+    new Brackets((qb) => {
+      for (const item of columnNames) {
+        qb.orWhere(`${item} like :${parameterName}`)
+      }
+    }),
+  )
+
+  this.setParameter(parameterName, `%${q}%`)
+
+  return this
 }
 
 SelectQueryBuilder.prototype.paginate = async function (
@@ -69,61 +80,6 @@ SelectQueryBuilder.prototype.paginate = async function (
   })
 
   return [results, pageMetaDto]
-}
-
-SelectQueryBuilder.prototype.paginateSub = async function (
-  pageOptionsDto: PageOptionsDto,
-  distinct = false,
-) {
-  const page = pageOptionsDto.page || PaginationConstant.DefaultPage
-  const count = pageOptionsDto.take || PaginationConstant.DefaultCount
-  this.andWhere('request.id > 0')
-
-  if (distinct) {
-    this.take(count).skip((page - 1) * count)
-  } else {
-    this.limit(count).offset((page - 1) * count)
-  }
-
-  const subQuery = this.clone().select('request.id', 'id').getQuery()
-
-  const [results, total] = await Promise.all([
-    this.clone()
-      .groupBy()
-      .offset(undefined)
-      .limit(undefined)
-      .skip(undefined)
-      .take(undefined)
-      .innerJoin('(' + subQuery + ')', 'sub', 'request.id = sub.id')
-      .getMany(),
-    this.getCount(),
-  ])
-
-  const pageMetaDto = new PageMetaDto({
-    itemCount: total,
-    pageOptionsDto,
-  })
-
-  return [results, pageMetaDto]
-}
-
-QueryBuilder.prototype.searchByString = function (
-  q: string,
-  columnNames: string[],
-  parameterName = 'q',
-) {
-  if (!q) return this
-  this.andWhere(
-    new Brackets((qb) => {
-      for (const item of columnNames) {
-        qb.orWhere(`${item} like :${parameterName}`)
-      }
-    }),
-  )
-
-  this.setParameter(parameterName, `%${q}%`)
-
-  return this
 }
 
 Array.prototype.toDtos = function <
