@@ -13,7 +13,12 @@ import {
   UserStatusEnum,
 } from '@/constants'
 import { AbstractService } from '@/shared/services/abstract.service'
-import { CreateUserDto, UserDto, UsersPageOptionsDto } from '../dto'
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserDto,
+  UsersPageOptionsDto,
+} from '../dto'
 import { PageDto } from '@/shared/common/dto'
 import * as bcrypt from 'bcrypt'
 
@@ -26,8 +31,8 @@ export class UserService extends AbstractService<User> {
     super(userRepository)
   }
 
-  async createUser(userId: number, body: CreateUserDto) {
-    const existUser = await this.findOneBy({
+  async createUser({ userId, body }: { userId: number; body: CreateUserDto }) {
+    const existUser = await this.existsBy({
       username: body.username,
     })
 
@@ -56,10 +61,21 @@ export class UserService extends AbstractService<User> {
     })
   }
 
+  async findUserById(id: number): Promise<User> {
+    const user = await this.findOneBy({ id })
+
+    if (!user) {
+      throw new NotFoundException(`User not found by id ${id}`)
+    }
+
+    return user
+  }
+
   private buildQueryList(
     pageOptionsDto: UsersPageOptionsDto,
   ): SelectQueryBuilder<User> {
     const { role, email } = pageOptionsDto
+
     const queryBuilder: SelectQueryBuilder<User> =
       this.userRepository.createQueryBuilder('user')
 
@@ -75,27 +91,32 @@ export class UserService extends AbstractService<User> {
     const queryBuilder: SelectQueryBuilder<User> =
       this.buildQueryList(pageOptionsDto)
 
-    const [users, pageMeta] = await queryBuilder
-      .select([
-        'user.id',
-        'user.username',
-        'user.firstName',
-        'user.lastName',
-        'user.role',
-        'user.isLocked',
-        'user.status',
-        'user.createdAt',
-      ])
-      .paginate(pageOptionsDto)
+    const [users, pageMeta] = await queryBuilder.paginate(pageOptionsDto)
 
     return users.toPageDto(pageMeta)
   }
 
   async getUserById(id: number): Promise<UserDto> {
-    const user = await this.findOneBy({ id })
-    if (!user) {
-      throw new NotFoundException(`User not found by id ${id}`)
-    }
-    return user.toDto()
+    return (await this.findUserById(id)).toDto()
+  }
+
+  async updateUserById({
+    id,
+    userId,
+    body,
+  }: {
+    id: number
+    userId: number
+    body: UpdateUserDto
+  }): Promise<void> {
+    const user = await this.findUserById(id)
+
+    await this.updateBy(user.id, { ...body, updatedBy: userId })
+  }
+
+  async deleteUserById({ id }: { id: number }): Promise<void> {
+    const user = await this.findUserById(id)
+
+    await this.softDelete(user.id)
   }
 }

@@ -73,6 +73,31 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
         ? this.repository.create(entityLike)
         : this.repository.create()
   }
+
+  async exists(options?: FindManyOptions<TEntity>): Promise<boolean> {
+    return this.repository.exists(options)
+  }
+
+  async existsBy(
+    where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[],
+  ): Promise<boolean> {
+    return this.repository.existsBy(where)
+  }
+
+  async softDelete(
+    criteria:
+      | string
+      | string[]
+      | number
+      | number[]
+      | Date
+      | Date[]
+      | ObjectId
+      | ObjectId[]
+      | FindOptionsWhere<TEntity>,
+  ): Promise<UpdateResult> {
+    return this.repository.softDelete(criteria)
+  }
 }
 
 export default AbstractService

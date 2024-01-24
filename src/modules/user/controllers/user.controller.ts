@@ -1,7 +1,21 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
-import { ApiBody, ApiCreatedResponse, ApiParam, ApiTags } from '@nestjs/swagger'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { UserService } from '../services/user.service'
-import { CreateUserDto, UserDto, UsersPageOptionsDto } from '../dto'
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserDto,
+  UsersPageOptionsDto,
+} from '../dto'
 import { AllRoles, RoleEnum } from '@/constants'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
 import { Auth } from '@/modules/auth/decorators/auth.decorator'
@@ -15,16 +29,12 @@ export class UserController {
 
   @Post()
   @Auth(RoleEnum.BaseAdmin)
-  @ApiCreatedResponse({
-    description: 'Create user successfully',
-  })
   @ApiAuth(undefined, { summary: 'Create new user' })
-  @ApiBody({ type: CreateUserDto })
   async create(
     @CurrentUserId() userId: number,
     @Body() body: CreateUserDto,
   ): Promise<void> {
-    return this.userService.createUser(userId, body)
+    return this.userService.createUser({ userId, body })
   }
 
   @Get()
@@ -41,9 +51,26 @@ export class UserController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiParam({ name: 'id', type: 'number' })
   @ApiAuth(UserDto, { summary: 'Find user by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<UserDto> {
     return this.userService.getUserById(id)
+  }
+
+  @Put(':id')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Update user by id' })
+  update(
+    @Param('id', PositiveNumberPipe) id: number,
+    @CurrentUserId() userId: number,
+    @Body() body: UpdateUserDto,
+  ): Promise<void> {
+    return this.userService.updateUserById({ id, userId, body })
+  }
+
+  @Delete(':id')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Delete user by id' })
+  delete(@Param('id', PositiveNumberPipe) id: number): Promise<void> {
+    return this.userService.deleteUserById({ id })
   }
 }

@@ -5,7 +5,12 @@ import {
   UserLockedEnum,
   UserStatusEnum,
 } from '@/constants'
-import { EnumField, EnumFieldOptional, StringField } from '@/shared/decorators'
+import {
+  EnumField,
+  EnumFieldOptional,
+  StringField,
+  StringFieldOptional,
+} from '@/shared/decorators'
 
 export class CreateUserDto {
   @StringField({ maxLength: EntityConstant.EntityUserNameLength })
@@ -16,6 +21,9 @@ export class CreateUserDto {
 
   @StringField({ maxLength: EntityConstant.EntityUserNameLength })
   readonly username: string
+
+  @StringFieldOptional({ maxLength: EntityConstant.EntityShortLength })
+  readonly email: string
 
   @EnumField(() => RoleEnum)
   readonly role: RoleEnum
