@@ -30,6 +30,12 @@ export enum UserStatusEnum {
   Active,
 }
 
+export enum CategoryStatusEnum {
+  Inactive,
+  Active,
+}
+
+
 export enum UserLockedEnum {
   Unlocked,
   Locked,
@@ -50,4 +56,9 @@ export const UserStatusList = {
 export const UserLockedList = {
   [UserLockedEnum.Unlocked]: 'Unlocked',
   [UserLockedEnum.Locked]: 'Locked',
+}
+
+export const CategoryStatusList = {
+  [UserStatusEnum.Active]: 'Active',
+  [UserStatusEnum.Inactive]: 'Inactive',
 }

@@ -24,6 +24,9 @@ const dbConfig = {
   migrations: ['dist/database/migrations/*{.ts,.js}'],
   logging: 'all',
   logger: dbOption.logger,
+  cli: {
+    migrationsDir: 'src/database/migrations',
+  },
 }
 
 export default registerAs('typeorm', () => dbConfig)

@@ -1,3 +1,4 @@
+import { ConflictException, NotFoundException } from '@nestjs/common'
 import {
   DeepPartial,
   FindManyOptions,
@@ -82,6 +83,19 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[],
   ): Promise<boolean> {
     return this.repository.existsBy(where)
+  }
+
+  async validateDuplicate(
+    where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[],
+  ): Promise<void> {
+    if (await this.existsBy(where)) throw new ConflictException('Data existed')
+  }
+
+  async validateExist(
+    where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[],
+  ): Promise<void> {
+    if (!(await this.existsBy(where)))
+      throw new NotFoundException('Data not exist')
   }
 
   async softDelete(

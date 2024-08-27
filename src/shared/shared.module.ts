@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import dbConfig from '@/database/data-source/data-source'
+import { HealthModule } from './health/health.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import dbConfig from '@/database/data-source/data-source'
         await configService.get('typeorm')!,
       inject: [ConfigService],
     }),
+    HealthModule,
   ],
   providers: [],
 })

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as moment from 'moment-timezone'
 
 import { AppConstant, RegexConstant } from '@/constants'

@@ -1,6 +1,6 @@
 import { LoginFailException, SignUpFailException } from '@/exceptions'
 import { User } from '@/modules/user/entities/user.entity'
-import { UserService } from '@/modules/user/services/user.service'
+import { UserService } from '@/modules/user/user.service'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { plainToInstance } from 'class-transformer'
@@ -11,7 +11,7 @@ import {
   LoginResponseDto,
   UserLoginDto,
   UserSignUpDto,
-} from '../dto'
+} from './dto'
 
 @Injectable()
 export class AuthService {

@@ -9,13 +9,13 @@ import {
   Query,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-import { UserService } from '../services/user.service'
+import { UserService } from './user.service'
 import {
   CreateUserDto,
   UpdateUserDto,
   UserDto,
   UsersPageOptionsDto,
-} from '../dto'
+} from './dto'
 import { AllRoles, RoleEnum } from '@/constants'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
 import { Auth } from '@/modules/auth/decorators/auth.decorator'

@@ -25,7 +25,6 @@ import {
   ValidateIf,
 } from 'class-validator'
 import * as moment from 'moment-timezone'
-import Validator from 'validator'
 
 import { AppConstant, ExportConstant, RegexConstant } from '@/constants'
 import { ValidationMessage } from '@/messages'
@@ -113,7 +112,7 @@ export const IsString = (
   _IsString({ message: ValidationMessage.isString, ...makeOption(options) })
 
 export const IsNumberString = (
-  options?: Validator.IsNumericOptions,
+  options?: validator.IsNumericOptions,
   validOptions?: string | ValidationOptions,
 ): PropertyDecorator =>
   _IsNumberString(

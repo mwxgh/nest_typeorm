@@ -1,10 +1,6 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from '../entities/user.entity'
+import { User } from './entities/user.entity'
 import { FindOptionsWhere, Repository, SelectQueryBuilder } from 'typeorm'
 import {
   AppConstant,
@@ -18,7 +14,7 @@ import {
   UpdateUserDto,
   UserDto,
   UsersPageOptionsDto,
-} from '../dto'
+} from './dto'
 import { PageDto } from '@/shared/common/dto'
 import * as bcrypt from 'bcrypt'
 
@@ -32,13 +28,7 @@ export class UserService extends AbstractService<User> {
   }
 
   async createUser({ userId, body }: { userId: number; body: CreateUserDto }) {
-    const existUser = await this.existsBy({
-      username: body.username,
-    })
-
-    if (existUser) {
-      throw new ConflictException('ID exist in system')
-    }
+    await this.validateDuplicate({ username: body.username })
 
     await this.save({
       ...body,
@@ -74,7 +64,7 @@ export class UserService extends AbstractService<User> {
   private buildQueryList(
     pageOptionsDto: UsersPageOptionsDto,
   ): SelectQueryBuilder<User> {
-    const { role, email } = pageOptionsDto
+    const { role, email, order, orderBy } = pageOptionsDto
 
     const queryBuilder: SelectQueryBuilder<User> =
       this.userRepository.createQueryBuilder('user')
@@ -82,7 +72,10 @@ export class UserService extends AbstractService<User> {
     if (role) queryBuilder.where({ role })
     if (email) queryBuilder.andWhere({ email })
 
-    return queryBuilder.orderBy('user.createdAt', Direction.DESC)
+    return queryBuilder.orderBy(
+      `user.${orderBy ?? 'createdAt'}`,
+      order ?? Direction.ASC,
+    )
   }
 
   async getUsersPaginate(
