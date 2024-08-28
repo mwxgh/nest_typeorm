@@ -17,6 +17,7 @@ import {
 } from './dto'
 import { PageDto } from '@/shared/common/dto'
 import * as bcrypt from 'bcrypt'
+import { trim } from 'lodash'
 
 @Injectable()
 export class UserService extends AbstractService<User> {
@@ -64,13 +65,16 @@ export class UserService extends AbstractService<User> {
   private buildQueryList(
     pageOptionsDto: UsersPageOptionsDto,
   ): SelectQueryBuilder<User> {
-    const { role, email, order, orderBy } = pageOptionsDto
+    const { role, email, order, orderBy, q } = pageOptionsDto
 
     const queryBuilder: SelectQueryBuilder<User> =
       this.userRepository.createQueryBuilder('user')
 
     if (role) queryBuilder.where({ role })
     if (email) queryBuilder.andWhere({ email })
+    if (q) {
+      queryBuilder.searchByString(trim(q), ['user.firstName', 'user.lastName'])
+    }
 
     return queryBuilder.orderBy(
       `user.${orderBy ?? 'createdAt'}`,

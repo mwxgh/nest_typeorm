@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -9,6 +13,7 @@ import { CategoryDto } from './dto/category.dto'
 import { PageDto } from '@/shared/common/dto'
 import { CategoriesPageOptionsDto } from './dto/categories-page-options.dto'
 import { Direction } from '@/constants'
+import { trim } from 'lodash'
 
 @Injectable()
 export class CategoryService extends AbstractService<Category> {
@@ -26,14 +31,14 @@ export class CategoryService extends AbstractService<Category> {
     userId: number
     body: CreateCategoryDto
   }) {
-    const { parentId, name } = body
+    body.parentId && (await this.validateExist({ id: body.parentId }))
 
-    parentId && (await this.validateExist({ parentId }))
-
-    await this.validateDuplicate({ name })
+    const data = Object.assign(body, {
+      slug: await this.generateSlug(body.name),
+    })
 
     await this.save({
-      ...body,
+      ...data,
       createdBy: userId,
       updatedBy: userId,
     })
@@ -52,12 +57,17 @@ export class CategoryService extends AbstractService<Category> {
   private buildQueryList(
     pageOptionsDto: CategoriesPageOptionsDto,
   ): SelectQueryBuilder<Category> {
-    const { name, order, orderBy } = pageOptionsDto
+    const { parentId, order, orderBy, q } = pageOptionsDto
 
     const queryBuilder: SelectQueryBuilder<Category> =
       this.categoryRepository.createQueryBuilder('category')
 
-    if (name) queryBuilder.where({ name })
+    if (parentId) {
+      queryBuilder.where({ parentId })
+    }
+    if (q) {
+      queryBuilder.searchByString(trim(q), ['category.name'])
+    }
 
     return queryBuilder.orderBy(
       `category.${orderBy ?? 'createdAt'}`,
@@ -65,15 +75,24 @@ export class CategoryService extends AbstractService<Category> {
     )
   }
 
-  async getUsersPaginate(
+  async getCategories(
+    optionsDto: CategoriesPageOptionsDto,
+  ): Promise<CategoryDto[]> {
+    const categories: Category[] =
+      await this.buildQueryList(optionsDto).getMany()
+
+    return categories.toDtos()
+  }
+
+  async getCategoriesPaginate(
     pageOptionsDto: CategoriesPageOptionsDto,
   ): Promise<PageDto<CategoryDto>> {
     const queryBuilder: SelectQueryBuilder<Category> =
       this.buildQueryList(pageOptionsDto)
 
-    const [users, pageMeta] = await queryBuilder.paginate(pageOptionsDto)
+    const [categories, pageMeta] = await queryBuilder.paginate(pageOptionsDto)
 
-    return users.toPageDto(pageMeta)
+    return categories.toPageDto(pageMeta)
   }
 
   async getCategoryById(id: number): Promise<CategoryDto> {
@@ -89,9 +108,36 @@ export class CategoryService extends AbstractService<Category> {
     userId: number
     body: UpdateCategoryDto
   }): Promise<void> {
-    const category = await this.findById(id)
+    const category: Category = await this.findById(id)
 
-    await this.updateBy(category.id, { ...body, updatedBy: userId })
+    body.parentId && (await this.validateExist({ id: body.parentId }))
+
+    const childCategories = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where({ parentId: category.id })
+      .select(['category.parentId'])
+      .getMany()
+
+    if (childCategories.length > 0) {
+      const isParentIdIncluded = childCategories.some(
+        (item) => item.parentId === body.parentId,
+      )
+
+      console.log(
+        childCategories,
+        isParentIdIncluded,
+        'childCategories_____________',
+      )
+      if (isParentIdIncluded || body.parentId === id) {
+        throw new BadRequestException(
+          'Cannot update circular relative category',
+        )
+      }
+    }
+
+    console.log(userId)
+
+    // await this.updateBy(category.id, { ...body, updatedBy: userId })
   }
 
   async deleteCategoryById({ id }: { id: number }): Promise<void> {

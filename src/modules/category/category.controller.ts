@@ -27,7 +27,7 @@ export class CategoryController {
 
   @Post()
   @Auth(RoleEnum.BaseAdmin)
-  @ApiAuth(undefined, { summary: 'Create new categories' })
+  @ApiAuth(undefined, { summary: 'Create new category' })
   async create(
     @CurrentUserId() userId: number,
     @Body() body: CreateCategoryDto,
@@ -43,10 +43,24 @@ export class CategoryController {
     summary: 'Get category list',
     type: PageDto<CategoryDto>,
   })
-  getAll(
+  getAllWithMeta(
     @Query() query: CategoriesPageOptionsDto,
   ): Promise<PageDto<CategoryDto>> {
-    return this.categoryService.getUsersPaginate(query)
+    return this.categoryService.getCategoriesPaginate(query)
+  }
+
+  @Get('/child')
+  @Auth(...AllRoles)
+  @ApiAuth(CategoryDto, {
+    summary: 'Find category relative with parent category',
+  })
+  @ApiPageOkResponse({
+    description: 'Get child categories list',
+    summary: 'Get child categories list',
+    type: CategoryDto,
+  })
+  getAll(@Query() query: CategoriesPageOptionsDto): Promise<CategoryDto[]> {
+    return this.categoryService.getCategories(query)
   }
 
   @Get(':id')

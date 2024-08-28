@@ -12,6 +12,8 @@ import {
 } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 
+import { default as slugify } from 'slugify'
+
 export abstract class AbstractService<TEntity extends ObjectLiteral> {
   constructor(protected readonly repository: Repository<TEntity>) {}
 
@@ -98,6 +100,10 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
       throw new NotFoundException('Data not exist')
   }
 
+  async count(options: FindManyOptions): Promise<number> {
+    return await this.repository.count(options)
+  }
+
   async softDelete(
     criteria:
       | string
@@ -111,6 +117,50 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
       | FindOptionsWhere<TEntity>,
   ): Promise<UpdateResult> {
     return this.repository.softDelete(criteria)
+  }
+
+  /**
+   * Get character from ASCII match criteria
+   * ASCII table : https://www.asciitable.com/
+   * - ...rest: { from: number; range: number }[] to accept element params instead of array
+   * - Eg : getCharFromASCII({ from: 97, range: 26 },
+   *                         { from: 48, range: 10 })
+   * - params: { from: number; range: number }[] to accept array instead of element params
+   * - Eg : getCharFromASCII([{ from: 97, range: 26 },
+   *                          { from: 48, range: 10 }])
+   */
+  private getCharFromASCII(params: { from: number; range: number }[]): string {
+    const arrayCharsFromASCII = params.map((o) => {
+      const charFromASCII = Array.from(Array(o.range)).map((e, i) => i + o.from)
+
+      return charFromASCII.map((x) => String.fromCharCode(x)).join('')
+    })
+
+    return arrayCharsFromASCII.join('')
+  }
+
+  async generateSlug(name: string): Promise<string> {
+    const makeId = (length: number): string =>
+      Array.from({ length }, () =>
+        this.getCharFromASCII([
+          { from: 97, range: 26 },
+          { from: 48, range: 10 },
+        ]).charAt(Math.floor(Math.random() * 36)),
+      ).join('')
+
+    let slug = slugify(name, {
+      replacement: '-',
+      remove: undefined,
+      lower: true,
+    })
+    let i = 0
+
+    while (i++ < 100) {
+      if ((await this.count({ where: { slug } })) === 0) return slug
+      slug = `${slug}-${makeId(8)}`
+    }
+
+    return slug
   }
 }
 

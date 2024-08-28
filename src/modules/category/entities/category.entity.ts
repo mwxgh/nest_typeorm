@@ -1,5 +1,12 @@
 import { Exclude } from 'class-transformer'
-import { Column, Entity, Index } from 'typeorm'
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm'
 import { CategoryStatusEnum, EntityConstant } from '@/constants'
 import {
   AbstractEntityWithCU,
@@ -41,4 +48,13 @@ export class Category
     default: CategoryStatusEnum.Active,
   })
   status: CategoryStatusEnum
+
+  @ManyToOne(() => Category, (category) => category.children, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'parent_id' })
+  parent: Category
+
+  @OneToMany(() => Category, (category) => category.parent)
+  children: Category[]
 }
