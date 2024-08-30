@@ -1,4 +1,11 @@
 import { ExportConstant } from '@/constants'
+import { AsyncRequestContext } from '@/modules/async-context-request'
+import { Logger } from 'winston'
+
+export type ExceptionFilterType = {
+  asyncRequestContext: AsyncRequestContext
+  logger: Logger
+}
 
 export type IAttachment = {
   filename: string

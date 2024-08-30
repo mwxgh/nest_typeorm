@@ -1,4 +1,29 @@
+import { AppConstant } from '@/constants'
 import * as crypto from 'crypto'
+
+export const replaceHiddenText = (
+  text: string,
+  numDigitsHidden = AppConstant.numDigitsHidden,
+  characterHidden = AppConstant.characterHidden,
+) => {
+  const textReplaced = `${text}`.replace(
+    // example : example => exam***
+    new RegExp(`.{0,${numDigitsHidden}}$`),
+    `${characterHidden.repeat(numDigitsHidden)}`,
+  )
+
+  if (
+    typeof textReplaced === 'string' &&
+    textReplaced.length >= AppConstant.maxCharacterLog
+  ) {
+    return (
+      textReplaced.substring(0, AppConstant.maxCharacterLog) +
+      `${characterHidden.repeat(numDigitsHidden)}...`
+    )
+  }
+
+  return textReplaced
+}
 
 export const generatePassword = (): string => {
   const length = 8

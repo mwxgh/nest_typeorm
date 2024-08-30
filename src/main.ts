@@ -15,6 +15,11 @@ import { AppModule } from './app.module'
 import { AppConstant } from '@constants/app.constant'
 import { setupSwagger } from './shared/utils/setup.swagger'
 import config from '@/config/config'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { AsyncRequestContext } from './modules/async-context-request'
+import { ResponseLoggerInterceptor } from './shared/interceptors/response.interceptor'
+import { TimeoutInterceptor } from './shared/interceptors/timeout.interceptor'
+import { ConfigService } from '@nestjs/config'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -25,6 +30,25 @@ async function bootstrap() {
 
   // Get config of app.
   const appConfig = config().app
+
+  const configService = app.get(ConfigService)
+  const appConfigForTimeOut = configService.get('app') || {}
+
+  // Apply winston logger for app.
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
+
+  const filterParam = {
+    asyncRequestContext: app.get(AsyncRequestContext),
+    logger: app.get(WINSTON_MODULE_NEST_PROVIDER),
+  }
+
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector), {
+      excludeExtraneousValues: true,
+    }),
+    new ResponseLoggerInterceptor(filterParam),
+    new TimeoutInterceptor(appConfigForTimeOut),
+  )
 
   // Enable CORS
   app.enableCors({

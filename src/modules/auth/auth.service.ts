@@ -1,7 +1,7 @@
 import { LoginFailException, SignUpFailException } from '@/exceptions'
 import { User } from '@/modules/user/entities/user.entity'
 import { UserService } from '@/modules/user/user.service'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { plainToInstance } from 'class-transformer'
 import * as bcrypt from 'bcrypt'
@@ -12,12 +12,16 @@ import {
   UserLoginDto,
   UserSignUpDto,
 } from './dto'
+import { Logger } from 'winston'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {}
 
   async validateUser(username: string, password: string): Promise<User> {
@@ -65,6 +69,8 @@ export class AuthService {
     const { username, password } = data
 
     const user = await this.validateUser(username, password)
+
+    this.logger.log('Login successful', {})
 
     return this.generateToken(user)
   }
