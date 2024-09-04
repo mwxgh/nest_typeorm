@@ -28,7 +28,7 @@ export class Category
     type: 'int',
   })
   @Exclude()
-  parentId: number
+  parentId?: number
 
   @Column({
     type: 'varchar',

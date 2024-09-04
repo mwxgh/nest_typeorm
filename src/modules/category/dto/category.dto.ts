@@ -7,7 +7,7 @@ import { AbstractDtoWithCU } from '@/shared/common/dto'
 export class CategoryDto extends AbstractDtoWithCU {
   @Expose()
   @ApiProperty()
-  parentId: number
+  parentId?: number
 
   @Expose()
   @ApiProperty()
@@ -21,6 +21,10 @@ export class CategoryDto extends AbstractDtoWithCU {
   @ApiProperty()
   status: string
 
+  @Expose()
+  @ApiProperty()
+  children: any
+
   constructor(category: Category) {
     super(category)
 
@@ -28,5 +32,6 @@ export class CategoryDto extends AbstractDtoWithCU {
     this.slug = category.slug
     this.parentId = category.parentId
     this.status = CategoryStatusList[category.status]
+    this.children = category.children
   }
 }

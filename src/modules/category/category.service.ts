@@ -12,7 +12,7 @@ import { Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryDto } from './dto/category.dto'
 import { PageDto } from '@/shared/common/dto'
 import { CategoriesPageOptionsDto } from './dto/categories-page-options.dto'
-import { Direction } from '@/constants'
+import { CategoryStatusList, Direction } from '@/constants'
 import { trim } from 'lodash'
 
 @Injectable()
@@ -110,34 +110,80 @@ export class CategoryService extends AbstractService<Category> {
   }): Promise<void> {
     const category: Category = await this.findById(id)
 
-    body.parentId && (await this.validateExist({ id: body.parentId }))
+    if (body.parentId) {
+      await this.validateExist({ id: body.parentId })
 
-    const childCategories = await this.categoryRepository
-      .createQueryBuilder('category')
-      .where({ parentId: category.id })
-      .select(['category.parentId'])
-      .getMany()
-
-    if (childCategories.length > 0) {
-      const isParentIdIncluded = childCategories.some(
-        (item) => item.parentId === body.parentId,
+      const categoryDescendants = await this.buildCategoryDescendants(
+        body.parentId,
       )
 
-      console.log(
-        childCategories,
-        isParentIdIncluded,
-        'childCategories_____________',
-      )
-      if (isParentIdIncluded || body.parentId === id) {
+      const uniqueParentIds = [
+        ...new Set(
+          categoryDescendants
+            .map((category) => category.parentId)
+            .filter((id) => id !== null),
+        ),
+      ]
+
+      if (uniqueParentIds.includes(body.parentId)) {
         throw new BadRequestException(
           'Cannot update circular relative category',
         )
       }
     }
 
-    console.log(userId)
+    await this.updateBy(category.id, { ...body, updatedBy: userId })
+  }
 
-    // await this.updateBy(category.id, { ...body, updatedBy: userId })
+  buildCategoryTree(
+    categories: Category[],
+    parentId: number | null = null,
+  ): CategoryDto[] {
+    return categories
+      .filter((category) => category.parentId === parentId)
+      .map((category) => ({
+        ...category,
+        status: CategoryStatusList[category.status],
+        children: this.buildCategoryTree(categories, category.id),
+      }))
+  }
+
+  async getCategoryTree(rootId: number): Promise<CategoryDto[]> {
+    const categories = await this.buildCategoryDescendants(rootId)
+    return this.buildCategoryTree(categories)
+  }
+
+  async buildCategoryDescendants(rootId: number): Promise<Category[]> {
+    const data: Category[] = await this.categoryRepository.query(
+      `
+      WITH RECURSIVE category_hierarchy AS (
+        SELECT id, parent_id AS parentId, name, slug, status
+        FROM categories
+        WHERE id = ?
+
+        UNION ALL
+
+        SELECT c.id, c.parent_id AS parentId, c.name, c.slug, c.status
+        FROM categories c
+        INNER JOIN category_hierarchy ch ON c.parent_id = ch.id
+      )
+
+      SELECT id, parentId, name, slug, status
+      FROM category_hierarchy
+      `,
+      [rootId],
+    )
+
+    return data
+  }
+
+  async getCategoryDescendants(rootId: number): Promise<CategoryDto[]> {
+    const data: Category[] = await this.buildCategoryDescendants(rootId)
+
+    return data.map((category) => ({
+      ...category,
+      status: CategoryStatusList[category.status],
+    }))
   }
 
   async deleteCategoryById({ id }: { id: number }): Promise<void> {

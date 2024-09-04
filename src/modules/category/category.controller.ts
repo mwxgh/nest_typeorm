@@ -49,25 +49,30 @@ export class CategoryController {
     return this.categoryService.getCategoriesPaginate(query)
   }
 
-  @Get('/child')
-  @Auth(...AllRoles)
-  @ApiAuth(CategoryDto, {
-    summary: 'Find category relative with parent category',
-  })
-  @ApiPageOkResponse({
-    description: 'Get child categories list',
-    summary: 'Get child categories list',
-    type: CategoryDto,
-  })
-  getAll(@Query() query: CategoriesPageOptionsDto): Promise<CategoryDto[]> {
-    return this.categoryService.getCategories(query)
-  }
 
   @Get(':id')
   @Auth(...AllRoles)
   @ApiAuth(CategoryDto, { summary: 'Find category by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<CategoryDto> {
     return this.categoryService.getCategoryById(id)
+  }
+
+  @Get('descendants/:id')
+  @Auth(...AllRoles)
+  @ApiAuth(CategoryDto, { summary: 'Find category by id' })
+  getDescendants(
+    @Param('id', PositiveNumberPipe) id: number,
+  ): Promise<CategoryDto[]> {
+    return this.categoryService.getCategoryDescendants(id)
+  }
+
+  @Get('family-tree/:id')
+  @Auth(...AllRoles)
+  @ApiAuth(CategoryDto, { summary: 'Find category by id' })
+  getFamilyTree(
+    @Param('id', PositiveNumberPipe) id: number,
+  ): Promise<CategoryDto[]> {
+    return this.categoryService.getCategoryTree(id)
   }
 
   @Put(':id')
