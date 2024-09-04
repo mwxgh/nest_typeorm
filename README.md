@@ -32,6 +32,14 @@
 $ yarn install
 ```
 
+## Database (npm is required)
+
+
+```bash
+# Generate migration
+$ npm run migration:generate --name=something
+```
+
 ## Running the app
 
 ```bash

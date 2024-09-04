@@ -35,6 +35,10 @@ export enum CategoryStatusEnum {
   Active,
 }
 
+export enum TagStatusEnum {
+  Inactive,
+  Active,
+}
 
 export enum UserLockedEnum {
   Unlocked,
@@ -59,6 +63,11 @@ export const UserLockedList = {
 }
 
 export const CategoryStatusList = {
-  [UserStatusEnum.Active]: 'Active',
-  [UserStatusEnum.Inactive]: 'Inactive',
+  [CategoryStatusEnum.Active]: 'Active',
+  [CategoryStatusEnum.Inactive]: 'Inactive',
+}
+
+export const TagStatusList = {
+  [TagStatusEnum.Active]: 'Active',
+  [TagStatusEnum.Inactive]: 'Inactive',
 }

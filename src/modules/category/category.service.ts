@@ -187,8 +187,8 @@ export class CategoryService extends AbstractService<Category> {
   }
 
   async deleteCategoryById({ id }: { id: number }): Promise<void> {
-    const user = await this.findById(id)
+    const category = await this.findById(id)
 
-    await this.softDelete(user.id)
+    await this.softDelete(category.id)
   }
 }

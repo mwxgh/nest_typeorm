@@ -30,7 +30,7 @@ export class UserController {
   @Post()
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Create new user' })
-  async create(
+  create(
     @CurrentUserId() userId: number,
     @Body() body: CreateUserDto,
   ): Promise<void> {

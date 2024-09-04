@@ -28,7 +28,7 @@ export class CategoryController {
   @Post()
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Create new category' })
-  async create(
+  create(
     @CurrentUserId() userId: number,
     @Body() body: CreateCategoryDto,
   ): Promise<void> {
@@ -43,12 +43,11 @@ export class CategoryController {
     summary: 'Get category list',
     type: PageDto<CategoryDto>,
   })
-  getAllWithMeta(
+  getAll(
     @Query() query: CategoriesPageOptionsDto,
   ): Promise<PageDto<CategoryDto>> {
     return this.categoryService.getCategoriesPaginate(query)
   }
-
 
   @Get(':id')
   @Auth(...AllRoles)
