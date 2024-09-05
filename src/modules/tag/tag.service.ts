@@ -64,7 +64,7 @@ export class TagService extends AbstractService<Tag> {
     const tag = await this.findOneBy({ id })
 
     if (!tag) {
-      throw new NotFoundException(`Tag not found by id ${id}`)
+      throw new NotFoundException(`Tag with ID ${id} was not found.`)
     }
 
     return tag
@@ -84,6 +84,11 @@ export class TagService extends AbstractService<Tag> {
     body: UpdateTagDto
   }): Promise<void> {
     const tag = await this.findTagById(id)
+
+    if (body.name)
+      Object.assign(body, {
+        slug: await this.generateSlug(body.name),
+      })
 
     await this.updateBy(tag.id, { ...body, updatedBy: userId })
   }

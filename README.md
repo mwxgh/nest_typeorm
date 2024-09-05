@@ -1,5 +1,18 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="50" alt="Nest Logo" /></a>
+  <a href="https://www.typescriptlang.org/" target="_blank">
+    <img src="https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-icon.svg" width="50" alt="TypeScript Logo" />
+</a>
+<a href="https://typeorm.io/" target="_blank">
+    <img src="https://github.com/typeorm/typeorm/raw/master/resources/logo_big.png" width="110" alt="TypeORM Logo" />
+</a>
+<a href="https://typeorm.io/" target="_blank">
+    <img src="https://www.vectorlogo.zone/logos/docker/docker-icon.svg" width="50" alt="Docker Logo" />
+</a>
+<a href="https://typeorm.io/" target="_blank">
+    <img src="https://www.vectorlogo.zone/logos/mysql/mysql-icon.svg" width="50" alt="MySQL Logo" />
+</a>
+
 </p>
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
@@ -32,8 +45,7 @@
 $ yarn install
 ```
 
-## Database (npm is required)
-
+## Database (npm only)
 
 ```bash
 # Generate migration

@@ -18,8 +18,10 @@ import { PageDto } from '@/shared/common/dto'
 import { TagDto } from './dto/tag.dto'
 import { TagsPageOptionsDto } from './dto/tags-page-options.dto'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
+import { ApiTags } from '@nestjs/swagger'
 
-@Controller('tag')
+@ApiTags('Tags')
+@Controller('tags')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 

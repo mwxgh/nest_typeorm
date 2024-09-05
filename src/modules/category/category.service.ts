@@ -48,7 +48,7 @@ export class CategoryService extends AbstractService<Category> {
     const category = await this.findOneBy({ id })
 
     if (!category) {
-      throw new NotFoundException(`Category not found by id ${id}`)
+      throw new NotFoundException(`Category with ID ${id} was not found.`)
     }
 
     return category
@@ -131,6 +131,11 @@ export class CategoryService extends AbstractService<Category> {
         )
       }
     }
+
+    if (body.name)
+      Object.assign(body, {
+        slug: await this.generateSlug(body.name),
+      })
 
     await this.updateBy(category.id, { ...body, updatedBy: userId })
   }

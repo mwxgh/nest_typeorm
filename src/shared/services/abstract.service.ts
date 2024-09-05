@@ -156,7 +156,8 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     let i = 0
 
     while (i++ < 100) {
-      if ((await this.count({ where: { slug } })) === 0) return slug
+      if ((await this.count({ where: { slug }, withDeleted: true })) === 0)
+        return slug
       slug = `${slug}-${makeId(8)}`
     }
 

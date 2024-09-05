@@ -56,7 +56,7 @@ export class UserService extends AbstractService<User> {
     const user = await this.findOneBy({ id })
 
     if (!user) {
-      throw new NotFoundException(`User not found by id ${id}`)
+      throw new NotFoundException(`User with ID ${id} was not found.`)
     }
 
     return user
