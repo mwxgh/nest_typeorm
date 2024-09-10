@@ -6,11 +6,11 @@ import {
 } from '@/shared/decorators'
 
 export class CreateCategoryDto {
-  @StringField({ maxLength: EntityConstant.EntityUserNameLength })
+  @StringField({ maxLength: EntityConstant.EntityNameLength })
   readonly name: string
 
   @NumberFieldOptional()
-  readonly parentId: number
+  readonly parentId?: number
 
   @EnumField(() => CategoryStatusEnum)
   readonly status: CategoryStatusEnum
