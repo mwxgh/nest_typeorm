@@ -1,14 +1,19 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Repository, SelectQueryBuilder } from 'typeorm'
 import AbstractService from '@/shared/services/abstract.service'
 import { Media } from './entities/media.entity'
 import { CreateMediaDto } from './dto/create-media.dto'
 import * as path from 'path'
 import { writeFile } from 'fs/promises'
 import config from '@/config/config'
-import { BaseStatusEnum } from '@/constants'
+import { BaseStatusEnum, Direction } from '@/constants'
 import { randomBytes } from 'crypto'
+import { MediaPageOptionsDto } from './dto/media-page-options.dto'
+import { MediaDto } from './dto/media.dto'
+import { PageDto } from '@/shared/common/dto'
+import { trim } from 'lodash'
+import { UpdateMediaDto } from './dto/update-media.dto'
 
 @Injectable()
 export class MediaService extends AbstractService<Media> {
@@ -37,7 +42,7 @@ export class MediaService extends AbstractService<Media> {
 
     await writeFile(absoluteFileDestination, file.buffer)
 
-    const media = {
+    await this.save({
       ...createMediaDto,
       originalName: file.originalname,
       filename,
@@ -48,8 +53,69 @@ export class MediaService extends AbstractService<Media> {
         BaseStatusEnum[
           createMediaDto.status as unknown as keyof typeof BaseStatusEnum
         ],
+    })
+  }
+
+  private buildQueryList(
+    pageOptionsDto: MediaPageOptionsDto,
+  ): SelectQueryBuilder<Media> {
+    const { order, orderBy, q } = pageOptionsDto
+
+    const queryBuilder: SelectQueryBuilder<Media> =
+      this.mediaRepository.createQueryBuilder('media')
+
+    if (q) {
+      queryBuilder.searchByString(trim(q), ['media.type'])
     }
 
-    await this.save(media)
+    return queryBuilder.orderBy(
+      `media.${orderBy ?? 'createdAt'}`,
+      order ?? Direction.ASC,
+    )
+  }
+
+  async getMediaPaginate(
+    pageOptionsDto: MediaPageOptionsDto,
+  ): Promise<PageDto<MediaDto>> {
+    const queryBuilder: SelectQueryBuilder<Media> =
+      this.buildQueryList(pageOptionsDto)
+
+    const [media, pageMeta] = await queryBuilder.paginate(pageOptionsDto)
+
+    return media.toPageDto(pageMeta)
+  }
+
+  async findMediaById(id: number): Promise<Media> {
+    const media = await this.findOneBy({ id })
+
+    if (!media) {
+      throw new NotFoundException(`Media with ID ${id} was not found.`)
+    }
+
+    return media
+  }
+
+  async getMediaById(id: number): Promise<MediaDto> {
+    return (await this.findMediaById(id)).toDto()
+  }
+
+  async updateMediaById({
+    id,
+    userId,
+    body,
+  }: {
+    id: number
+    userId: number
+    body: UpdateMediaDto
+  }): Promise<void> {
+    const tag = await this.findMediaById(id)
+
+    await this.updateBy(tag.id, { ...body, updatedBy: userId })
+  }
+
+  async deleteMediaById({ id }: { id: number }): Promise<void> {
+    const media = await this.findMediaById(id)
+
+    await this.softDelete(media.id)
   }
 }
