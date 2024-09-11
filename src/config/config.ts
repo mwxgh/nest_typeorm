@@ -10,6 +10,11 @@ export default () => ({
     timeout: process.env.APP_TIMEOUT || 30000,
   },
 
+  fileUpload: {
+    destination: process.env.FILE_UPLOAD_DESTINATION || 'uploads',
+    maxSize: process.env.FILE_UPLOAD_MAX_SIZE,
+  },
+
   jwt: {
     privateKey: process.env.JWT_PRIVATE_KEY,
     secret: process.env.JWT_SECRET,

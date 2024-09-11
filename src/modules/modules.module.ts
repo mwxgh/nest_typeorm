@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module'
 import { CategoryModule } from './category/category.module'
 import { AsyncRequestContextModule } from './async-context-request'
 import { TagModule } from './tag/tag.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TagModule } from './tag/tag.module';
     UserModule,
     CategoryModule,
     TagModule,
+    MediaModule,
   ],
 })
 export class ModulesModule {}
