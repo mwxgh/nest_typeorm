@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-import { TagStatusList } from '@/constants'
+import { BaseStatusList } from '@/constants'
 import { AbstractDtoWithCU } from '@/shared/common/dto'
 import { Tag } from '../entities/tag.entity'
 
@@ -22,6 +22,6 @@ export class TagDto extends AbstractDtoWithCU {
 
     this.name = tag.name
     this.slug = tag.slug
-    this.status = TagStatusList[tag.status]
+    this.status = BaseStatusList[tag.status]
   }
 }

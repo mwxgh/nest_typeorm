@@ -3,7 +3,7 @@ import {
   EntityConstant,
   RoleEnum,
   UserLockedEnum,
-  UserStatusEnum,
+  BaseStatusEnum,
 } from '@/constants'
 import {
   EnumField,
@@ -28,12 +28,12 @@ export class CreateUserDto {
   @EnumField(() => RoleEnum)
   readonly role: RoleEnum
 
-  @EnumFieldOptional(() => UserStatusEnum)
-  readonly status: UserStatusEnum
+  @EnumFieldOptional(() => BaseStatusEnum)
+  readonly status: BaseStatusEnum
 
   @EnumFieldOptional(() => UserLockedEnum)
   @Transform(({ obj }) =>
-    obj.status === UserStatusEnum.Inactive
+    obj.status === BaseStatusEnum.Inactive
       ? UserLockedEnum.Locked
       : obj.isLocked,
   )

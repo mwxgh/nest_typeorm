@@ -12,7 +12,7 @@ import { Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryDto } from './dto/category.dto'
 import { PageDto } from '@/shared/common/dto'
 import { CategoriesPageOptionsDto } from './dto/categories-page-options.dto'
-import { CategoryStatusList, Direction } from '@/constants'
+import { BaseStatusList, Direction } from '@/constants'
 import { trim } from 'lodash'
 
 @Injectable()
@@ -148,7 +148,7 @@ export class CategoryService extends AbstractService<Category> {
       .filter((category) => category.parentId === parentId)
       .map((category) => ({
         ...category,
-        status: CategoryStatusList[category.status],
+        status: BaseStatusList[category.status],
         children: this.buildCategoryTree(categories, category.id),
       }))
   }
@@ -187,7 +187,7 @@ export class CategoryService extends AbstractService<Category> {
 
     return data.map((category) => ({
       ...category,
-      status: CategoryStatusList[category.status],
+      status: BaseStatusList[category.status],
     }))
   }
 

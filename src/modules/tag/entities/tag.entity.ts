@@ -1,5 +1,5 @@
 import { Column, Entity, Index } from 'typeorm'
-import { EntityConstant, TagStatusEnum } from '@/constants'
+import { EntityConstant, BaseStatusEnum } from '@/constants'
 import {
   AbstractEntityWithCU,
   IAbstractEntity,
@@ -29,7 +29,7 @@ export class Tag
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: TagStatusEnum.Active,
+    default: BaseStatusEnum.Active,
   })
-  status: TagStatusEnum
+  status: BaseStatusEnum
 }

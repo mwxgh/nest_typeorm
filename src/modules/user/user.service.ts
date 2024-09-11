@@ -6,7 +6,7 @@ import {
   AppConstant,
   Direction,
   UserLockedEnum,
-  UserStatusEnum,
+  BaseStatusEnum,
 } from '@/constants'
 import { AbstractService } from '@/shared/services/abstract.service'
 import {
@@ -48,7 +48,7 @@ export class UserService extends AbstractService<User> {
     return await this.findOneBy({
       ...conditions,
       isLocked: UserLockedEnum.Unlocked,
-      status: UserStatusEnum.Active,
+      status: BaseStatusEnum.Active,
     })
   }
 

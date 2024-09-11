@@ -4,7 +4,7 @@ import {
   EntityConstant,
   RoleEnum,
   UserLockedEnum,
-  UserStatusEnum,
+  BaseStatusEnum,
 } from '@/constants'
 import { UserDto } from '@/modules/user/dto/user.dto'
 import {
@@ -72,9 +72,9 @@ export class User
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: UserStatusEnum.Active,
+    default: BaseStatusEnum.Active,
   })
-  status: UserStatusEnum
+  status: BaseStatusEnum
 
   @Column({
     name: 'is_locked',

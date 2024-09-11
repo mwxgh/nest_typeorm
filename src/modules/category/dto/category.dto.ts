@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-import { CategoryStatusList } from '@/constants'
+import { BaseStatusList } from '@/constants'
 import { Category } from '../entities/category.entity'
 import { AbstractDtoWithCU } from '@/shared/common/dto'
 
@@ -31,7 +31,7 @@ export class CategoryDto extends AbstractDtoWithCU {
     this.name = category.name
     this.slug = category.slug
     this.parentId = category.parentId
-    this.status = CategoryStatusList[category.status]
+    this.status = BaseStatusList[category.status]
     this.children = category.children
   }
 }

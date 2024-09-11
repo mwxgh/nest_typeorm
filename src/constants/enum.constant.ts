@@ -25,17 +25,7 @@ export const AllRoles: RoleEnum[] = [
   RoleEnum.NormalUser,
 ]
 
-export enum UserStatusEnum {
-  Inactive,
-  Active,
-}
-
-export enum CategoryStatusEnum {
-  Inactive,
-  Active,
-}
-
-export enum TagStatusEnum {
+export enum BaseStatusEnum {
   Inactive,
   Active,
 }
@@ -52,22 +42,12 @@ export const RoleList = {
   [RoleEnum.NormalUser]: 'NormalUser',
 }
 
-export const UserStatusList = {
-  [UserStatusEnum.Active]: 'Active',
-  [UserStatusEnum.Inactive]: 'Inactive',
-}
-
 export const UserLockedList = {
   [UserLockedEnum.Unlocked]: 'Unlocked',
   [UserLockedEnum.Locked]: 'Locked',
 }
 
-export const CategoryStatusList = {
-  [CategoryStatusEnum.Active]: 'Active',
-  [CategoryStatusEnum.Inactive]: 'Inactive',
-}
-
-export const TagStatusList = {
-  [TagStatusEnum.Active]: 'Active',
-  [TagStatusEnum.Inactive]: 'Inactive',
+export const BaseStatusList = {
+  [BaseStatusEnum.Active]: 'Active',
+  [BaseStatusEnum.Inactive]: 'Inactive',
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-import { UserLockedEnum, UserStatusEnum } from '@/constants'
+import { UserLockedEnum, BaseStatusEnum } from '@/constants'
 
 export class DetailUserResponseDto {
   @Expose()
@@ -29,7 +29,7 @@ export class DetailUserResponseDto {
 
   @Expose()
   @ApiProperty()
-  status: UserStatusEnum
+  status: BaseStatusEnum
 
   @Expose()
   @ApiProperty()

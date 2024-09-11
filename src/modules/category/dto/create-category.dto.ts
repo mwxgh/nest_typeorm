@@ -1,4 +1,4 @@
-import { CategoryStatusEnum, EntityConstant } from '@/constants'
+import { BaseStatusEnum, EntityConstant } from '@/constants'
 import {
   EnumField,
   NumberFieldOptional,
@@ -12,6 +12,6 @@ export class CreateCategoryDto {
   @NumberFieldOptional()
   readonly parentId?: number
 
-  @EnumField(() => CategoryStatusEnum)
-  readonly status: CategoryStatusEnum
+  @EnumField(() => BaseStatusEnum)
+  readonly status: BaseStatusEnum
 }

@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer'
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
-import { CategoryStatusEnum, EntityConstant } from '@/constants'
+import { BaseStatusEnum, EntityConstant } from '@/constants'
 import {
   AbstractEntityWithCU,
   IAbstractEntity,
@@ -38,9 +38,9 @@ export class Category
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: CategoryStatusEnum.Active,
+    default: BaseStatusEnum.Active,
   })
-  status: CategoryStatusEnum
+  status: BaseStatusEnum
 
   // Self-referencing relationship for parent
   @ManyToOne(() => Category, (category) => category.children, {
