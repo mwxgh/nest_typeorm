@@ -27,7 +27,7 @@ export class MediaDto extends AbstractDtoWithCU {
 
   @Expose()
   @ApiProperty()
-  dimension: any
+  properties: any
 
   @Expose()
   @ApiProperty()
@@ -41,7 +41,7 @@ export class MediaDto extends AbstractDtoWithCU {
     this.type = media.type
     this.mimetype = media.mimetype
     this.url = media.url
-    this.dimension = media.dimension
+    this.properties = media.properties
     this.status = BaseStatusList[media.status]
   }
 }

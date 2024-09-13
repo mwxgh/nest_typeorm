@@ -3,7 +3,7 @@ import { EnumField, StringFieldOptional } from '@/shared/decorators'
 
 export class CreateMediaDto {
   @StringFieldOptional()
-  readonly dimension?: any
+  readonly properties?: any
 
   @EnumField(() => BaseStatusEnum)
   readonly status: BaseStatusEnum

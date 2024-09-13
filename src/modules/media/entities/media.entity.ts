@@ -48,7 +48,7 @@ export class Media
     type: 'json',
     nullable: true,
   })
-  dimension: string
+  properties: string
 
   @Column({
     type: 'tinyint',
