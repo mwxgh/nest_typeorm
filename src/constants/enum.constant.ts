@@ -35,6 +35,37 @@ export enum UserLockedEnum {
   Locked,
 }
 
+export enum ContentStatusEnum {
+  Draft,
+  Review,
+  Published,
+  Rejected,
+  Hide,
+  Expired,
+}
+
+export enum ContentPriorityEnum {
+  Low,
+  Medium,
+  High,
+  Urgent,
+  Critical,
+}
+
+export enum ContentTypeEnum {
+  Article,
+  Video,
+  Image,
+  Audio,
+  Infographic,
+  Tutorial,
+  Review,
+  Interview,
+  CaseStudy,
+  EBook,
+  FAQ,
+}
+
 export const RoleList = {
   [RoleEnum.BaseAdmin]: 'Base Admin',
   [RoleEnum.Supervisor]: 'Supervisor',
@@ -50,4 +81,35 @@ export const UserLockedList = {
 export const BaseStatusList = {
   [BaseStatusEnum.Active]: 'Active',
   [BaseStatusEnum.Inactive]: 'Inactive',
+}
+
+export const ContentStatusList = {
+  [ContentStatusEnum.Draft]: 'Draft',
+  [ContentStatusEnum.Review]: 'Review',
+  [ContentStatusEnum.Published]: 'Published',
+  [ContentStatusEnum.Rejected]: 'Rejected',
+  [ContentStatusEnum.Hide]: 'Hide',
+  [ContentStatusEnum.Expired]: 'Expired',
+}
+
+export const ContentPriorityList = {
+  [ContentPriorityEnum.Low]: 'Low',
+  [ContentPriorityEnum.Medium]: 'Medium',
+  [ContentPriorityEnum.High]: 'High',
+  [ContentPriorityEnum.Urgent]: 'Urgent',
+  [ContentPriorityEnum.Critical]: 'Critical',
+}
+
+export const ContentTypeList = {
+  [ContentTypeEnum.Article]: 'Article',
+  [ContentTypeEnum.Video]: 'Video',
+  [ContentTypeEnum.Image]: 'Image',
+  [ContentTypeEnum.Audio]: 'Audio',
+  [ContentTypeEnum.Infographic]: 'Infographic',
+  [ContentTypeEnum.Tutorial]: 'Tutorial',
+  [ContentTypeEnum.Review]: 'Review',
+  [ContentTypeEnum.Interview]: 'Interview',
+  [ContentTypeEnum.CaseStudy]: 'CaseStudy',
+  [ContentTypeEnum.EBook]: 'EBook',
+  [ContentTypeEnum.FAQ]: 'FAQ',
 }

@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer'
-import { Column, Entity, Index } from 'typeorm'
+import { Column, Entity, Index, OneToMany } from 'typeorm'
 import {
   EntityConstant,
   RoleEnum,
@@ -12,6 +12,7 @@ import {
   IAbstractEntity,
 } from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
+import { Content } from '@/modules/content/entities/content.entity'
 
 @Entity('users')
 @UseDto(UserDto)
@@ -83,4 +84,10 @@ export class User
     default: UserLockedEnum.Unlocked,
   })
   isLocked: UserLockedEnum
+
+  @OneToMany(() => Content, (content) => content.createdBy)
+  createdContents: Content[]
+
+  @OneToMany(() => Content, (content) => content.releasedBy)
+  releasedContents: Content[]
 }

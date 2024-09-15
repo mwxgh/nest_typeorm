@@ -12,7 +12,7 @@ export default () => ({
 
   fileUpload: {
     destination: process.env.FILE_UPLOAD_DESTINATION || 'uploads',
-    maxSize: process.env.FILE_UPLOAD_MAX_SIZE,
+    maxSize: Number(process.env.FILE_UPLOAD_MAX_SIZE) || 52428800,
   },
 
   jwt: {
