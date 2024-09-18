@@ -80,6 +80,7 @@ export class Content
     name: 'released_at',
     type: 'datetime',
     precision: EntityConstant.TimePrecision,
+    default: () => 'NOW()',
   })
   releasedAt: Date
 
@@ -87,6 +88,7 @@ export class Content
     name: 'expired_at',
     type: 'datetime',
     precision: EntityConstant.TimePrecision,
+    nullable: true,
   })
   expiredAt: Date
 
