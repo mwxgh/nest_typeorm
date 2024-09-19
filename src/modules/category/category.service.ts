@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { Category } from './entities/category.entity'
 import AbstractService from '@/shared/services/abstract.service'
-import { Repository, SelectQueryBuilder } from 'typeorm'
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm'
 import { PageDto } from '@/shared/common/dto'
 import { BaseStatusList, Direction } from '@/constants'
 import { trim } from 'lodash'
@@ -16,12 +16,15 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from './dto'
+import { CategoryRelationService } from './category-relation.service'
 
 @Injectable()
 export class CategoryService extends AbstractService<Category> {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    private readonly categoryRelationService: CategoryRelationService,
+    private readonly dataSource: DataSource,
   ) {
     super(categoryRepository)
   }
@@ -196,6 +199,13 @@ export class CategoryService extends AbstractService<Category> {
   async deleteCategoryById({ id }: { id: number }): Promise<void> {
     const category = await this.findById(id)
 
-    await this.softDelete(category.id)
+    await this.dataSource.transaction(async (entityManager) => {
+      await entityManager.softDelete(Category, { id: category.id })
+
+      await this.categoryRelationService.unassignCategoryRelations({
+        categoryIds: [category.id],
+        entityManager,
+      })
+    })
   }
 }

@@ -3,7 +3,6 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { CategoryRelation } from './entities/category-relation.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { EntityManager, In, Repository } from 'typeorm'
-import { Content } from '../content/entities/content.entity'
 import { Category } from './entities/category.entity'
 import { BaseStatusEnum, RelationTypeEnum } from '@/constants'
 
@@ -12,8 +11,6 @@ export class CategoryRelationService extends AbstractService<CategoryRelation> {
   constructor(
     @InjectRepository(CategoryRelation)
     private readonly categoryRelationRepository: Repository<CategoryRelation>,
-    @InjectRepository(Content)
-    private contentRepository: Repository<Content>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {
@@ -63,9 +60,9 @@ export class CategoryRelationService extends AbstractService<CategoryRelation> {
     type,
     entityManager,
   }: {
-    relationId: number
+    relationId?: number
     categoryIds?: number[]
-    type: RelationTypeEnum
+    type?: RelationTypeEnum
     entityManager?: EntityManager
   }): Promise<void> {
     const repository = entityManager
@@ -73,9 +70,9 @@ export class CategoryRelationService extends AbstractService<CategoryRelation> {
       : this.categoryRelationRepository
 
     await repository.delete({
-      relationId,
+      ...(relationId ? { relationId } : {}),
       ...(categoryIds?.length ? { categoryId: In(categoryIds) } : {}),
-      type,
+      ...(type !== undefined ? { type } : {}),
     })
   }
 }
