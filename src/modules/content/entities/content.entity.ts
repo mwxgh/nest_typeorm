@@ -1,20 +1,31 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm'
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm'
 import {
   ContentPriorityEnum,
   ContentStatusEnum,
   ContentTypeEnum,
   EntityConstant,
 } from '@/constants'
-import { AbstractEntity, IAbstractEntity } from '@/shared/common/base.entity'
+import {
+  AbstractEntityWithCU,
+  IAbstractEntity,
+} from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
-import { ContentDto } from '../dto/content.dto'
 import { User } from '@/modules/user/entities/user.entity'
+import { CategoryRelation } from '@/modules/category/entities/category-relation.entity'
+import { ContentDto } from '../dto'
 
 @Entity('contents')
 @UseDto(ContentDto)
 @Index(['slug'], { unique: true })
 export class Content
-  extends AbstractEntity<ContentDto>
+  extends AbstractEntityWithCU<ContentDto>
   implements IAbstractEntity<ContentDto>
 {
   @Column({
@@ -99,4 +110,10 @@ export class Content
   @ManyToOne(() => User, (user) => user.releasedContents)
   @JoinColumn({ name: 'released_by' })
   releaser: User
+
+  @OneToMany(
+    () => CategoryRelation,
+    (categoryRelation) => categoryRelation.content,
+  )
+  categoryRelations: CategoryRelation[]
 }

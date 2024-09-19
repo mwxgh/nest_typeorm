@@ -5,10 +5,11 @@ import {
   ContentStatusList,
   ContentTypeList,
 } from '@/constants'
-import { AbstractDto } from '@/shared/common/dto'
+import { AbstractDtoWithCU } from '@/shared/common/dto'
 import { Content } from '../entities/content.entity'
+import { CategoryDto } from '@/modules/category/dto/category.dto'
 
-export class ContentDto extends AbstractDto {
+export class ContentDto extends AbstractDtoWithCU {
   @Expose()
   @ApiProperty()
   title: string
@@ -39,10 +40,6 @@ export class ContentDto extends AbstractDto {
 
   @Expose()
   @ApiProperty()
-  createdBy: number
-
-  @Expose()
-  @ApiProperty()
   releasedBy: number
 
   @Expose()
@@ -52,6 +49,10 @@ export class ContentDto extends AbstractDto {
   @Expose()
   @ApiProperty()
   expiredAt: Date
+
+  @Expose()
+  @ApiProperty({ type: () => CategoryDto, isArray: true })
+  categories: CategoryDto[]
 
   constructor(content: Content) {
     super(content)
@@ -64,8 +65,12 @@ export class ContentDto extends AbstractDto {
     this.priority = ContentPriorityList[content.priority]
     this.type = ContentTypeList[content.type]
     this.createdBy = content.createdBy
+    this.updatedBy = content.updatedBy
     this.releasedBy = content.releasedBy
     this.releasedAt = content.releasedAt
     this.expiredAt = content.expiredAt
+    this.categories = content.categoryRelations?.map((relation) =>
+      relation.category.toDto(),
+    )
   }
 }

@@ -140,7 +140,7 @@ export class CategoryService extends AbstractService<Category> {
     await this.updateBy(category.id, { ...body, updatedBy: userId })
   }
 
-  buildCategoryTree(
+  private buildCategoryTree(
     categories: Category[],
     parentId: number | null = null,
   ): CategoryDto[] {

@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer'
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
 import { BaseStatusEnum, EntityConstant } from '@/constants'
 import {
@@ -7,6 +6,7 @@ import {
 } from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
 import { CategoryDto } from '../dto/category.dto'
+import { CategoryRelation } from './category-relation.entity'
 
 @Entity('categories')
 @UseDto(CategoryDto)
@@ -20,7 +20,6 @@ export class Category
     nullable: true,
     type: 'int',
   })
-  @Exclude()
   parentId?: number
 
   @Column({
@@ -51,4 +50,10 @@ export class Category
   // Self-referencing relationship for children
   @OneToMany(() => Category, (category) => category.parent)
   children: Category[]
+
+  @OneToMany(
+    () => CategoryRelation,
+    (categoryRelation) => categoryRelation.category,
+  )
+  categoryRelations: CategoryRelation[]
 }

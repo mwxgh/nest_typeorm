@@ -1,24 +1,37 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { CreateContentDto } from './dto/create-content.dto'
-import { UpdateContentDto } from './dto/update-content.dto'
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common'
 import { Content } from './entities/content.entity'
 import AbstractService from '@/shared/services/abstract.service'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, SelectQueryBuilder } from 'typeorm'
-import { ContentsPageOptionsDto } from './dto/contents-page-options.dto'
-import { trim } from 'lodash'
-import { Direction } from '@/constants'
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm'
+import { difference, trim } from 'lodash'
+import { Direction, RelationTypeEnum } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
-import { ContentDto } from './dto/content.dto'
+import { CategoryRelationService } from '../category/category-relation.service'
+import {
+  ContentDto,
+  ContentsPageOptionsDto,
+  CreateContentDto,
+  UpdateContentDto,
+  UpdateContentPriorityDto,
+  UpdateContentStatusDto,
+  UpdateContentTypeDto,
+} from './dto'
 
 @Injectable()
 export class ContentService extends AbstractService<Content> {
   constructor(
     @InjectRepository(Content)
     private readonly contentRepository: Repository<Content>,
+    private readonly categoryRelationService: CategoryRelationService,
+    private readonly dataSource: DataSource,
   ) {
     super(contentRepository)
   }
+
   async createContent({
     userId,
     body,
@@ -26,14 +39,33 @@ export class ContentService extends AbstractService<Content> {
     userId: number
     body: CreateContentDto
   }): Promise<void> {
-    const data = Object.assign(body, {
+    const { mediaIds, tagIds, categoryIds, ...data } = body
+
+    Object.assign(data, {
       slug: await this.generateSlug(body.title),
     })
 
-    await this.save({
-      ...data,
-      createdBy: userId,
-    })
+    try {
+      await this.dataSource.transaction(async (entityManager) => {
+        const newContent = await entityManager.save(Content, {
+          ...data,
+          createdBy: userId,
+        })
+
+        if (categoryIds && categoryIds.length > 0) {
+          await this.categoryRelationService.assignCategoryRelations({
+            relationId: newContent.id,
+            categoryIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+      })
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create content.')
+    }
+
+    console.log(categoryIds, mediaIds, tagIds, userId)
   }
 
   private buildQueryList(
@@ -68,7 +100,7 @@ export class ContentService extends AbstractService<Content> {
     return contents.toPageDto(pageMeta)
   }
 
-  async findById(id: number): Promise<Content> {
+  async findContentById(id: number): Promise<Content> {
     const content = await this.findOneBy({ id })
 
     if (!content) {
@@ -78,16 +110,121 @@ export class ContentService extends AbstractService<Content> {
     return content
   }
 
+  async findContentWithRelationById(id: number): Promise<Content> {
+    const content = await this.contentRepository
+      .createQueryBuilder('content')
+      .leftJoinAndSelect('content.categoryRelations', 'cc', 'cc.type = :type', {
+        type: RelationTypeEnum.Content,
+      })
+      .leftJoinAndSelect('cc.category', 'category')
+      .where('content.id = :id', { id })
+      .getOne()
+
+    if (!content) {
+      throw new NotFoundException(`Content with ID ${id} was not found.`)
+    }
+
+    return content
+  }
+
   async getContentById(id: number): Promise<ContentDto> {
-    return (await this.findById(id)).toDto()
+    return (await this.findContentWithRelationById(id)).toDto()
   }
 
-  update(id: number, updateContentDto: UpdateContentDto) {
-    console.log(updateContentDto)
-    return `This action updates a #${id} content`
+  async updateContentById({
+    id,
+    userId,
+    body,
+  }: {
+    id: number
+    userId: number
+    body: UpdateContentDto
+  }): Promise<void> {
+    const { mediaIds, tagIds, categoryIds, ...data } = body
+
+    if (data.title)
+      Object.assign(data, {
+        slug: await this.generateSlug(data.title),
+      })
+
+    const content =
+      mediaIds || tagIds || categoryIds
+        ? await this.findContentWithRelationById(id)
+        : await this.findContentById(id)
+
+    const currentCategoryIds =
+      content.categoryRelations?.map((i) => i.categoryId) || []
+
+    const assignCategoryIds = categoryIds
+      ? difference(categoryIds, currentCategoryIds)
+      : []
+    const unassignCategoryIds = categoryIds
+      ? difference(currentCategoryIds, categoryIds)
+      : []
+
+    try {
+      await this.dataSource.transaction(async (entityManager) => {
+        if (assignCategoryIds.length > 0) {
+          await this.categoryRelationService.assignCategoryRelations({
+            relationId: content.id,
+            categoryIds: assignCategoryIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+
+        if (unassignCategoryIds.length > 0) {
+          await this.categoryRelationService.unassignCategoryRelations({
+            relationId: content.id,
+            categoryIds: unassignCategoryIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+
+        await entityManager.update(
+          Content,
+          { id: content.id },
+          {
+            ...data,
+            updatedBy: userId,
+          },
+        )
+      })
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update content.')
+    }
+    console.log(mediaIds, tagIds)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} content`
+  async updatePropertyContentById({
+    id,
+    userId,
+    body,
+  }: {
+    id: number
+    userId: number
+    body:
+      | UpdateContentStatusDto
+      | UpdateContentTypeDto
+      | UpdateContentPriorityDto
+  }): Promise<void> {
+    const content = await this.findContentById(id)
+
+    await this.updateBy({ id: content.id }, { ...body, updatedBy: userId })
+  }
+
+  async deleteCategoryById({ id }: { id: number }): Promise<void> {
+    const content = await this.findContentById(id)
+
+    await this.dataSource.transaction(async (entityManager) => {
+      await entityManager.softDelete(Content, { id: content.id })
+
+      await this.categoryRelationService.unassignCategoryRelations({
+        relationId: content.id,
+        type: RelationTypeEnum.Content,
+        entityManager,
+      })
+    })
   }
 }

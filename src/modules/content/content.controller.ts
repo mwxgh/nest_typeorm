@@ -3,22 +3,28 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
+  Put,
+  Patch,
 } from '@nestjs/common'
 import { ContentService } from './content.service'
-import { CreateContentDto } from './dto/create-content.dto'
-import { UpdateContentDto } from './dto/update-content.dto'
 import { ApiTags } from '@nestjs/swagger'
 import { ApiAuth, ApiPageOkResponse, CurrentUserId } from '@/shared/decorators'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { AllRoles, RoleEnum } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
-import { ContentDto } from './dto/content.dto'
-import { ContentsPageOptionsDto } from './dto/contents-page-options.dto'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
+import {
+  ContentDto,
+  ContentsPageOptionsDto,
+  CreateContentDto,
+  UpdateContentDto,
+  UpdateContentPriorityDto,
+  UpdateContentStatusDto,
+  UpdateContentTypeDto,
+} from './dto'
 
 @ApiTags('Contents')
 @Controller('contents')
@@ -54,13 +60,54 @@ export class ContentController {
     return this.contentService.getContentById(id)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto) {
-    return this.contentService.update(+id, updateContentDto)
+  @Put(':id')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Update content by id' })
+  update(
+    @Param('id', PositiveNumberPipe) id: number,
+    @CurrentUserId() userId: number,
+    @Body() body: UpdateContentDto,
+  ): Promise<void> {
+    return this.contentService.updateContentById({ id, userId, body })
+  }
+
+  @Patch(':id/status')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Update content status by id' })
+  updateStatus(
+    @Param('id', PositiveNumberPipe) id: number,
+    @CurrentUserId() userId: number,
+    @Body() body: UpdateContentStatusDto,
+  ): Promise<void> {
+    return this.contentService.updatePropertyContentById({ id, userId, body })
+  }
+
+  @Patch(':id/type')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Update content type by id' })
+  updateType(
+    @Param('id', PositiveNumberPipe) id: number,
+    @CurrentUserId() userId: number,
+    @Body() body: UpdateContentTypeDto,
+  ): Promise<void> {
+    return this.contentService.updatePropertyContentById({ id, userId, body })
+  }
+
+  @Patch(':id/priority')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Update content priority by id' })
+  updatePriority(
+    @Param('id', PositiveNumberPipe) id: number,
+    @CurrentUserId() userId: number,
+    @Body() body: UpdateContentPriorityDto,
+  ): Promise<void> {
+    return this.contentService.updatePropertyContentById({ id, userId, body })
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.contentService.remove(+id)
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Delete content by id' })
+  remove(@Param('id', PositiveNumberPipe) id: number) {
+    return this.contentService.deleteCategoryById({ id })
   }
 }

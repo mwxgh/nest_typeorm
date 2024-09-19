@@ -4,6 +4,11 @@ export enum GenderEnum {
   Other,
 }
 
+export enum RelationTypeEnum {
+  Content = 1,
+  Product,
+}
+
 export enum RoleEnum {
   BaseAdmin = 1,
   Supervisor,
@@ -64,6 +69,11 @@ export enum ContentTypeEnum {
   CaseStudy,
   EBook,
   FAQ,
+}
+
+export const RelationTypeList = {
+  [RelationTypeEnum.Content]: 'Content',
+  [RelationTypeEnum.Product]: 'Product',
 }
 
 export const RoleList = {
