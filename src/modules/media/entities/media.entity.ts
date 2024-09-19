@@ -1,11 +1,11 @@
 import { Entity, Column } from 'typeorm'
-import { MediaDto } from '../dto/media.dto'
 import { UseDto } from '@/shared/decorators'
 import {
   AbstractEntityWithCU,
   IAbstractEntity,
 } from '@/shared/common/base.entity'
 import { BaseStatusEnum, EntityConstant } from '@/constants'
+import { MediaDto } from '../dto'
 
 @Entity('media')
 @UseDto(MediaDto)

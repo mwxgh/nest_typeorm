@@ -1,15 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { CreateTagDto } from './dto/create-tag.dto'
-import { UpdateTagDto } from './dto/update-tag.dto'
 import AbstractService from '@/shared/services/abstract.service'
 import { Tag } from './entities/tag.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, SelectQueryBuilder } from 'typeorm'
-import { TagsPageOptionsDto } from './dto/tags-page-options.dto'
 import { trim } from 'lodash'
 import { Direction } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
-import { TagDto } from './dto/tag.dto'
+import { CreateTagDto, TagDto, TagsPageOptionsDto, UpdateTagDto } from './dto'
 
 @Injectable()
 export class TagService extends AbstractService<Tag> {

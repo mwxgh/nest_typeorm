@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger'
-
 import { NumberField } from '@/shared/decorators'
 
 export class LockUserDto {

@@ -5,7 +5,7 @@ import {
   IAbstractEntity,
 } from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
-import { TagDto } from '../dto/tag.dto'
+import { TagDto } from '../dto'
 
 @Entity('tags')
 @UseDto(TagDto)

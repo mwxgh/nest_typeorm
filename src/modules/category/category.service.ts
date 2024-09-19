@@ -3,17 +3,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { CreateCategoryDto } from './dto/create-category.dto'
-import { UpdateCategoryDto } from './dto/update-category.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Category } from './entities/category.entity'
 import AbstractService from '@/shared/services/abstract.service'
 import { Repository, SelectQueryBuilder } from 'typeorm'
-import { CategoryDto } from './dto/category.dto'
 import { PageDto } from '@/shared/common/dto'
-import { CategoriesPageOptionsDto } from './dto/categories-page-options.dto'
 import { BaseStatusList, Direction } from '@/constants'
 import { trim } from 'lodash'
+import {
+  CategoriesPageOptionsDto,
+  CategoryDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from './dto'
 
 @Injectable()
 export class CategoryService extends AbstractService<Category> {

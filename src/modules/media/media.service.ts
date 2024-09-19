@@ -8,19 +8,21 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, SelectQueryBuilder } from 'typeorm'
 import AbstractService from '@/shared/services/abstract.service'
 import { Media } from './entities/media.entity'
-import { CreateMediaDto } from './dto/create-media.dto'
 import * as path from 'path'
 import { writeFile, unlink } from 'fs/promises'
 import config from '@/config/config'
 import { BaseStatusEnum, Direction } from '@/constants'
 import { randomBytes } from 'crypto'
-import { MediaPageOptionsDto } from './dto/media-page-options.dto'
-import { MediaDto } from './dto/media.dto'
 import { PageDto } from '@/shared/common/dto'
 import { trim } from 'lodash'
-import { UpdateMediaDto } from './dto/update-media.dto'
 import { Logger } from 'winston'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import {
+  CreateMediaDto,
+  MediaDto,
+  MediaPageOptionsDto,
+  UpdateMediaDto,
+} from './dto'
 
 @Injectable()
 export class MediaService extends AbstractService<Media> {

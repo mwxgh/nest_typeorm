@@ -9,16 +9,18 @@ import {
   Put,
 } from '@nestjs/common'
 import { CategoryService } from './category.service'
-import { CreateCategoryDto } from './dto/create-category.dto'
-import { UpdateCategoryDto } from './dto/update-category.dto'
 import { ApiTags } from '@nestjs/swagger'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { AllRoles, RoleEnum } from '@/constants'
 import { ApiAuth, ApiPageOkResponse, CurrentUserId } from '@/shared/decorators'
 import { PageDto } from '@/shared/common/dto'
-import { CategoryDto } from './dto/category.dto'
-import { CategoriesPageOptionsDto } from './dto/categories-page-options.dto'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
+import {
+  CategoriesPageOptionsDto,
+  CategoryDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from './dto'
 
 @ApiTags('Categories')
 @Controller('categories')

@@ -13,16 +13,18 @@ import {
 } from '@nestjs/common'
 import { MediaService } from './media.service'
 import { ApiConsumes, ApiTags } from '@nestjs/swagger'
-import { CreateMediaDto } from './dto/create-media.dto'
 import { FileInterceptor, FilesInterceptor } from '@nest-lab/fastify-multer'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { AllRoles, RoleEnum } from '@/constants'
 import { ApiAuth, ApiPageOkResponse, CurrentUserId } from '@/shared/decorators'
-import { MediaDto } from './dto/media.dto'
 import { PageDto } from '@/shared/common/dto'
-import { MediaPageOptionsDto } from './dto/media-page-options.dto'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
-import { UpdateMediaDto } from './dto/update-media.dto'
+import {
+  CreateMediaDto,
+  MediaDto,
+  MediaPageOptionsDto,
+  UpdateMediaDto,
+} from './dto'
 
 @ApiTags('Media')
 @Controller('media')

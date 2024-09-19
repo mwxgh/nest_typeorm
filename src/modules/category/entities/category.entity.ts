@@ -5,8 +5,8 @@ import {
   IAbstractEntity,
 } from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
-import { CategoryDto } from '../dto/category.dto'
 import { CategoryRelation } from './category-relation.entity'
+import { CategoryDto } from '../dto'
 
 @Entity('categories')
 @UseDto(CategoryDto)

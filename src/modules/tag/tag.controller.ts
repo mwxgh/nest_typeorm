@@ -9,16 +9,13 @@ import {
   Put,
 } from '@nestjs/common'
 import { TagService } from './tag.service'
-import { CreateTagDto } from './dto/create-tag.dto'
-import { UpdateTagDto } from './dto/update-tag.dto'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { AllRoles, RoleEnum } from '@/constants'
 import { ApiAuth, ApiPageOkResponse, CurrentUserId } from '@/shared/decorators'
 import { PageDto } from '@/shared/common/dto'
-import { TagDto } from './dto/tag.dto'
-import { TagsPageOptionsDto } from './dto/tags-page-options.dto'
 import { PositiveNumberPipe } from '@/shared/pipes/positive-number.pipe'
 import { ApiTags } from '@nestjs/swagger'
+import { CreateTagDto, TagDto, TagsPageOptionsDto, UpdateTagDto } from './dto'
 
 @ApiTags('Tags')
 @Controller('tags')
