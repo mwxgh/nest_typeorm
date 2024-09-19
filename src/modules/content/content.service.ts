@@ -21,6 +21,7 @@ import {
   UpdateContentTypeDto,
 } from './dto'
 import { TagRelationService } from '../tag/tag-relation.service'
+import { MediaRelationService } from '../media/media-relation.service'
 
 @Injectable()
 export class ContentService extends AbstractService<Content> {
@@ -29,6 +30,7 @@ export class ContentService extends AbstractService<Content> {
     private readonly contentRepository: Repository<Content>,
     private readonly categoryRelationService: CategoryRelationService,
     private readonly tagRelationService: TagRelationService,
+    private readonly mediaRelationService: MediaRelationService,
     private readonly dataSource: DataSource,
   ) {
     super(contentRepository)
@@ -71,14 +73,21 @@ export class ContentService extends AbstractService<Content> {
             entityManager,
           })
         }
+
+        if (mediaIds && mediaIds.length > 0) {
+          await this.mediaRelationService.assignMediaRelations({
+            relationId: newContent.id,
+            mediaIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
       })
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to create content. ${error}`,
       )
     }
-
-    console.log(mediaIds)
   }
 
   private buildQueryList(
@@ -126,14 +135,22 @@ export class ContentService extends AbstractService<Content> {
   async findContentWithRelationById(id: number): Promise<Content> {
     const content = await this.contentRepository
       .createQueryBuilder('content')
+
       .leftJoinAndSelect('content.categoryRelations', 'cc', 'cc.type = :type', {
         type: RelationTypeEnum.Content,
       })
       .leftJoinAndSelect('cc.category', 'category')
+
       .leftJoinAndSelect('content.tagRelations', 'ct', 'ct.type = :type', {
         type: RelationTypeEnum.Content,
       })
       .leftJoinAndSelect('ct.tag', 'tag')
+
+      .leftJoinAndSelect('content.mediaRelations', 'cm', 'cm.type = :type', {
+        type: RelationTypeEnum.Content,
+      })
+      .leftJoinAndSelect('cm.media', 'media')
+
       .where('content.id = :id', { id })
       .getOne()
 
@@ -174,6 +191,8 @@ export class ContentService extends AbstractService<Content> {
 
     const currentTagIds = content.tagRelations?.map((i) => i.tagId) || []
 
+    const currentMediaIds = content.mediaRelations?.map((i) => i.mediaId) || []
+
     const assignCategoryIds = categoryIds
       ? difference(categoryIds, currentCategoryIds)
       : []
@@ -183,6 +202,11 @@ export class ContentService extends AbstractService<Content> {
 
     const assignTagIds = tagIds ? difference(tagIds, currentTagIds) : []
     const unassignTagIds = tagIds ? difference(currentTagIds, tagIds) : []
+
+    const assignMediaIds = mediaIds ? difference(mediaIds, currentMediaIds) : []
+    const unassignMediaIds = mediaIds
+      ? difference(currentMediaIds, mediaIds)
+      : []
 
     try {
       await this.dataSource.transaction(async (entityManager) => {
@@ -222,6 +246,24 @@ export class ContentService extends AbstractService<Content> {
           })
         }
 
+        if (assignMediaIds.length > 0) {
+          await this.mediaRelationService.assignMediaRelations({
+            relationId: content.id,
+            mediaIds: assignMediaIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+
+        if (unassignMediaIds.length > 0) {
+          await this.mediaRelationService.unassignMediaRelations({
+            relationId: content.id,
+            mediaIds: unassignMediaIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+
         await entityManager.update(
           Content,
           { id: content.id },
@@ -236,7 +278,6 @@ export class ContentService extends AbstractService<Content> {
         `Failed to update content. ${error}`,
       )
     }
-    console.log(mediaIds)
   }
 
   async updatePropertyContentById({
@@ -269,6 +310,12 @@ export class ContentService extends AbstractService<Content> {
       })
 
       await this.tagRelationService.unassignTagRelations({
+        relationId: content.id,
+        type: RelationTypeEnum.Content,
+        entityManager,
+      })
+
+      await this.mediaRelationService.unassignMediaRelations({
         relationId: content.id,
         type: RelationTypeEnum.Content,
         entityManager,

@@ -21,6 +21,7 @@ import { User } from '@/modules/user/entities/user.entity'
 import { CategoryRelation } from '@/modules/category/entities/category-relation.entity'
 import { ContentDto } from '../dto'
 import { TagRelation } from '@/modules/tag/entities/tag-relation.entity'
+import { MediaRelation } from '@/modules/media/entities/media-relation.entity'
 
 @Entity('contents')
 @UseDto(ContentDto)
@@ -120,4 +121,7 @@ export class Content
 
   @OneToMany(() => TagRelation, (tagRelation) => tagRelation.content)
   tagRelations: TagRelation[]
+
+  @OneToMany(() => MediaRelation, (mediaRelation) => mediaRelation.content)
+  mediaRelations: MediaRelation[]
 }

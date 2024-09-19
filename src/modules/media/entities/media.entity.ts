@@ -1,4 +1,4 @@
-import { Entity, Column } from 'typeorm'
+import { Entity, Column, OneToMany } from 'typeorm'
 import { UseDto } from '@/shared/decorators'
 import {
   AbstractEntityWithCU,
@@ -6,6 +6,7 @@ import {
 } from '@/shared/common/base.entity'
 import { BaseStatusEnum, EntityConstant } from '@/constants'
 import { MediaDto } from '../dto'
+import { MediaRelation } from './media-relation.entity'
 
 @Entity('media')
 @UseDto(MediaDto)
@@ -56,4 +57,7 @@ export class Media
     default: BaseStatusEnum.Active,
   })
   status: BaseStatusEnum
+
+  @OneToMany(() => MediaRelation, (mediaRelation) => mediaRelation.media)
+  mediaRelations: MediaRelation[]
 }
