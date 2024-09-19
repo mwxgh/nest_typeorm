@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm'
+import { Column, Entity, Index, OneToMany } from 'typeorm'
 import { EntityConstant, BaseStatusEnum } from '@/constants'
 import {
   AbstractEntityWithCU,
@@ -6,6 +6,7 @@ import {
 } from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
 import { TagDto } from '../dto'
+import { TagRelation } from './tag-relation.entity'
 
 @Entity('tags')
 @UseDto(TagDto)
@@ -32,4 +33,7 @@ export class Tag
     default: BaseStatusEnum.Active,
   })
   status: BaseStatusEnum
+
+  @OneToMany(() => TagRelation, (tagRelation) => tagRelation.tag)
+  tagRelations: TagRelation[]
 }

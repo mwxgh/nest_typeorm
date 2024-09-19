@@ -20,6 +20,7 @@ import {
   UpdateContentStatusDto,
   UpdateContentTypeDto,
 } from './dto'
+import { TagRelationService } from '../tag/tag-relation.service'
 
 @Injectable()
 export class ContentService extends AbstractService<Content> {
@@ -27,6 +28,7 @@ export class ContentService extends AbstractService<Content> {
     @InjectRepository(Content)
     private readonly contentRepository: Repository<Content>,
     private readonly categoryRelationService: CategoryRelationService,
+    private readonly tagRelationService: TagRelationService,
     private readonly dataSource: DataSource,
   ) {
     super(contentRepository)
@@ -60,12 +62,23 @@ export class ContentService extends AbstractService<Content> {
             entityManager,
           })
         }
+
+        if (tagIds && tagIds.length > 0) {
+          await this.tagRelationService.assignTagRelations({
+            relationId: newContent.id,
+            tagIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
       })
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create content.')
+      throw new InternalServerErrorException(
+        `Failed to create content. ${error}`,
+      )
     }
 
-    console.log(categoryIds, mediaIds, tagIds, userId)
+    console.log(mediaIds)
   }
 
   private buildQueryList(
@@ -117,6 +130,10 @@ export class ContentService extends AbstractService<Content> {
         type: RelationTypeEnum.Content,
       })
       .leftJoinAndSelect('cc.category', 'category')
+      .leftJoinAndSelect('content.tagRelations', 'ct', 'ct.type = :type', {
+        type: RelationTypeEnum.Content,
+      })
+      .leftJoinAndSelect('ct.tag', 'tag')
       .where('content.id = :id', { id })
       .getOne()
 
@@ -155,12 +172,17 @@ export class ContentService extends AbstractService<Content> {
     const currentCategoryIds =
       content.categoryRelations?.map((i) => i.categoryId) || []
 
+    const currentTagIds = content.tagRelations?.map((i) => i.tagId) || []
+
     const assignCategoryIds = categoryIds
       ? difference(categoryIds, currentCategoryIds)
       : []
     const unassignCategoryIds = categoryIds
       ? difference(currentCategoryIds, categoryIds)
       : []
+
+    const assignTagIds = tagIds ? difference(tagIds, currentTagIds) : []
+    const unassignTagIds = tagIds ? difference(currentTagIds, tagIds) : []
 
     try {
       await this.dataSource.transaction(async (entityManager) => {
@@ -182,6 +204,24 @@ export class ContentService extends AbstractService<Content> {
           })
         }
 
+        if (assignTagIds.length > 0) {
+          await this.tagRelationService.assignTagRelations({
+            relationId: content.id,
+            tagIds: assignTagIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+
+        if (unassignTagIds.length > 0) {
+          await this.tagRelationService.unassignTagRelations({
+            relationId: content.id,
+            tagIds: unassignTagIds,
+            type: RelationTypeEnum.Content,
+            entityManager,
+          })
+        }
+
         await entityManager.update(
           Content,
           { id: content.id },
@@ -192,9 +232,11 @@ export class ContentService extends AbstractService<Content> {
         )
       })
     } catch (error) {
-      throw new InternalServerErrorException('Failed to update content.')
+      throw new InternalServerErrorException(
+        `Failed to update content. ${error}`,
+      )
     }
-    console.log(mediaIds, tagIds)
+    console.log(mediaIds)
   }
 
   async updatePropertyContentById({
@@ -221,6 +263,12 @@ export class ContentService extends AbstractService<Content> {
       await entityManager.softDelete(Content, { id: content.id })
 
       await this.categoryRelationService.unassignCategoryRelations({
+        relationId: content.id,
+        type: RelationTypeEnum.Content,
+        entityManager,
+      })
+
+      await this.tagRelationService.unassignTagRelations({
         relationId: content.id,
         type: RelationTypeEnum.Content,
         entityManager,

@@ -10,6 +10,6 @@ import { CategoryRelation } from './entities/category-relation.entity'
   imports: [TypeOrmModule.forFeature([Category, CategoryRelation])],
   controllers: [CategoryController],
   providers: [CategoryService, CategoryRelationService],
-  exports: [CategoryRelationService], // Ensure this is exported if needed in other modules
+  exports: [CategoryRelationService],
 })
 export class CategoryModule {}

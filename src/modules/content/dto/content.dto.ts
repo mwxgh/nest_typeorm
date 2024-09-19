@@ -8,6 +8,7 @@ import {
 import { AbstractDtoWithCU } from '@/shared/common/dto'
 import { Content } from '../entities/content.entity'
 import { CategoryDto } from '@/modules/category/dto/category.dto'
+import { TagDto } from '@/modules/tag/dto'
 
 export class ContentDto extends AbstractDtoWithCU {
   @Expose()
@@ -54,6 +55,10 @@ export class ContentDto extends AbstractDtoWithCU {
   @ApiProperty({ type: () => CategoryDto, isArray: true })
   categories: CategoryDto[]
 
+  @Expose()
+  @ApiProperty({ type: () => TagDto, isArray: true })
+  tags: TagDto[]
+
   constructor(content: Content) {
     super(content)
 
@@ -72,5 +77,6 @@ export class ContentDto extends AbstractDtoWithCU {
     this.categories = content.categoryRelations?.map((relation) =>
       relation.category.toDto(),
     )
+    this.tags = content.tagRelations?.map((relation) => relation.tag.toDto())
   }
 }
