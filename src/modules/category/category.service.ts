@@ -29,7 +29,7 @@ export class CategoryService extends AbstractService<Category> {
     super(categoryRepository)
   }
 
-  async createCategory({
+  async customCreate({
     userId,
     body,
   }: {
@@ -80,16 +80,14 @@ export class CategoryService extends AbstractService<Category> {
     )
   }
 
-  async getCategories(
-    optionsDto: CategoriesPageOptionsDto,
-  ): Promise<CategoryDto[]> {
+  async getList(optionsDto: CategoriesPageOptionsDto): Promise<CategoryDto[]> {
     const categories: Category[] =
       await this.buildQueryList(optionsDto).getMany()
 
     return categories.toDtos()
   }
 
-  async getCategoriesPaginate(
+  async getWithPaginate(
     pageOptionsDto: CategoriesPageOptionsDto,
   ): Promise<PageDto<CategoryDto>> {
     const queryBuilder: SelectQueryBuilder<Category> =
@@ -100,11 +98,11 @@ export class CategoryService extends AbstractService<Category> {
     return categories.toPageDto(pageMeta)
   }
 
-  async getCategoryById(id: number): Promise<CategoryDto> {
+  async getById(id: number): Promise<CategoryDto> {
     return (await this.findById(id)).toDto()
   }
 
-  async updateCategoryById({
+  async customUpdate({
     id,
     userId,
     body,
@@ -118,7 +116,7 @@ export class CategoryService extends AbstractService<Category> {
     if (body.parentId) {
       await this.validateExist({ id: body.parentId })
 
-      const categoryDescendants = await this.buildCategoryDescendants(
+      const categoryDescendants = await this.buildDescendants(
         body.parentId,
       )
 
@@ -145,7 +143,7 @@ export class CategoryService extends AbstractService<Category> {
     await this.updateBy(category.id, { ...body, updatedBy: userId })
   }
 
-  private buildCategoryTree(
+  private buildFamilyTree(
     categories: Category[],
     parentId: number | null = null,
   ): CategoryDto[] {
@@ -154,31 +152,40 @@ export class CategoryService extends AbstractService<Category> {
       .map((category) => ({
         ...category,
         status: BaseStatusList[category.status],
-        children: this.buildCategoryTree(categories, category.id),
+        children: this.buildFamilyTree(categories, category.id),
       }))
   }
 
-  async getCategoryTree(rootId: number): Promise<CategoryDto[]> {
-    const categories = await this.buildCategoryDescendants(rootId)
-    return this.buildCategoryTree(categories)
+  async getFamilyTree(rootId: number): Promise<CategoryDto[]> {
+    const categories = await this.buildDescendants(rootId)
+    return this.buildFamilyTree(categories)
   }
 
-  async buildCategoryDescendants(rootId: number): Promise<Category[]> {
+  private async buildDescendants(rootId: number): Promise<Category[]> {
     const data: Category[] = await this.categoryRepository.query(
       `
       WITH RECURSIVE category_hierarchy AS (
-        SELECT id, parent_id AS parentId, name, slug, status
-        FROM categories
-        WHERE id = ?
-
-        UNION ALL
-
-        SELECT c.id, c.parent_id AS parentId, c.name, c.slug, c.status
-        FROM categories c
-        INNER JOIN category_hierarchy ch ON c.parent_id = ch.id
+          SELECT id,
+              parent_id AS parentId,
+              name,
+              slug,
+              status
+          FROM categories
+          WHERE id = ?
+          UNION ALL
+          SELECT c.id,
+              c.parent_id AS parentId,
+              c.name,
+              c.slug,
+              c.status
+          FROM categories c
+              INNER JOIN category_hierarchy ch ON c.parent_id = ch.id
       )
-
-      SELECT id, parentId, name, slug, status
+      SELECT id,
+          parentId,
+          name,
+          slug,
+          status
       FROM category_hierarchy
       `,
       [rootId],
@@ -187,8 +194,8 @@ export class CategoryService extends AbstractService<Category> {
     return data
   }
 
-  async getCategoryDescendants(rootId: number): Promise<CategoryDto[]> {
-    const data: Category[] = await this.buildCategoryDescendants(rootId)
+  async getDescendants(rootId: number): Promise<CategoryDto[]> {
+    const data: Category[] = await this.buildDescendants(rootId)
 
     return data.map((category) => ({
       ...category,
@@ -196,13 +203,13 @@ export class CategoryService extends AbstractService<Category> {
     }))
   }
 
-  async deleteCategoryById({ id }: { id: number }): Promise<void> {
+  async deleteBy({ id }: { id: number }): Promise<void> {
     const category = await this.findById(id)
 
     await this.dataSource.transaction(async (entityManager) => {
       await entityManager.softDelete(Category, { id: category.id })
 
-      await this.categoryRelationService.unassignCategoryRelations({
+      await this.categoryRelationService.unassignRelations({
         categoryIds: [category.id],
         entityManager,
       })

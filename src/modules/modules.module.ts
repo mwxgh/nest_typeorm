@@ -6,6 +6,7 @@ import { AsyncRequestContextModule } from './async-context-request'
 import { TagModule } from './tag/tag.module';
 import { MediaModule } from './media/media.module';
 import { ContentModule } from './content/content.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ContentModule } from './content/content.module';
     TagModule,
     MediaModule,
     ContentModule,
+    CommentModule,
   ],
 })
 export class ModulesModule {}

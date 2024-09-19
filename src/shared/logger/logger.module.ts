@@ -28,7 +28,7 @@ const formatted = () => {
       ) => ({
         transports: [
           new transports.Console({
-            silent: configService.get('appEnv') === AppConstant.test,
+            silent: configService.get('APP_ENV') === AppConstant.test,
             format: format.combine(
               format.timestamp({ format: formatted }),
               loggerFormat(asyncContext),

@@ -36,7 +36,7 @@ export class ContentService extends AbstractService<Content> {
     super(contentRepository)
   }
 
-  async createContent({
+  async customCreate({
     userId,
     body,
   }: {
@@ -57,7 +57,7 @@ export class ContentService extends AbstractService<Content> {
         })
 
         if (categoryIds && categoryIds.length > 0) {
-          await this.categoryRelationService.assignCategoryRelations({
+          await this.categoryRelationService.assignRelations({
             relationId: newContent.id,
             categoryIds,
             type: RelationTypeEnum.Content,
@@ -66,7 +66,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (tagIds && tagIds.length > 0) {
-          await this.tagRelationService.assignTagRelations({
+          await this.tagRelationService.assignRelations({
             relationId: newContent.id,
             tagIds,
             type: RelationTypeEnum.Content,
@@ -75,7 +75,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (mediaIds && mediaIds.length > 0) {
-          await this.mediaRelationService.assignMediaRelations({
+          await this.mediaRelationService.assignRelations({
             relationId: newContent.id,
             mediaIds,
             type: RelationTypeEnum.Content,
@@ -111,7 +111,7 @@ export class ContentService extends AbstractService<Content> {
     )
   }
 
-  async getContentsPaginate(
+  async getWithPaginate(
     pageOptionsDto: ContentsPageOptionsDto,
   ): Promise<PageDto<ContentDto>> {
     const queryBuilder: SelectQueryBuilder<Content> =
@@ -122,7 +122,7 @@ export class ContentService extends AbstractService<Content> {
     return contents.toPageDto(pageMeta)
   }
 
-  async findContentById(id: number): Promise<Content> {
+  async findById(id: number): Promise<Content> {
     const content = await this.findOneBy({ id })
 
     if (!content) {
@@ -132,7 +132,7 @@ export class ContentService extends AbstractService<Content> {
     return content
   }
 
-  async findContentWithRelationById(id: number): Promise<Content> {
+  async findWithRelationById(id: number): Promise<Content> {
     const content = await this.contentRepository
       .createQueryBuilder('content')
 
@@ -161,11 +161,11 @@ export class ContentService extends AbstractService<Content> {
     return content
   }
 
-  async getContentById(id: number): Promise<ContentDto> {
-    return (await this.findContentWithRelationById(id)).toDto()
+  async getById(id: number): Promise<ContentDto> {
+    return (await this.findWithRelationById(id)).toDto()
   }
 
-  async updateContentById({
+  async customUpdate({
     id,
     userId,
     body,
@@ -183,8 +183,8 @@ export class ContentService extends AbstractService<Content> {
 
     const content =
       mediaIds || tagIds || categoryIds
-        ? await this.findContentWithRelationById(id)
-        : await this.findContentById(id)
+        ? await this.findWithRelationById(id)
+        : await this.findById(id)
 
     const currentCategoryIds =
       content.categoryRelations?.map((i) => i.categoryId) || []
@@ -211,7 +211,7 @@ export class ContentService extends AbstractService<Content> {
     try {
       await this.dataSource.transaction(async (entityManager) => {
         if (assignCategoryIds.length > 0) {
-          await this.categoryRelationService.assignCategoryRelations({
+          await this.categoryRelationService.assignRelations({
             relationId: content.id,
             categoryIds: assignCategoryIds,
             type: RelationTypeEnum.Content,
@@ -220,7 +220,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (unassignCategoryIds.length > 0) {
-          await this.categoryRelationService.unassignCategoryRelations({
+          await this.categoryRelationService.unassignRelations({
             relationId: content.id,
             categoryIds: unassignCategoryIds,
             type: RelationTypeEnum.Content,
@@ -229,7 +229,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (assignTagIds.length > 0) {
-          await this.tagRelationService.assignTagRelations({
+          await this.tagRelationService.assignRelations({
             relationId: content.id,
             tagIds: assignTagIds,
             type: RelationTypeEnum.Content,
@@ -238,7 +238,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (unassignTagIds.length > 0) {
-          await this.tagRelationService.unassignTagRelations({
+          await this.tagRelationService.unassignRelations({
             relationId: content.id,
             tagIds: unassignTagIds,
             type: RelationTypeEnum.Content,
@@ -247,7 +247,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (assignMediaIds.length > 0) {
-          await this.mediaRelationService.assignMediaRelations({
+          await this.mediaRelationService.assignRelations({
             relationId: content.id,
             mediaIds: assignMediaIds,
             type: RelationTypeEnum.Content,
@@ -256,7 +256,7 @@ export class ContentService extends AbstractService<Content> {
         }
 
         if (unassignMediaIds.length > 0) {
-          await this.mediaRelationService.unassignMediaRelations({
+          await this.mediaRelationService.unassignRelations({
             relationId: content.id,
             mediaIds: unassignMediaIds,
             type: RelationTypeEnum.Content,
@@ -280,7 +280,7 @@ export class ContentService extends AbstractService<Content> {
     }
   }
 
-  async updatePropertyContentById({
+  async updatePropertyById({
     id,
     userId,
     body,
@@ -292,30 +292,30 @@ export class ContentService extends AbstractService<Content> {
       | UpdateContentTypeDto
       | UpdateContentPriorityDto
   }): Promise<void> {
-    const content = await this.findContentById(id)
+    const content = await this.findById(id)
 
     await this.updateBy({ id: content.id }, { ...body, updatedBy: userId })
   }
 
-  async deleteCategoryById({ id }: { id: number }): Promise<void> {
-    const content = await this.findContentById(id)
+  async deleteBy({ id }: { id: number }): Promise<void> {
+    const content = await this.findById(id)
 
     await this.dataSource.transaction(async (entityManager) => {
       await entityManager.softDelete(Content, { id: content.id })
 
-      await this.categoryRelationService.unassignCategoryRelations({
+      await this.categoryRelationService.unassignRelations({
         relationId: content.id,
         type: RelationTypeEnum.Content,
         entityManager,
       })
 
-      await this.tagRelationService.unassignTagRelations({
+      await this.tagRelationService.unassignRelations({
         relationId: content.id,
         type: RelationTypeEnum.Content,
         entityManager,
       })
 
-      await this.mediaRelationService.unassignMediaRelations({
+      await this.mediaRelationService.unassignRelations({
         relationId: content.id,
         type: RelationTypeEnum.Content,
         entityManager,

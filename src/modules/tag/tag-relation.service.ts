@@ -17,7 +17,7 @@ export class TagRelationService extends AbstractService<TagRelation> {
     super(tagRelationRepository)
   }
 
-  async assignTagRelations({
+  async assignRelations({
     relationId,
     tagIds,
     type,
@@ -54,7 +54,7 @@ export class TagRelationService extends AbstractService<TagRelation> {
     await repository.save(contentTags)
   }
 
-  async unassignTagRelations({
+  async unassignRelations({
     relationId,
     tagIds,
     type,

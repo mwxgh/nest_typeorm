@@ -19,7 +19,7 @@ export class TagService extends AbstractService<Tag> {
   ) {
     super(tagRepository)
   }
-  async createTag({ userId, body }: { userId: number; body: CreateTagDto }) {
+  async customCreate({ userId, body }: { userId: number; body: CreateTagDto }) {
     const data = Object.assign(body, {
       slug: await this.generateSlug(body.name),
     })
@@ -49,7 +49,7 @@ export class TagService extends AbstractService<Tag> {
     )
   }
 
-  async getTagsPaginate(
+  async getWithPaginate(
     pageOptionsDto: TagsPageOptionsDto,
   ): Promise<PageDto<TagDto>> {
     const queryBuilder: SelectQueryBuilder<Tag> =
@@ -60,7 +60,7 @@ export class TagService extends AbstractService<Tag> {
     return tags.toPageDto(pageMeta)
   }
 
-  async findTagById(id: number): Promise<Tag> {
+  async findById(id: number): Promise<Tag> {
     const tag = await this.findOneBy({ id })
 
     if (!tag) {
@@ -70,11 +70,11 @@ export class TagService extends AbstractService<Tag> {
     return tag
   }
 
-  async getTagById(id: number): Promise<TagDto> {
-    return (await this.findTagById(id)).toDto()
+  async getById(id: number): Promise<TagDto> {
+    return (await this.findById(id)).toDto()
   }
 
-  async updateTagById({
+  async customUpdate({
     id,
     userId,
     body,
@@ -83,7 +83,7 @@ export class TagService extends AbstractService<Tag> {
     userId: number
     body: UpdateTagDto
   }): Promise<void> {
-    const tag = await this.findTagById(id)
+    const tag = await this.findById(id)
 
     if (body.name)
       Object.assign(body, {
@@ -93,13 +93,13 @@ export class TagService extends AbstractService<Tag> {
     await this.updateBy(tag.id, { ...body, updatedBy: userId })
   }
 
-  async deleteTagById({ id }: { id: number }): Promise<void> {
-    const tag = await this.findTagById(id)
+  async deleteBy({ id }: { id: number }): Promise<void> {
+    const tag = await this.findById(id)
 
     await this.dataSource.transaction(async (entityManager) => {
       await entityManager.softDelete(Tag, { id: tag.id })
 
-      await this.tagRelationService.unassignTagRelations({
+      await this.tagRelationService.unassignRelations({
         tagIds: [tag.id],
         entityManager,
       })

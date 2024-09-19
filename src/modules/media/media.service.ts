@@ -35,7 +35,7 @@ export class MediaService extends AbstractService<Media> {
     super(mediaRepository)
   }
 
-  async uploadMediaToSystem(
+  async uploadToSystem(
     file: Express.Multer.File,
     createMediaDto: CreateMediaDto,
   ): Promise<void> {
@@ -92,7 +92,7 @@ export class MediaService extends AbstractService<Media> {
     )
   }
 
-  async getMediaPaginate(
+  async getWithPaginate(
     pageOptionsDto: MediaPageOptionsDto,
   ): Promise<PageDto<MediaDto>> {
     const queryBuilder: SelectQueryBuilder<Media> =
@@ -103,7 +103,7 @@ export class MediaService extends AbstractService<Media> {
     return media.toPageDto(pageMeta)
   }
 
-  async findMediaById(id: number): Promise<Media> {
+  async findById(id: number): Promise<Media> {
     const media = await this.findOneBy({ id })
 
     if (!media) {
@@ -113,11 +113,11 @@ export class MediaService extends AbstractService<Media> {
     return media
   }
 
-  async getMediaById(id: number): Promise<MediaDto> {
-    return (await this.findMediaById(id)).toDto()
+  async getById(id: number): Promise<MediaDto> {
+    return (await this.findById(id)).toDto()
   }
 
-  async updateMediaById({
+  async customUpdate({
     id,
     userId,
     body,
@@ -126,13 +126,13 @@ export class MediaService extends AbstractService<Media> {
     userId: number
     body: UpdateMediaDto
   }): Promise<void> {
-    const tag = await this.findMediaById(id)
+    const tag = await this.findById(id)
 
     await this.updateBy(tag.id, { ...body, updatedBy: userId })
   }
 
-  async deleteMediaById({ id }: { id: number }): Promise<void> {
-    const media = await this.findMediaById(id)
+  async deleteBy({ id }: { id: number }): Promise<void> {
+    const media = await this.findById(id)
 
     if (media.url) {
       try {

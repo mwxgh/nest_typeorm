@@ -38,7 +38,7 @@ export class ContentController {
     @CurrentUserId() userId: number,
     @Body() body: CreateContentDto,
   ): Promise<void> {
-    return this.contentService.createContent({ userId, body })
+    return this.contentService.customCreate({ userId, body })
   }
 
   @Get()
@@ -50,14 +50,14 @@ export class ContentController {
     type: PageDto<ContentDto>,
   })
   getAll(@Query() query: ContentsPageOptionsDto): Promise<PageDto<ContentDto>> {
-    return this.contentService.getContentsPaginate(query)
+    return this.contentService.getWithPaginate(query)
   }
 
   @Get(':id')
   @Auth(...AllRoles)
   @ApiAuth(ContentDto, { summary: 'Find content by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<ContentDto> {
-    return this.contentService.getContentById(id)
+    return this.contentService.getById(id)
   }
 
   @Put(':id')
@@ -68,7 +68,7 @@ export class ContentController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateContentDto,
   ): Promise<void> {
-    return this.contentService.updateContentById({ id, userId, body })
+    return this.contentService.customUpdate({ id, userId, body })
   }
 
   @Patch(':id/status')
@@ -79,7 +79,7 @@ export class ContentController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateContentStatusDto,
   ): Promise<void> {
-    return this.contentService.updatePropertyContentById({ id, userId, body })
+    return this.contentService.updatePropertyById({ id, userId, body })
   }
 
   @Patch(':id/type')
@@ -90,7 +90,7 @@ export class ContentController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateContentTypeDto,
   ): Promise<void> {
-    return this.contentService.updatePropertyContentById({ id, userId, body })
+    return this.contentService.updatePropertyById({ id, userId, body })
   }
 
   @Patch(':id/priority')
@@ -101,13 +101,13 @@ export class ContentController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateContentPriorityDto,
   ): Promise<void> {
-    return this.contentService.updatePropertyContentById({ id, userId, body })
+    return this.contentService.updatePropertyById({ id, userId, body })
   }
 
   @Delete(':id')
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Delete content by id' })
   remove(@Param('id', PositiveNumberPipe) id: number) {
-    return this.contentService.deleteCategoryById({ id })
+    return this.contentService.deleteBy({ id })
   }
 }

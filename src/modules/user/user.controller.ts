@@ -34,7 +34,7 @@ export class UserController {
     @CurrentUserId() userId: number,
     @Body() body: CreateUserDto,
   ): Promise<void> {
-    return this.userService.createUser({ userId, body })
+    return this.userService.customCreate({ userId, body })
   }
 
   @Get()
@@ -46,14 +46,14 @@ export class UserController {
     type: PageDto<UserDto>,
   })
   getAll(@Query() query: UsersPageOptionsDto): Promise<PageDto<UserDto>> {
-    return this.userService.getUsersPaginate(query)
+    return this.userService.getWithPaginate(query)
   }
 
   @Get(':id')
   @Auth(...AllRoles)
   @ApiAuth(UserDto, { summary: 'Find user by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<UserDto> {
-    return this.userService.getUserById(id)
+    return this.userService.getById(id)
   }
 
   @Put(':id')
@@ -64,13 +64,13 @@ export class UserController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateUserDto,
   ): Promise<void> {
-    return this.userService.updateUserById({ id, userId, body })
+    return this.userService.customUpdate({ id, userId, body })
   }
 
   @Delete(':id')
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Delete user by id' })
   delete(@Param('id', PositiveNumberPipe) id: number): Promise<void> {
-    return this.userService.deleteUserById({ id })
+    return this.userService.deleteBy({ id })
   }
 }

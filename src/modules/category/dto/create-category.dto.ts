@@ -9,9 +9,11 @@ export class CreateCategoryDto {
   @StringField({ maxLength: EntityConstant.EntityNameLength })
   readonly name: string
 
-  @NumberFieldOptional()
+  @NumberFieldOptional({ default: null })
   readonly parentId?: number
 
-  @EnumField(() => BaseStatusEnum)
+  @EnumField(() => BaseStatusEnum, {
+    default: BaseStatusEnum.Active,
+  })
   readonly status: BaseStatusEnum
 }

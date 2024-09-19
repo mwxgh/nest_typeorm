@@ -25,7 +25,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<User> {
-    const user = await this.userService.findUserActive({ username })
+    const user = await this.userService.findActive({ username })
 
     if (!user) {
       throw new LoginFailException()

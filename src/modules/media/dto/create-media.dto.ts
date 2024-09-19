@@ -5,6 +5,8 @@ export class CreateMediaDto {
   @StringFieldOptional()
   readonly properties?: any
 
-  @EnumField(() => BaseStatusEnum)
+  @EnumField(() => BaseStatusEnum, {
+    default: BaseStatusEnum.Active,
+  })
   readonly status: BaseStatusEnum
 }

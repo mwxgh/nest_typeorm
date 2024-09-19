@@ -5,6 +5,8 @@ export class CreateTagDto {
   @StringField({ maxLength: EntityConstant.EntityNameLength })
   readonly name: string
 
-  @EnumField(() => BaseStatusEnum)
+  @EnumField(() => BaseStatusEnum, {
+    default: BaseStatusEnum.Active,
+  })
   readonly status: BaseStatusEnum
 }

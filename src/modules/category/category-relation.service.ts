@@ -17,7 +17,7 @@ export class CategoryRelationService extends AbstractService<CategoryRelation> {
     super(categoryRelationRepository)
   }
 
-  async assignCategoryRelations({
+  async assignRelations({
     relationId,
     categoryIds,
     type,
@@ -54,7 +54,7 @@ export class CategoryRelationService extends AbstractService<CategoryRelation> {
     await repository.save(contentCategories)
   }
 
-  async unassignCategoryRelations({
+  async unassignRelations({
     relationId,
     categoryIds,
     type,

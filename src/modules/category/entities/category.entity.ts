@@ -1,4 +1,11 @@
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm'
 import { BaseStatusEnum, EntityConstant } from '@/constants'
 import {
   AbstractEntityWithCU,
@@ -19,6 +26,7 @@ export class Category
     name: 'parent_id',
     nullable: true,
     type: 'int',
+    unsigned: true,
   })
   parentId?: number
 
@@ -41,13 +49,12 @@ export class Category
   })
   status: BaseStatusEnum
 
-  // Self-referencing relationship for parent
   @ManyToOne(() => Category, (category) => category.children, {
     onDelete: 'SET NULL',
   })
+  @JoinColumn({ name: 'parent_id' })
   parent: Category
 
-  // Self-referencing relationship for children
   @OneToMany(() => Category, (category) => category.parent)
   children: Category[]
 

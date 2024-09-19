@@ -40,6 +40,16 @@ export enum UserLockedEnum {
   Locked,
 }
 
+export enum CommentStatusEnum {
+  Accepted,
+  Rejected,
+}
+
+export enum CommentPriorityEnum {
+  Low,
+  High,
+}
+
 export enum ContentStatusEnum {
   Draft,
   Review,
@@ -91,6 +101,16 @@ export const UserLockedList = {
 export const BaseStatusList = {
   [BaseStatusEnum.Active]: 'Active',
   [BaseStatusEnum.Inactive]: 'Inactive',
+}
+
+export const CommentStatusList = {
+  [CommentStatusEnum.Accepted]: 'Accepted',
+  [CommentStatusEnum.Rejected]: 'Rejected',
+}
+
+export const CommentPriorityList = {
+  [CommentPriorityEnum.Low]: 'Low',
+  [CommentPriorityEnum.High]: 'High',
 }
 
 export const ContentStatusList = {

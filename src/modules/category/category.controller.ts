@@ -34,7 +34,7 @@ export class CategoryController {
     @CurrentUserId() userId: number,
     @Body() body: CreateCategoryDto,
   ): Promise<void> {
-    return this.categoryService.createCategory({ userId, body })
+    return this.categoryService.customCreate({ userId, body })
   }
 
   @Get()
@@ -48,32 +48,32 @@ export class CategoryController {
   getAll(
     @Query() query: CategoriesPageOptionsDto,
   ): Promise<PageDto<CategoryDto>> {
-    return this.categoryService.getCategoriesPaginate(query)
+    return this.categoryService.getWithPaginate(query)
   }
 
   @Get(':id')
   @Auth(...AllRoles)
   @ApiAuth(CategoryDto, { summary: 'Find category by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<CategoryDto> {
-    return this.categoryService.getCategoryById(id)
+    return this.categoryService.getById(id)
   }
 
-  @Get('descendants/:id')
+  @Get(':id/descendants')
   @Auth(...AllRoles)
   @ApiAuth(CategoryDto, { summary: 'Find category by id' })
   getDescendants(
     @Param('id', PositiveNumberPipe) id: number,
   ): Promise<CategoryDto[]> {
-    return this.categoryService.getCategoryDescendants(id)
+    return this.categoryService.getDescendants(id)
   }
 
-  @Get('family-tree/:id')
+  @Get(':id/family-tree')
   @Auth(...AllRoles)
   @ApiAuth(CategoryDto, { summary: 'Find category by id' })
   getFamilyTree(
     @Param('id', PositiveNumberPipe) id: number,
   ): Promise<CategoryDto[]> {
-    return this.categoryService.getCategoryTree(id)
+    return this.categoryService.getFamilyTree(id)
   }
 
   @Put(':id')
@@ -84,13 +84,13 @@ export class CategoryController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateCategoryDto,
   ): Promise<void> {
-    return this.categoryService.updateCategoryById({ id, userId, body })
+    return this.categoryService.customUpdate({ id, userId, body })
   }
 
   @Delete(':id')
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Delete category by id' })
   delete(@Param('id', PositiveNumberPipe) id: number): Promise<void> {
-    return this.categoryService.deleteCategoryById({ id })
+    return this.categoryService.deleteBy({ id })
   }
 }

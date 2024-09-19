@@ -17,7 +17,7 @@ export class MediaRelationService extends AbstractService<MediaRelation> {
     super(mediaRelationRepository)
   }
 
-  async assignMediaRelations({
+  async assignRelations({
     relationId,
     mediaIds,
     type,
@@ -54,7 +54,7 @@ export class MediaRelationService extends AbstractService<MediaRelation> {
     await repository.save(contentMedias)
   }
 
-  async unassignMediaRelations({
+  async unassignRelations({
     relationId,
     mediaIds,
     type,

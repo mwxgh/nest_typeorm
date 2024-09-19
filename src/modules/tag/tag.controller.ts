@@ -29,7 +29,7 @@ export class TagController {
     @CurrentUserId() userId: number,
     @Body() body: CreateTagDto,
   ): Promise<void> {
-    return this.tagService.createTag({ userId, body })
+    return this.tagService.customCreate({ userId, body })
   }
 
   @Get()
@@ -41,14 +41,14 @@ export class TagController {
     type: PageDto<TagDto>,
   })
   getAll(@Query() query: TagsPageOptionsDto): Promise<PageDto<TagDto>> {
-    return this.tagService.getTagsPaginate(query)
+    return this.tagService.getWithPaginate(query)
   }
 
   @Get(':id')
   @Auth(...AllRoles)
   @ApiAuth(TagDto, { summary: 'Find tag by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<TagDto> {
-    return this.tagService.getTagById(id)
+    return this.tagService.getById(id)
   }
 
   @Put(':id')
@@ -59,13 +59,13 @@ export class TagController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateTagDto,
   ): Promise<void> {
-    return this.tagService.updateTagById({ id, userId, body })
+    return this.tagService.customUpdate({ id, userId, body })
   }
 
   @Delete(':id')
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Delete tag by id' })
   delete(@Param('id', PositiveNumberPipe) id: number): Promise<void> {
-    return this.tagService.deleteTagById({ id })
+    return this.tagService.deleteBy({ id })
   }
 }

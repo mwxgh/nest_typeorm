@@ -40,7 +40,7 @@ export class MediaController {
     @Body() createMediaDto: CreateMediaDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
-    return this.mediaService.uploadMediaToSystem(file, createMediaDto)
+    return this.mediaService.uploadToSystem(file, createMediaDto)
   }
 
   @Post('multiple')
@@ -64,14 +64,14 @@ export class MediaController {
     type: PageDto<MediaDto>,
   })
   getAll(@Query() query: MediaPageOptionsDto): Promise<PageDto<MediaDto>> {
-    return this.mediaService.getMediaPaginate(query)
+    return this.mediaService.getWithPaginate(query)
   }
 
   @Get(':id')
   @Auth(...AllRoles)
   @ApiAuth(MediaDto, { summary: 'Find media by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<MediaDto> {
-    return this.mediaService.getMediaById(id)
+    return this.mediaService.getById(id)
   }
 
   @Put(':id')
@@ -82,13 +82,13 @@ export class MediaController {
     @CurrentUserId() userId: number,
     @Body() body: UpdateMediaDto,
   ): Promise<void> {
-    return this.mediaService.updateMediaById({ id, userId, body })
+    return this.mediaService.customUpdate({ id, userId, body })
   }
 
   @Delete(':id')
   @Auth(RoleEnum.BaseAdmin)
   @ApiAuth(undefined, { summary: 'Delete media by id' })
   delete(@Param('id', PositiveNumberPipe) id: number): Promise<void> {
-    return this.mediaService.deleteMediaById({ id })
+    return this.mediaService.deleteBy({ id })
   }
 }

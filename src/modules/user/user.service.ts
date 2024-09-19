@@ -28,7 +28,13 @@ export class UserService extends AbstractService<User> {
     super(userRepository)
   }
 
-  async createUser({ userId, body }: { userId: number; body: CreateUserDto }) {
+  async customCreate({
+    userId,
+    body,
+  }: {
+    userId: number
+    body: CreateUserDto
+  }) {
     await this.validateDuplicate({ username: body.username })
 
     await this.save({
@@ -42,9 +48,7 @@ export class UserService extends AbstractService<User> {
     })
   }
 
-  async findUserActive(
-    conditions: FindOptionsWhere<User>,
-  ): Promise<User | null> {
+  async findActive(conditions: FindOptionsWhere<User>): Promise<User | null> {
     return await this.findOneBy({
       ...conditions,
       isLocked: UserLockedEnum.Unlocked,
@@ -52,7 +56,7 @@ export class UserService extends AbstractService<User> {
     })
   }
 
-  async findUserById(id: number): Promise<User> {
+  async findById(id: number): Promise<User> {
     const user = await this.findOneBy({ id })
 
     if (!user) {
@@ -82,7 +86,7 @@ export class UserService extends AbstractService<User> {
     )
   }
 
-  async getUsersPaginate(
+  async getWithPaginate(
     pageOptionsDto: UsersPageOptionsDto,
   ): Promise<PageDto<UserDto>> {
     const queryBuilder: SelectQueryBuilder<User> =
@@ -93,11 +97,11 @@ export class UserService extends AbstractService<User> {
     return users.toPageDto(pageMeta)
   }
 
-  async getUserById(id: number): Promise<UserDto> {
-    return (await this.findUserById(id)).toDto()
+  async getById(id: number): Promise<UserDto> {
+    return (await this.findById(id)).toDto()
   }
 
-  async updateUserById({
+  async customUpdate({
     id,
     userId,
     body,
@@ -106,13 +110,13 @@ export class UserService extends AbstractService<User> {
     userId: number
     body: UpdateUserDto
   }): Promise<void> {
-    const user = await this.findUserById(id)
+    const user = await this.findById(id)
 
     await this.updateBy(user.id, { ...body, updatedBy: userId })
   }
 
-  async deleteUserById({ id }: { id: number }): Promise<void> {
-    const user = await this.findUserById(id)
+  async deleteBy({ id }: { id: number }): Promise<void> {
+    const user = await this.findById(id)
 
     await this.softDelete(user.id)
   }

@@ -13,6 +13,7 @@ import {
 } from '@/shared/common/base.entity'
 import { UseDto } from '@/shared/decorators'
 import { Content } from '@/modules/content/entities/content.entity'
+import { Comment } from '@/modules/comment/entities/comment.entity'
 
 @Entity('users')
 @UseDto(UserDto)
@@ -90,4 +91,10 @@ export class User
 
   @OneToMany(() => Content, (content) => content.releasedBy)
   releasedContents: Content[]
+
+  @OneToMany(() => Comment, (comment) => comment.createdBy)
+  createdComments: Comment[]
+
+  @OneToMany(() => Comment, (comment) => comment.acceptor)
+  acceptedComments: Comment[]
 }
