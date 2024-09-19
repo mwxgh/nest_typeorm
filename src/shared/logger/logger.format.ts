@@ -9,55 +9,54 @@ import config from '@/config/config'
 
 export const loggerFormat = (asyncContext: AsyncRequestContext) =>
   format.printf(({ context, level, timestamp, message }): string => {
-    let { contextId, endpoint, ip, device, domain, userId, method } =
-      context || asyncContext.getRequestIdStore() || {}
+    // Get context information
+    const {
+      contextId = 'N/A',
+      endpoint = 'N/A',
+      ip = 'N/A',
+      device = 'N/A',
+      domain = 'N/A',
+      userId = 'N/A',
+      method = 'N/A',
+    } = context || asyncContext.getRequestIdStore() || {}
 
-    timestamp = `[${timestamp}]`
-    let colorFunction
+    // Define color functions based on log level
+    const colorForLevel =
+      {
+        [LoggerConstant.infoLevel]: green,
+        [LoggerConstant.fatalLevel]: red,
+        [LoggerConstant.errorLevel]: red,
+        [LoggerConstant.warnLevel]: yellow,
+        [LoggerConstant.debugLevel]: yellow,
+      }[level] || white
 
-    switch (level) {
-      case LoggerConstant.infoLevel:
-        colorFunction = green
-
-        break
-      case LoggerConstant.fatalLevel:
-      case LoggerConstant.errorLevel:
-        colorFunction = red
-
-        break
-
-      case LoggerConstant.warnLevel:
-      case LoggerConstant.debugLevel:
-        colorFunction = yellow
-
-        break
-      default:
-        colorFunction = white
-        break
-    }
-
+    // Determine if colors should be applied based on the environment
     const environment = config().app.env
+    const applyColor =
+      environment === AppConstant.test || environment === AppConstant.dev
+        ? (text: string) => colorForLevel(text)
+        : (text: string) => text
 
-    if (![AppConstant.test, AppConstant.dev].includes(environment)) {
-      colorFunction = (text: string) => text
+    // Format the level and context
+    const formatWithColor = (text: string) => applyColor(`[${text}]`)
+    const formattedLevel = formatWithColor(level.toUpperCase())
+    const formattedContext = {
+      contextId: formatWithColor(contextId),
+      domain: formatWithColor(domain),
+      userId: formatWithColor(`LoginID: ${userId}`),
+      ip: formatWithColor(`IP: ${ip}`),
+      endpoint: formatWithColor(`Endpoint: ${endpoint}`),
+      device: formatWithColor(`Device: ${device}`),
+      method: formatWithColor(method),
     }
 
-    level = colorFunction(`[${level.toUpperCase()}]`)
-    domain = colorFunction(`[${domain}]`)
-    userId = colorFunction(`[LoginID: ${userId}]`)
-    ip = colorFunction(`[IP: ${ip}]`)
-    endpoint = colorFunction(`[Endpoint: ${endpoint}]`)
-    device = colorFunction(`[Device: ${device}]`)
-    method = colorFunction(`[${method}]`)
-
-    contextId = colorFunction(`[${contextId}]`)
-
-    if (
-      LoggerConstant.infoLevel == level &&
+    // Highlight SQL queries
+    const formattedMessage =
+      level === LoggerConstant.infoLevel &&
       message.startsWith(LoggerConstant.queryPrefix)
-    ) {
-      message = PlatformTools.highlightSql(message)
-    }
+        ? PlatformTools.highlightSql(message)
+        : message
 
-    return `${timestamp} ${contextId} ${level} ${domain} ${userId} ${ip} ${method} ${endpoint} ${device} - ${message}`
+    // Return formatted log message
+    return `[${timestamp}] ${formattedContext.contextId} ${formattedLevel} ${formattedContext.domain} ${formattedContext.userId} ${formattedContext.ip} ${formattedContext.method} ${formattedContext.endpoint} ${formattedContext.device} - ${formattedMessage}`
   })
