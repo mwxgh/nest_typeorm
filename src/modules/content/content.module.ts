@@ -6,6 +6,7 @@ import { Content } from './entities/content.entity'
 import { CategoryModule } from '../category/category.module'
 import { TagModule } from '../tag/tag.module'
 import { MediaModule } from '../media/media.module'
+import { CommentModule } from '../comment/comment.module'
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { MediaModule } from '../media/media.module'
     CategoryModule,
     TagModule,
     MediaModule,
+    CommentModule,
   ],
   controllers: [ContentController],
   providers: [ContentService],

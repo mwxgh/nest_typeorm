@@ -11,8 +11,14 @@ import {
   UpdateResult,
 } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
-
 import { default as slugify } from 'slugify'
+
+export type HierarchicalEntity = {
+  id: number
+  parentId?: number
+  children: HierarchicalEntity[]
+  parent?: HierarchicalEntity
+}
 
 export abstract class AbstractService<TEntity extends ObjectLiteral> {
   constructor(protected readonly repository: Repository<TEntity>) {}
@@ -162,6 +168,29 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     }
 
     return slug
+  }
+
+  convertToEntities<T extends HierarchicalEntity>(
+    data: T[],
+    EntityClass: new () => T,
+  ): T[] {
+    const entityMap = new Map<number, T>()
+
+    data.forEach((item) => {
+      const entity = Object.assign(new EntityClass(), item, { children: [] })
+      entityMap.set(entity.id, entity)
+    })
+
+    entityMap.forEach((entity) => {
+      if (entity.parentId) {
+        const parentEntity = entityMap.get(entity.parentId)
+
+        parentEntity?.children.push(entity)
+        entity.parent = parentEntity
+      }
+    })
+
+    return Array.from(entityMap.values()).filter((entity) => !entity.parentId)
   }
 }
 

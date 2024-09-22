@@ -12,9 +12,9 @@ import {
 import AbstractService from '@/shared/services/abstract.service'
 import { Comment } from './entities/comment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { IsNull, Repository, SelectQueryBuilder } from 'typeorm'
+import { EntityManager, IsNull, Repository, SelectQueryBuilder } from 'typeorm'
 import { trim } from 'lodash'
-import { CommentPriorityList, CommentStatusList, Direction } from '@/constants'
+import { Direction } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
 
 @Injectable()
@@ -92,20 +92,6 @@ export class CommentService extends AbstractService<Comment> {
     return comments.toPageDto(pageMeta)
   }
 
-  private buildFamilyTree(
-    comments: Comment[],
-    parentId: number | null = null,
-  ): CommentDto[] {
-    return comments
-      .filter((comment) => comment.parentId === parentId)
-      .map((comment) => ({
-        ...comment,
-        status: CommentStatusList[comment.status],
-        priority: CommentPriorityList[comment.priority],
-        children: this.buildFamilyTree(comments, comment.id),
-      }))
-  }
-
   private async buildDescendants(rootId: number): Promise<Comment[]> {
     const data: Comment[] = await this.commentRepository.query(
       `
@@ -139,7 +125,7 @@ export class CommentService extends AbstractService<Comment> {
       [rootId],
     )
 
-    return data
+    return this.convertToEntities(data, Comment)
   }
 
   async findById(id: number): Promise<Comment> {
@@ -159,24 +145,43 @@ export class CommentService extends AbstractService<Comment> {
   async getDescendants(rootId: number): Promise<CommentDto[]> {
     const data: Comment[] = await this.buildDescendants(rootId)
 
-    return data.map((comment) => ({
-      ...comment,
-      status: CommentStatusList[comment.status],
-      priority: CommentPriorityList[comment.priority],
-    }))
+    return data.toDtos()
   }
 
-  async getFamilyTree(rootId: number): Promise<CommentDto[]> {
-    const comments = await this.buildDescendants(rootId)
-    return this.buildFamilyTree(comments)
+  async customUpdate({
+    id,
+    userId,
+    body,
+  }: {
+    id: number
+    userId: number
+    body: UpdateCommentDto
+  }): Promise<void> {
+    const comment: Comment = await this.findById(id)
+
+    await this.updateBy(comment.id, { ...body, updatedBy: userId })
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    console.log(updateCommentDto)
-    return `This action updates a #${id} comment`
+  async deleteBy({ id }: { id: number }) {
+    const commentsToRemove = await this.find({
+      where: [{ id }, { parentId: id }],
+      select: ['id'],
+    })
+
+    await this.softDelete(commentsToRemove.map((i) => i.id))
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`
+  async deleteContentCascade({
+    contentId,
+    entityManager,
+  }: {
+    contentId: number
+    entityManager: EntityManager
+  }): Promise<void> {
+    const repository = entityManager
+      ? entityManager.getRepository(Comment)
+      : this.commentRepository
+
+    await repository.softDelete({ contentId })
   }
 }

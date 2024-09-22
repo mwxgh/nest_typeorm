@@ -57,7 +57,7 @@ export class MediaController {
 
   @Get()
   @Auth(...AllRoles)
-  @ApiAuth(PageDto<MediaDto>, { summary: 'Find media with pagination' })
+  @ApiAuth(PageDto<MediaDto>, { summary: 'Get media with pagination' })
   @ApiPageOkResponse({
     description: 'Get media list',
     summary: 'Get media list',
@@ -69,7 +69,7 @@ export class MediaController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiAuth(MediaDto, { summary: 'Find media by id' })
+  @ApiAuth(MediaDto, { summary: 'Get media detail by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<MediaDto> {
     return this.mediaService.getById(id)
   }

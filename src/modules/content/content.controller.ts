@@ -43,7 +43,7 @@ export class ContentController {
 
   @Get()
   @Auth(...AllRoles)
-  @ApiAuth(PageDto<ContentDto>, { summary: 'Find content with pagination' })
+  @ApiAuth(PageDto<ContentDto>, { summary: 'Get content with pagination' })
   @ApiPageOkResponse({
     description: 'Get content list',
     summary: 'Get content list',
@@ -55,7 +55,7 @@ export class ContentController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiAuth(ContentDto, { summary: 'Find content by id' })
+  @ApiAuth(ContentDto, { summary: 'Get content detail by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<ContentDto> {
     return this.contentService.getById(id)
   }

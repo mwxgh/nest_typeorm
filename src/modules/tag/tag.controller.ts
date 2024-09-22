@@ -34,7 +34,7 @@ export class TagController {
 
   @Get()
   @Auth(...AllRoles)
-  @ApiAuth(PageDto<TagDto>, { summary: 'Find tag with pagination' })
+  @ApiAuth(PageDto<TagDto>, { summary: 'Get tag with pagination' })
   @ApiPageOkResponse({
     description: 'Get tag list',
     summary: 'Get tag list',
@@ -46,7 +46,7 @@ export class TagController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiAuth(TagDto, { summary: 'Find tag by id' })
+  @ApiAuth(TagDto, { summary: 'Get tag detail by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<TagDto> {
     return this.tagService.getById(id)
   }

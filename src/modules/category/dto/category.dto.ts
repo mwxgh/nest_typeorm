@@ -22,8 +22,8 @@ export class CategoryDto extends AbstractDtoWithCU {
   status: string
 
   @Expose()
-  @ApiProperty()
-  children: any
+  @ApiProperty({ type: () => CategoryDto, isArray: true })
+  children: CategoryDto[]
 
   constructor(category: Category) {
     super(category)
@@ -32,6 +32,7 @@ export class CategoryDto extends AbstractDtoWithCU {
     this.slug = category.slug
     this.parentId = category.parentId
     this.status = BaseStatusList[category.status]
-    this.children = category.children
+    this.children =
+      category.children?.map((child) => new CategoryDto(child)) || []
   }
 }

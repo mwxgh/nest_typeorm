@@ -39,7 +39,7 @@ export class UserController {
 
   @Get()
   @Auth(...AllRoles)
-  @ApiAuth(PageDto<UserDto>, { summary: 'Find user with pagination' })
+  @ApiAuth(PageDto<UserDto>, { summary: 'Get user with pagination' })
   @ApiPageOkResponse({
     description: 'Get user list',
     summary: 'Get user list',
@@ -51,7 +51,7 @@ export class UserController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiAuth(UserDto, { summary: 'Find user by id' })
+  @ApiAuth(UserDto, { summary: 'Get user detail by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<UserDto> {
     return this.userService.getById(id)
   }

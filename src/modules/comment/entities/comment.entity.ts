@@ -70,10 +70,13 @@ export class Comment
   content: Content
 
   @ManyToOne(() => Comment, (category) => category.children, {
-    onDelete: 'SET NULL',
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'parent_id' })
   parent: Comment
+
+  // Reference to the parent-child relationship of Category (SET NULL)
+  // When removing one comment, all child comments belonging to this comment must also be removed.
 
   @OneToMany(() => Comment, (comment) => comment.parent)
   children: Comment[]

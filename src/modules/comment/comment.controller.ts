@@ -3,10 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common'
 import { CommentService } from './comment.service'
 import {
@@ -39,7 +39,7 @@ export class CommentController {
 
   @Get()
   @Auth(...AllRoles)
-  @ApiAuth(PageDto<CommentDto>, { summary: 'Find comment with pagination' })
+  @ApiAuth(PageDto<CommentDto>, { summary: 'Get comment with pagination' })
   @ApiPageOkResponse({
     description: 'Get comment list',
     summary: 'Get comment list',
@@ -51,36 +51,35 @@ export class CommentController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiAuth(CommentDto, { summary: 'Find comment by id' })
+  @ApiAuth(CommentDto, { summary: 'Get comment detail by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<CommentDto> {
     return this.commentService.getById(id)
   }
 
   @Get(':id/descendants')
   @Auth(...AllRoles)
-  @ApiAuth(CommentDto, { summary: 'Find comment by id' })
+  @ApiAuth(CommentDto, { summary: 'Get comment with descendants by id' })
   getDescendants(
     @Param('id', PositiveNumberPipe) id: number,
   ): Promise<CommentDto[]> {
     return this.commentService.getDescendants(id)
   }
 
-  @Get(':id/family-tree')
-  @Auth(...AllRoles)
-  @ApiAuth(CommentDto, { summary: 'Find comment by id' })
-  getFamilyTree(
+  @Put(':id')
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Update comment by id' })
+  update(
     @Param('id', PositiveNumberPipe) id: number,
-  ): Promise<CommentDto[]> {
-    return this.commentService.getFamilyTree(id)
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(+id, updateCommentDto)
+    @CurrentUserId() userId: number,
+    @Body() body: UpdateCommentDto,
+  ): Promise<void> {
+    return this.commentService.customUpdate({ id, userId, body })
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id)
+  @Auth(RoleEnum.BaseAdmin)
+  @ApiAuth(undefined, { summary: 'Delete comment by id' })
+  delete(@Param('id', PositiveNumberPipe) id: number): Promise<void> {
+    return this.commentService.deleteBy({ id })
   }
 }

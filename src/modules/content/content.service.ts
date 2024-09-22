@@ -22,6 +22,7 @@ import {
 } from './dto'
 import { TagRelationService } from '../tag/tag-relation.service'
 import { MediaRelationService } from '../media/media-relation.service'
+import { CommentService } from '../comment/comment.service'
 
 @Injectable()
 export class ContentService extends AbstractService<Content> {
@@ -31,6 +32,7 @@ export class ContentService extends AbstractService<Content> {
     private readonly categoryRelationService: CategoryRelationService,
     private readonly tagRelationService: TagRelationService,
     private readonly mediaRelationService: MediaRelationService,
+    private readonly commentService: CommentService,
     private readonly dataSource: DataSource,
   ) {
     super(contentRepository)
@@ -150,6 +152,10 @@ export class ContentService extends AbstractService<Content> {
         type: RelationTypeEnum.Content,
       })
       .leftJoinAndSelect('cm.media', 'media')
+
+      .leftJoinAndSelect('content.comments', 'rc', 'rc.parentId IS NULL') // Fetch root comments
+      .leftJoinAndSelect('rc.children', 'rcc') // Fetch one level of child comments
+      .where('content.id = :contentId', { contentId: id })
 
       .where('content.id = :id', { id })
       .getOne()
@@ -302,6 +308,11 @@ export class ContentService extends AbstractService<Content> {
 
     await this.dataSource.transaction(async (entityManager) => {
       await entityManager.softDelete(Content, { id: content.id })
+
+      await this.commentService.deleteContentCascade({
+        contentId: content.id,
+        entityManager,
+      })
 
       await this.categoryRelationService.unassignRelations({
         relationId: content.id,

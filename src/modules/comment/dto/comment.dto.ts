@@ -30,8 +30,8 @@ export class CommentDto extends AbstractDtoWithCU {
   acceptedBy: number
 
   @Expose()
-  @ApiProperty()
-  children: any
+  @ApiProperty({ type: () => CommentDto, isArray: true })
+  children: CommentDto[]
 
   constructor(comment: Comment) {
     super(comment)
@@ -42,6 +42,7 @@ export class CommentDto extends AbstractDtoWithCU {
     this.status = CommentStatusList[comment.status]
     this.priority = CommentPriorityList[comment.priority]
     this.acceptedBy = comment.acceptedBy
-    this.children = comment.children
+    this.children =
+      comment.children?.map((child) => new CommentDto(child)) || []
   }
 }

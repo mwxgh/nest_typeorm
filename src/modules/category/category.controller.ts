@@ -39,7 +39,7 @@ export class CategoryController {
 
   @Get()
   @Auth(...AllRoles)
-  @ApiAuth(PageDto<CategoryDto>, { summary: 'Find category with pagination' })
+  @ApiAuth(PageDto<CategoryDto>, { summary: 'Get category with pagination' })
   @ApiPageOkResponse({
     description: 'Get category list',
     summary: 'Get category list',
@@ -53,27 +53,18 @@ export class CategoryController {
 
   @Get(':id')
   @Auth(...AllRoles)
-  @ApiAuth(CategoryDto, { summary: 'Find category by id' })
+  @ApiAuth(CategoryDto, { summary: 'Get category detail by id' })
   get(@Param('id', PositiveNumberPipe) id: number): Promise<CategoryDto> {
     return this.categoryService.getById(id)
   }
 
   @Get(':id/descendants')
   @Auth(...AllRoles)
-  @ApiAuth(CategoryDto, { summary: 'Find category by id' })
+  @ApiAuth(CategoryDto, { summary: 'Get category with descendants by id' })
   getDescendants(
     @Param('id', PositiveNumberPipe) id: number,
   ): Promise<CategoryDto[]> {
     return this.categoryService.getDescendants(id)
-  }
-
-  @Get(':id/family-tree')
-  @Auth(...AllRoles)
-  @ApiAuth(CategoryDto, { summary: 'Find category by id' })
-  getFamilyTree(
-    @Param('id', PositiveNumberPipe) id: number,
-  ): Promise<CategoryDto[]> {
-    return this.categoryService.getFamilyTree(id)
   }
 
   @Put(':id')

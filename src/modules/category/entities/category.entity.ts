@@ -55,6 +55,9 @@ export class Category
   @JoinColumn({ name: 'parent_id' })
   parent: Category
 
+  // Reference to the parent-child relationship of Comment (CASCADE)
+  // When removing one category, some content may also belong to a child category.
+
   @OneToMany(() => Category, (category) => category.parent)
   children: Category[]
 

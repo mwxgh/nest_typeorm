@@ -8,7 +8,7 @@ import { Category } from './entities/category.entity'
 import AbstractService from '@/shared/services/abstract.service'
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm'
 import { PageDto } from '@/shared/common/dto'
-import { BaseStatusList, Direction } from '@/constants'
+import { Direction } from '@/constants'
 import { trim } from 'lodash'
 import {
   CategoriesPageOptionsDto,
@@ -116,9 +116,7 @@ export class CategoryService extends AbstractService<Category> {
     if (body.parentId) {
       await this.validateExist({ id: body.parentId })
 
-      const categoryDescendants = await this.buildDescendants(
-        body.parentId,
-      )
+      const categoryDescendants = await this.buildDescendants(body.parentId)
 
       const uniqueParentIds = [
         ...new Set(
@@ -141,24 +139,6 @@ export class CategoryService extends AbstractService<Category> {
       })
 
     await this.updateBy(category.id, { ...body, updatedBy: userId })
-  }
-
-  private buildFamilyTree(
-    categories: Category[],
-    parentId: number | null = null,
-  ): CategoryDto[] {
-    return categories
-      .filter((category) => category.parentId === parentId)
-      .map((category) => ({
-        ...category,
-        status: BaseStatusList[category.status],
-        children: this.buildFamilyTree(categories, category.id),
-      }))
-  }
-
-  async getFamilyTree(rootId: number): Promise<CategoryDto[]> {
-    const categories = await this.buildDescendants(rootId)
-    return this.buildFamilyTree(categories)
   }
 
   private async buildDescendants(rootId: number): Promise<Category[]> {
@@ -191,16 +171,13 @@ export class CategoryService extends AbstractService<Category> {
       [rootId],
     )
 
-    return data
+    return this.convertToEntities(data, Category)
   }
 
   async getDescendants(rootId: number): Promise<CategoryDto[]> {
     const data: Category[] = await this.buildDescendants(rootId)
 
-    return data.map((category) => ({
-      ...category,
-      status: BaseStatusList[category.status],
-    }))
+    return data.toDtos()
   }
 
   async deleteBy({ id }: { id: number }): Promise<void> {
