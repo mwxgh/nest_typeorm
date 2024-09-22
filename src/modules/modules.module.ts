@@ -7,6 +7,7 @@ import { TagModule } from './tag/tag.module';
 import { MediaModule } from './media/media.module';
 import { ContentModule } from './content/content.module';
 import { CommentModule } from './comment/comment.module';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CommentModule } from './comment/comment.module';
     MediaModule,
     ContentModule,
     CommentModule,
+    MinioModule,
   ],
 })
 export class ModulesModule {}

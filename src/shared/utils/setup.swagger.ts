@@ -25,5 +25,5 @@ export const setupSwagger = (app: INestApplication): void => {
     },
   })
 
-  console.info(`Documentation: http://localhost:${appConfig.port}/swagger`)
+  console.warn(`Documentation: http://localhost:${appConfig.port}/swagger`)
 }

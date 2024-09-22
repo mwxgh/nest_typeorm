@@ -48,4 +48,14 @@ export default () => ({
     user: process.env.MAIL_USER,
     password: process.env.MAIL_PASSWORD,
   },
+
+  minio: {
+    endpoint: process.env.MINIO_ENDPOINT || 'http://127.0.0.1',
+    apiPort: Number(process.env.MINIO_API_PORT),
+    consolePort: Number(process.env.MINIO_CONSOLE_PORT),
+    ssl: false,
+    access: process.env.MINIO_ACCESS_KEY || 'access',
+    secret: process.env.MINIO_SECRET_KEY || 'secret',
+    bucket: process.env.MINIO_BUCKET_NAME || 'bucket',
+  },
 })

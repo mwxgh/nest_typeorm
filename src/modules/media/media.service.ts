@@ -1,18 +1,9 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, SelectQueryBuilder } from 'typeorm'
 import AbstractService from '@/shared/services/abstract.service'
 import { Media } from './entities/media.entity'
-import * as path from 'path'
-import { writeFile, unlink } from 'fs/promises'
-import config from '@/config/config'
 import { BaseStatusEnum, Direction } from '@/constants'
-import { randomBytes } from 'crypto'
 import { PageDto } from '@/shared/common/dto'
 import { trim } from 'lodash'
 import { Logger } from 'winston'
@@ -23,55 +14,51 @@ import {
   MediaPageOptionsDto,
   UpdateMediaDto,
 } from './dto'
+import { MinioService } from '../minio/minio.service'
 
 @Injectable()
 export class MediaService extends AbstractService<Media> {
   constructor(
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
+    private readonly minioService: MinioService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
   ) {
     super(mediaRepository)
   }
 
-  async uploadToSystem(
-    file: Express.Multer.File,
+  async uploadToMinIO(
+    files: Express.Multer.File[],
     createMediaDto: CreateMediaDto,
+    userId: number,
   ): Promise<void> {
-    const filesDestination = config().fileUpload.destination
-    const fileSizeValid = config().fileUpload.maxSize
+    try {
+      await this.minioService.createBucketIfNotExists()
 
-    if (file.size > fileSizeValid) {
-      throw new BadRequestException(
-        `File size exceeds the maximum limit of ${fileSizeValid / (1024 * 1024)} MB`,
-      )
+      const uploadPromises = files.map(async (file) => {
+        const { fileName, url } = await this.minioService.uploadFile(file)
+
+        await this.save({
+          ...createMediaDto,
+          originalName: file.originalname,
+          filename: fileName,
+          type: file.mimetype.split('/')[0],
+          mimetype: file.mimetype,
+          url,
+          status:
+            BaseStatusEnum[
+              createMediaDto.status as unknown as keyof typeof BaseStatusEnum
+            ],
+          createdBy: userId,
+          updatedBy: userId,
+        })
+      })
+
+      await Promise.all(uploadPromises)
+    } catch (error) {
+      throw new Error(`Failed to upload files: ${error.message}`)
     }
-
-    const timestampPrefix = Date.now()
-    const randomSuffix = randomBytes(8).toString('hex') // 16 hex characters
-    const filename = `${timestampPrefix}-${randomSuffix}${path.extname(file.originalname)}`
-
-    const absoluteFileDestination = path.resolve(
-      process.cwd(),
-      filesDestination,
-      filename,
-    )
-
-    await writeFile(absoluteFileDestination, file.buffer)
-
-    await this.save({
-      ...createMediaDto,
-      originalName: file.originalname,
-      filename,
-      type: file.mimetype.split('/')[0],
-      mimetype: file.mimetype,
-      url: absoluteFileDestination,
-      status:
-        BaseStatusEnum[
-          createMediaDto.status as unknown as keyof typeof BaseStatusEnum
-        ],
-    })
   }
 
   private buildQueryList(
@@ -134,19 +121,7 @@ export class MediaService extends AbstractService<Media> {
   async deleteBy({ id }: { id: number }): Promise<void> {
     const media = await this.findById(id)
 
-    if (media.url) {
-      try {
-        await unlink(media.url)
-      } catch (error) {
-        if (error.code !== 'ENOENT') {
-          throw error
-        }
-        this.logger.warn(
-          `File not found at ${media.url}, proceeding with deletion.`,
-          {},
-        )
-      }
-    }
+    await this.minioService.deleteFile(media.filename)
 
     await this.softDelete(media.id)
   }

@@ -1,26 +1,26 @@
-version: '3'
+version: '3.8'
 
 services:
-  # App
+  # Application Service
   app:
     build:
       context: .
       target: development
       dockerfile: ./dockerfile
-    container_name: 'nest_typeorm'
-    command: npm run start:dev
+    container_name: nest_typeorm
+    command: npm run start:dev  # Nodemon will restart on changes
     ports:
-      - ${APP_PORT}:3000
+      - "${APP_PORT}:3000"
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/usr/src/app  # Sync code with the container
+      - /usr/src/app/node_modules  # Keep node_modules in container
     depends_on:
       - mysql
     env_file: ./.env
     networks:
       - backend
 
-  # Database
+  # MySQL Database Service
   mysql:
     platform: linux/x86_64
     image: mysql:8.0
@@ -41,7 +41,7 @@ services:
     networks:
       - backend
 
-  # phpmyadmin
+  # phpMyAdmin Service
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
@@ -57,37 +57,53 @@ services:
     networks:
       - backend
 
-  # redis
-  redis:
-    image: redis:latest
+  # Redis Service
+  # redis:
+  #   image: redis:latest
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #     - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+  #   ports:
+  #     - "6679:6379"
+  #   volumes:
+  #     - ./.docker/redis/data:/data
+  #   networks:
+  #     - backend
+
+  # Redis UI
+  # redis-ui:
+  #   image: erikdubbelboer/phpredisadmin
+  #   environment:
+  #     ADMIN_USER: admin
+  #     ADMIN_PASS: admin
+  #     REDIS_1_HOST: redis
+  #     REDIS_1_PORT: 6379
+  #   ports:
+  #     - "8082:81"
+  #   links:
+  #     - redis
+  #   networks:
+  #     - backend
+
+  # MinIO Service
+  minio:
+    image: docker.io/bitnami/minio:latest
     environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    labels:
-      kompose.service.type: nodeport
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PW}
     ports:
-      - "6679:6379"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
-      - ./.docker/redis/data:/data
+      - minio_data:/data
+    restart: always
     networks:
       - backend
 
-  # redis-ui
-  redis-ui:
-    image: erikdubbelboer/phpredisadmin
-    environment:
-      - ADMIN_USER=admin
-      - ADMIN_PASS=admin
-      - REDIS_1_HOST=redis
-      - REDIS_1_PORT=6379
-      - REDIS_1_AUTH=
-    ports:
-      - "6380:81"
-    volumes:
-      - ./.docker/redis/data:/data
-    networks:
-      - backend
+volumes:
+  minio_data:
 
+# Define networks
 networks:
   backend:
     driver: bridge

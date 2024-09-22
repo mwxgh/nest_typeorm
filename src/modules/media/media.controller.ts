@@ -37,10 +37,11 @@ export class MediaController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
+    @CurrentUserId() userId: number,
     @Body() createMediaDto: CreateMediaDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
-    return this.mediaService.uploadToSystem(file, createMediaDto)
+    return this.mediaService.uploadToMinIO([file], createMediaDto, userId)
   }
 
   @Post('multiple')
@@ -49,10 +50,11 @@ export class MediaController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 4))
   async uploadMultiple(
+    @CurrentUserId() userId: number,
     @Body() createMediaDto: CreateMediaDto,
-    @UploadedFiles() files: Array<File>,
+    @UploadedFiles() files: Array<Express.Multer.File>,
   ): Promise<void> {
-    console.log(files)
+    return this.mediaService.uploadToMinIO(files, createMediaDto, userId)
   }
 
   @Get()

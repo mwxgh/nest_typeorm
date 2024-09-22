@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Media } from './entities/media.entity'
 import { MediaRelation } from './entities/media-relation.entity'
 import { MediaRelationService } from './media-relation.service'
+import { MinioModule } from '../minio/minio.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Media, MediaRelation])],
+  imports: [TypeOrmModule.forFeature([Media, MediaRelation]), MinioModule],
   controllers: [MediaController],
   providers: [MediaService, MediaRelationService],
   exports: [MediaRelationService],
