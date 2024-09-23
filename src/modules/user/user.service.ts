@@ -1,7 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
-import { FindOptionsWhere, Repository, SelectQueryBuilder } from 'typeorm'
+import {
+  FindOptionsWhere,
+  MoreThanOrEqual,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm'
 import {
   AppConstant,
   Direction,
@@ -16,8 +25,9 @@ import {
   UsersPageOptionsDto,
 } from './dto'
 import { PageDto } from '@/shared/common/dto'
-import * as bcrypt from 'bcrypt'
 import { trim } from 'lodash'
+import { UserProp } from '@/shared/interfaces'
+import { UpdateProfileDto } from '../profile/dto/update-profile.dto'
 
 @Injectable()
 export class UserService extends AbstractService<User> {
@@ -29,20 +39,26 @@ export class UserService extends AbstractService<User> {
   }
 
   async customCreate({
-    userId,
+    userProp,
     body,
   }: {
-    userId: number
+    userProp: UserProp
     body: CreateUserDto
   }) {
     await this.validateDuplicate({ username: body.username })
 
+    const { id: userId, role } = userProp
+    const { role: newUserRole } = body
+
+    if (role < newUserRole) {
+      throw new BadRequestException(
+        'Cannot create user with a higher role level',
+      )
+    }
+
     await this.save({
       ...body,
-      password: bcrypt.hashSync(
-        AppConstant.defaultPassword,
-        bcrypt.genSaltSync(AppConstant.saltOrRounds),
-      ),
+      password: this.hashPassword(AppConstant.defaultPassword),
       createdBy: userId,
       updatedBy: userId,
     })
@@ -56,8 +72,8 @@ export class UserService extends AbstractService<User> {
     })
   }
 
-  async findById(id: number): Promise<User> {
-    const user = await this.findOneBy({ id })
+  async findBy({ id, role }: { id: number; role: number }): Promise<User> {
+    const user = await this.findOneBy({ id, role: MoreThanOrEqual(role) })
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} was not found.`)
@@ -68,13 +84,15 @@ export class UserService extends AbstractService<User> {
 
   private buildQueryList(
     pageOptionsDto: UsersPageOptionsDto,
+    userProp: UserProp,
   ): SelectQueryBuilder<User> {
     const { role, email, order, orderBy, q } = pageOptionsDto
 
-    const queryBuilder: SelectQueryBuilder<User> =
-      this.userRepository.createQueryBuilder('user')
+    const queryBuilder: SelectQueryBuilder<User> = this.userRepository
+      .createQueryBuilder('user')
+      .andWhere('user.role >= :role', { role: userProp.role })
 
-    if (role) queryBuilder.where({ role })
+    if (role) queryBuilder.andWhere({ role })
     if (email) queryBuilder.andWhere({ email })
     if (q) {
       queryBuilder.searchByString(trim(q), ['user.firstName', 'user.lastName'])
@@ -88,35 +106,83 @@ export class UserService extends AbstractService<User> {
 
   async getWithPaginate(
     pageOptionsDto: UsersPageOptionsDto,
+    userProp: UserProp,
   ): Promise<PageDto<UserDto>> {
-    const queryBuilder: SelectQueryBuilder<User> =
-      this.buildQueryList(pageOptionsDto)
+    const queryBuilder: SelectQueryBuilder<User> = this.buildQueryList(
+      pageOptionsDto,
+      userProp,
+    )
 
     const [users, pageMeta] = await queryBuilder.paginate(pageOptionsDto)
 
     return users.toPageDto(pageMeta)
   }
 
-  async getById(id: number): Promise<UserDto> {
-    return (await this.findById(id)).toDto()
+  async getById({
+    id,
+    userProp,
+  }: {
+    id: number
+    userProp: UserProp
+  }): Promise<UserDto> {
+    return (await this.findBy({ id, role: userProp.role })).toDto()
   }
 
   async customUpdate({
     id,
-    userId,
+    userProp,
     body,
   }: {
     id: number
-    userId: number
+    userProp: UserProp
     body: UpdateUserDto
   }): Promise<void> {
-    const user = await this.findById(id)
+    const user = await this.findBy({ id, role: userProp.role })
 
-    await this.updateBy(user.id, { ...body, updatedBy: userId })
+    await this.updateBy(user.id, { ...body, updatedBy: userProp.id })
   }
 
-  async deleteBy({ id }: { id: number }): Promise<void> {
-    const user = await this.findById(id)
+  async deleteBy({
+    id,
+    userProp,
+  }: {
+    id: number
+    userProp: UserProp
+  }): Promise<void> {
+    if (id === userProp.id) {
+      throw new BadRequestException('Cannot delete yourself')
+    }
+    const user = await this.findBy({ id, role: userProp.role })
+
+    await this.softDelete(user.id)
+  }
+
+  async getProfile({
+    userProp,
+  }: {
+    userProp: UserProp
+  }): Promise<Partial<UserDto>> {
+    const profile = await this.findBy({ id: userProp.id, role: userProp.role })
+    return UserDto.toSimplifiedProfileDto(profile)
+  }
+
+  async updateProfile({
+    userProp,
+    body,
+  }: {
+    userProp: UserProp
+    body: UpdateProfileDto
+  }): Promise<void> {
+    const user = await this.findBy({ id: userProp.id, role: userProp.role })
+    if (body.password && body.password !== null) {
+      Object.assign(body, { password: this.hashPassword(body.password) })
+    }
+
+    await this.updateBy(user.id, { ...body, updatedBy: userProp.id })
+  }
+
+  async deleteProfile({ userProp }: { userProp: UserProp }): Promise<void> {
+    const user = await this.findBy({ id: userProp.id, role: userProp.role })
 
     await this.softDelete(user.id)
   }

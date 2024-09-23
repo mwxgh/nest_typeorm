@@ -7,6 +7,11 @@ export type ExceptionFilterType = {
   logger: Logger
 }
 
+export type UserProp = {
+  id: number
+  role: number
+}
+
 export type IAttachment = {
   filename: string
   content?: any

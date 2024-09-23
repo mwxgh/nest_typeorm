@@ -1,12 +1,12 @@
 import { User } from '@/modules/user/entities/user.entity'
-import { StringField } from '@/shared/decorators'
+import { PasswordField, StringField } from '@/shared/decorators'
 
 export class UserLoginDto {
   public static readonly entity = User.name
 
-  @StringField()
+  @StringField({ maxLength: 20 })
   readonly username: string
 
-  @StringField()
+  @PasswordField({ maxLength: 20 })
   readonly password: string
 }

@@ -12,6 +12,8 @@ import {
 } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { default as slugify } from 'slugify'
+import { AppConstant } from '@/constants'
+import * as bcrypt from 'bcrypt'
 
 export type HierarchicalEntity = {
   id: number
@@ -168,6 +170,11 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
     }
 
     return slug
+  }
+
+  hashPassword(password: string): string {
+    const salt = bcrypt.genSaltSync(AppConstant.saltOrRounds)
+    return bcrypt.hashSync(password, salt)
   }
 
   convertToEntities<T extends HierarchicalEntity>(

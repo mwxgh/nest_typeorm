@@ -1,6 +1,7 @@
 export * from './api-csv-ok-response.decorator'
 export * from './api-page-ok-response.decorator'
 export * from './current-user-id.decorator'
+export * from './current-user.decorator'
 export * from './field.decorator'
 export * from './property.decorator'
 export * from './public.decorator'

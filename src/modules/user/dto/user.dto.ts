@@ -47,4 +47,16 @@ export class UserDto extends AbstractDtoWithCU {
     this.status = BaseStatusList[user.status]
     this.isLocked = UserLockedList[user.isLocked]
   }
+
+  static toSimplifiedProfileDto(user: User): Partial<UserDto> {
+    return {
+      id: user.id,
+      username: user.username,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      role: RoleList[user.role],
+      isLocked: UserLockedList[user.isLocked],
+      status: BaseStatusList[user.status],
+    }
+  }
 }

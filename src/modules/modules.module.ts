@@ -8,6 +8,7 @@ import { MediaModule } from './media/media.module';
 import { ContentModule } from './content/content.module';
 import { CommentModule } from './comment/comment.module';
 import { MinioModule } from './minio/minio.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MinioModule } from './minio/minio.module';
     ContentModule,
     CommentModule,
     MinioModule,
+    ProfileModule,
   ],
 })
 export class ModulesModule {}
