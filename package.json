@@ -24,7 +24,8 @@
     "migration:run": "npm run typeorm migration:run -- -d ./src/database/data-source/data-source.ts",
     "migration:generate": "npm run typeorm -- -d ./src/database/data-source/data-source.ts migration:generate ./src/database/migrations/$npm_config_name",
     "migration:create": "npm run typeorm -- migration:create ./src/database/migrations/$npm_config_name",
-    "migration:revert": "npm run typeorm -- -d ./src/database/data-source/data-source.ts migration:revert"
+    "migration:revert": "npm run typeorm -- -d ./src/database/data-source/data-source.ts migration:revert",
+    "seed": "ts-node -r tsconfig-paths/register src/commands/seeder.command.ts"
   },
   "dependencies": {
     "@fastify/multipart": "^8.1.0",
@@ -86,9 +87,9 @@
     "ts-jest": "29.1.1",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
-    "tsconfig-paths": "4.2.0",
+    "tsconfig-paths": "^4.2.0",
     "typeorm": "^0.3.19",
-    "typeorm-extension": "^3.2.0",
+    "typeorm-extension": "^3.6.1",
     "typescript": "^5.3.3",
     "webpack": "^5.0.0",
     "winston": "^3.14.2"

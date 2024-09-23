@@ -12,7 +12,7 @@ export default () => ({
 
   fileUpload: {
     destination: process.env.FILE_UPLOAD_DESTINATION || 'uploads',
-    maxSize: Number(process.env.FILE_UPLOAD_MAX_SIZE) || 52428800,
+    maxSize: parseInt(String(process.env.FILE_UPLOAD_MAX_SIZE), 10) || 52428800,
   },
 
   jwt: {
@@ -26,7 +26,7 @@ export default () => ({
   database: {
     driver: process.env.DATABASE_DRIVER as 'mysql' | 'mongodb',
     host: process.env.DATABASE_HOST,
-    port: Number(process.env.DATABASE_PORT) || 3306,
+    port: parseInt(String(process.env.DATABASE_PORT), 10) || 3306,
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PW,
     db: process.env.DATABASE_DB,
@@ -50,9 +50,9 @@ export default () => ({
   },
 
   minio: {
-    endpoint: process.env.MINIO_ENDPOINT || 'http://127.0.0.1',
-    apiPort: Number(process.env.MINIO_API_PORT),
-    consolePort: Number(process.env.MINIO_CONSOLE_PORT),
+    endpoint: process.env.MINIO_ENDPOINT || 'localhost',
+    apiPort: parseInt(String(process.env.MINIO_API_PORT), 10),
+    consolePort: parseInt(String(process.env.MINIO_CONSOLE_PORT), 10),
     ssl: false,
     access: process.env.MINIO_ACCESS_KEY || 'access',
     secret: process.env.MINIO_SECRET_KEY || 'secret',

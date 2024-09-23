@@ -91,6 +91,6 @@ export class ContentDto extends AbstractDtoWithCU {
     this.medias = content.mediaRelations?.map((relation) =>
       relation.media.toDto(),
     )
-    this.comments = content.comments?.toDtos()
+    // this.comments = content.comments?.toDtos()
   }
 }

@@ -2,15 +2,15 @@ import { registerAs } from '@nestjs/config'
 import config from '../../config/config'
 import { DataSource, DataSourceOptions } from 'typeorm'
 
-const dbOption = config().database
+const { driver, host, username, port, password, db } = config().database
 
 const dbConfig = {
-  type: dbOption.driver,
-  host: dbOption.host,
-  username: dbOption.username,
-  port: dbOption.port,
-  password: dbOption.password,
-  database: dbOption.db,
+  type: driver,
+  host,
+  username,
+  port,
+  password,
+  database: db,
   autoLoadEntities: true,
   synchronize: false,
   charset: 'utf8mb4_general_ci',
