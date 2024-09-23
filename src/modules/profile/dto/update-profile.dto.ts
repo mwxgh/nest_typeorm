@@ -1,5 +1,5 @@
 import { EntityConstant } from '@/constants'
-import { PasswordFieldOptional, StringFieldOptional } from '@/shared/decorators'
+import { StringFieldOptional } from '@/shared/decorators'
 
 export class UpdateProfileDto {
   @StringFieldOptional({ maxLength: EntityConstant.EntityUserNameLength })
@@ -13,7 +13,4 @@ export class UpdateProfileDto {
 
   @StringFieldOptional({ maxLength: EntityConstant.EntityShortLength })
   readonly email: string
-
-  @PasswordFieldOptional({ maxLength: 20 })
-  readonly password: string
 }

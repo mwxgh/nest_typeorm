@@ -27,7 +27,7 @@ import {
 import { PageDto } from '@/shared/common/dto'
 import { trim } from 'lodash'
 import { UserProp } from '@/shared/interfaces'
-import { UpdateProfileDto } from '../profile/dto/update-profile.dto'
+import { ChangePasswordDto, UpdateProfileDto } from '../profile/dto'
 
 @Injectable()
 export class UserService extends AbstractService<User> {
@@ -72,12 +72,13 @@ export class UserService extends AbstractService<User> {
     })
   }
 
-  async findBy({ id, role }: { id: number; role: number }): Promise<User> {
-    const user = await this.findOneBy({ id, role: MoreThanOrEqual(role) })
+  async findBy({ id, role }: { id?: number; role?: number }): Promise<User> {
+    const user = await this.findOneBy({
+      id,
+      ...(role !== undefined && { role: MoreThanOrEqual(role) }),
+    })
 
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} was not found.`)
-    }
+    if (!user) throw new NotFoundException(`User with ID ${id} was not found.`)
 
     return user
   }
@@ -157,32 +158,46 @@ export class UserService extends AbstractService<User> {
     await this.softDelete(user.id)
   }
 
-  async getProfile({
-    userProp,
-  }: {
-    userProp: UserProp
-  }): Promise<Partial<UserDto>> {
-    const profile = await this.findBy({ id: userProp.id, role: userProp.role })
+  async getProfile({ id }: { id: number }): Promise<Partial<UserDto>> {
+    const profile = await this.findBy({ id })
     return UserDto.toSimplifiedProfileDto(profile)
   }
 
   async updateProfile({
-    userProp,
+    id,
     body,
   }: {
-    userProp: UserProp
+    id: number
     body: UpdateProfileDto
   }): Promise<void> {
-    const user = await this.findBy({ id: userProp.id, role: userProp.role })
-    if (body.password && body.password !== null) {
-      Object.assign(body, { password: this.hashPassword(body.password) })
-    }
+    const user = await this.findBy({ id })
 
-    await this.updateBy(user.id, { ...body, updatedBy: userProp.id })
+    await this.updateBy(user.id, { ...body, updatedBy: id })
   }
 
-  async deleteProfile({ userProp }: { userProp: UserProp }): Promise<void> {
-    const user = await this.findBy({ id: userProp.id, role: userProp.role })
+  async changePassword({
+    id,
+    body,
+  }: {
+    id: number
+    body: ChangePasswordDto
+  }): Promise<void> {
+    const { currentPassword, newPassword } = body
+
+    const user = await this.findBy({ id })
+
+    if (this.hashPassword(currentPassword) !== user.password) {
+      throw new BadRequestException('Current password incorrect')
+    }
+
+    await this.updateBy(user.id, {
+      password: this.hashPassword(newPassword),
+      updatedBy: id,
+    })
+  }
+
+  async deleteProfile({ id }: { id: number }): Promise<void> {
+    const user = await this.findBy({ id })
 
     await this.softDelete(user.id)
   }
