@@ -27,7 +27,7 @@ export class MediaDto extends AbstractDtoWithCU {
 
   @Expose()
   @ApiProperty()
-  properties: any
+  properties: JSON
 
   @Expose()
   @ApiProperty()
@@ -41,7 +41,7 @@ export class MediaDto extends AbstractDtoWithCU {
     this.type = media.type
     this.mimetype = media.mimetype
     this.url = media.url
-    this.properties = media.properties
+    this.properties = JSON.parse(media.properties.replace(/'/g, '"'))
     this.status = BaseStatusList[media.status]
   }
 }

@@ -14,6 +14,7 @@ import {
 import { UseDto } from '@/shared/decorators'
 import { Content } from '@/modules/content/entities/content.entity'
 import { Comment } from '@/modules/comment/entities/comment.entity'
+import { Reaction } from '@/modules/reaction/entities/reaction.entity'
 
 @Entity('users')
 @UseDto(UserDto)
@@ -97,4 +98,7 @@ export class User
 
   @OneToMany(() => Comment, (comment) => comment.acceptor)
   acceptedComments: Comment[]
+
+  @OneToMany(() => Reaction, (reaction) => reaction.reactor)
+  reactions: Reaction[]
 }

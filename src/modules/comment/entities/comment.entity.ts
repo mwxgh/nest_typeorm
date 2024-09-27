@@ -8,6 +8,7 @@ import { UseDto } from '@/shared/decorators'
 import { CommentDto } from '../dto'
 import { User } from '@/modules/user/entities/user.entity'
 import { Content } from '@/modules/content/entities/content.entity'
+import { Reaction } from '@/modules/reaction/entities/reaction.entity'
 
 @Entity('comments')
 @UseDto(CommentDto)
@@ -80,4 +81,7 @@ export class Comment
 
   @OneToMany(() => Comment, (comment) => comment.parent)
   children: Comment[]
+
+  @OneToMany(() => Reaction, (reaction) => reaction.comment)
+  reactions: Reaction[]
 }

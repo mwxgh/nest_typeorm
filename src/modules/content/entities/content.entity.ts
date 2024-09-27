@@ -23,6 +23,7 @@ import { ContentDto } from '../dto'
 import { TagRelation } from '@/modules/tag/entities/tag-relation.entity'
 import { MediaRelation } from '@/modules/media/entities/media-relation.entity'
 import { Comment } from '@/modules/comment/entities/comment.entity'
+import { Reaction } from '@/modules/reaction/entities/reaction.entity'
 
 @Entity('contents')
 @UseDto(ContentDto)
@@ -128,4 +129,7 @@ export class Content
 
   @OneToMany(() => Comment, (comment) => comment.content)
   comments: Comment[]
+
+  @OneToMany(() => Reaction, (reaction) => reaction.content)
+  reactions: Reaction[]
 }

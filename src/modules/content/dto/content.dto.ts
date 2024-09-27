@@ -11,6 +11,7 @@ import { CategoryDto } from '@/modules/category/dto/category.dto'
 import { TagDto } from '@/modules/tag/dto'
 import { MediaDto } from '@/modules/media/dto'
 import { CommentDto } from '@/modules/comment/dto'
+import { ReactionDto } from '@/modules/reaction/dto'
 
 export class ContentDto extends AbstractDtoWithCU {
   @Expose()
@@ -66,6 +67,10 @@ export class ContentDto extends AbstractDtoWithCU {
   medias: MediaDto[]
 
   @Expose()
+  @ApiProperty({ type: () => ReactionDto, isArray: true })
+  reactions: ReactionDto[]
+
+  @Expose()
   @ApiProperty({ type: () => CommentDto, isArray: true })
   comments: CommentDto[]
 
@@ -91,6 +96,7 @@ export class ContentDto extends AbstractDtoWithCU {
     this.medias = content.mediaRelations?.map((relation) =>
       relation.media.toDto(),
     )
-    // this.comments = content.comments?.toDtos()
+    this.reactions = content.reactions?.toDtos()
+    this.comments = content.comments?.toDtos()
   }
 }

@@ -18,5 +18,6 @@ import { CommentModule } from '../comment/comment.module'
   ],
   controllers: [ContentController],
   providers: [ContentService],
+  exports: [ContentService],
 })
 export class ContentModule {}

@@ -41,6 +41,7 @@ export class MediaService extends AbstractService<Media> {
 
         await this.save({
           ...createMediaDto,
+          properties: JSON.stringify(createMediaDto.properties),
           originalName: file.originalname,
           filename: fileName,
           type: file.mimetype.split('/')[0],
@@ -113,9 +114,13 @@ export class MediaService extends AbstractService<Media> {
     userId: number
     body: UpdateMediaDto
   }): Promise<void> {
-    const tag = await this.findById(id)
+    const media = await this.findById(id)
 
-    await this.updateBy(tag.id, { ...body, updatedBy: userId })
+    await this.updateBy(media.id, {
+      ...body,
+      properties: body.properties ? JSON.stringify(body.properties) : undefined,
+      updatedBy: userId,
+    })
   }
 
   async deleteBy({ id }: { id: number }): Promise<void> {

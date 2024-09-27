@@ -81,6 +81,16 @@ export enum ContentTypeEnum {
   FAQ,
 }
 
+export enum ReactionTypeEnum {
+  Like,
+  Love,
+  Care,
+  Haha,
+  Wow,
+  Sad,
+  Angry,
+}
+
 export const RelationTypeList = {
   [RelationTypeEnum.Content]: 'Content',
   [RelationTypeEnum.Product]: 'Product',
@@ -142,4 +152,14 @@ export const ContentTypeList = {
   [ContentTypeEnum.CaseStudy]: 'CaseStudy',
   [ContentTypeEnum.EBook]: 'EBook',
   [ContentTypeEnum.FAQ]: 'FAQ',
+}
+
+export const ReactionTypeList = {
+  [ReactionTypeEnum.Like]: 'Like',
+  [ReactionTypeEnum.Love]: 'Video',
+  [ReactionTypeEnum.Care]: 'Care',
+  [ReactionTypeEnum.Haha]: 'Haha',
+  [ReactionTypeEnum.Wow]: 'Wow',
+  [ReactionTypeEnum.Sad]: 'Sad',
+  [ReactionTypeEnum.Angry]: 'Angry',
 }

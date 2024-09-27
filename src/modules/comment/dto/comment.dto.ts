@@ -3,6 +3,7 @@ import { Expose } from 'class-transformer'
 import { CommentPriorityList, CommentStatusList } from '@/constants'
 import { AbstractDtoWithCU } from '@/shared/common/dto'
 import { Comment } from '../entities/comment.entity'
+import { ReactionDto } from '@/modules/reaction/dto'
 
 export class CommentDto extends AbstractDtoWithCU {
   @Expose()
@@ -30,8 +31,12 @@ export class CommentDto extends AbstractDtoWithCU {
   acceptedBy: number
 
   @Expose()
+  @ApiProperty({ type: () => ReactionDto, isArray: true })
+  reactions: ReactionDto[]
+
+  @Expose()
   @ApiProperty({ type: () => CommentDto, isArray: true })
-  children: CommentDto[]
+  children?: CommentDto[]
 
   constructor(comment: Comment) {
     super(comment)
@@ -42,7 +47,8 @@ export class CommentDto extends AbstractDtoWithCU {
     this.status = CommentStatusList[comment.status]
     this.priority = CommentPriorityList[comment.priority]
     this.acceptedBy = comment.acceptedBy
+    this.reactions = comment.reactions?.toDtos()
     this.children =
-      comment.children?.map((child) => new CommentDto(child)) || []
+      comment.children?.map((child) => new CommentDto(child)) || undefined
   }
 }

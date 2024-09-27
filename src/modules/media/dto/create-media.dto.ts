@@ -1,9 +1,20 @@
 import { BaseStatusEnum } from '@/constants'
-import { EnumField, StringFieldOptional } from '@/shared/decorators'
+import {
+  ClassFieldOptional,
+  EnumField,
+  NumberFieldOptional,
+} from '@/shared/decorators'
 
+class MediaPropertiesDto {
+  @NumberFieldOptional()
+  readonly width?: number
+
+  @NumberFieldOptional()
+  readonly height?: number
+}
 export class CreateMediaDto {
-  @StringFieldOptional()
-  readonly properties?: any
+  @ClassFieldOptional({ type: () => MediaPropertiesDto, isArray: false }) //StringFieldOptional for test with Postman
+  readonly properties?: MediaPropertiesDto
 
   @EnumField(() => BaseStatusEnum, {
     default: BaseStatusEnum.Active,

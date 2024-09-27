@@ -7,7 +7,7 @@ import { Content } from './entities/content.entity'
 import AbstractService from '@/shared/services/abstract.service'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm'
-import { difference, trim } from 'lodash'
+import { difference, trim, uniq } from 'lodash'
 import { Direction, RelationTypeEnum } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
 import { CategoryRelationService } from '../category/category-relation.service'
@@ -61,7 +61,7 @@ export class ContentService extends AbstractService<Content> {
         if (categoryIds && categoryIds.length > 0) {
           await this.categoryRelationService.assignRelations({
             relationId: newContent.id,
-            categoryIds,
+            categoryIds: uniq(categoryIds),
             type: RelationTypeEnum.Content,
             entityManager,
           })
@@ -70,7 +70,7 @@ export class ContentService extends AbstractService<Content> {
         if (tagIds && tagIds.length > 0) {
           await this.tagRelationService.assignRelations({
             relationId: newContent.id,
-            tagIds,
+            tagIds: uniq(tagIds),
             type: RelationTypeEnum.Content,
             entityManager,
           })
@@ -79,7 +79,7 @@ export class ContentService extends AbstractService<Content> {
         if (mediaIds && mediaIds.length > 0) {
           await this.mediaRelationService.assignRelations({
             relationId: newContent.id,
-            mediaIds,
+            mediaIds: uniq(mediaIds),
             type: RelationTypeEnum.Content,
             entityManager,
           })
@@ -153,9 +153,26 @@ export class ContentService extends AbstractService<Content> {
       })
       .leftJoinAndSelect('cm.media', 'media')
 
-      .leftJoinAndSelect('content.comments', 'rc', 'rc.parentId IS NULL') // Fetch root comments
-      .leftJoinAndSelect('rc.children', 'rcc') // Fetch one level of child comments
-      .where('content.id = :contentId', { contentId: id })
+      .leftJoinAndSelect(
+        'content.reactions',
+        'cr',
+        'cr.contentId = :contentId AND cr.commentId IS NULL',
+        {
+          contentId: id,
+        },
+      )
+
+      .leftJoinAndSelect(
+        'content.comments',
+        'ccm',
+        'ccm.contentId = :contentId AND ccm.parentId IS NULL',
+        {
+          contentId: id,
+        },
+      )
+      .leftJoinAndSelect('ccm.children', 'ccc')
+      .leftJoinAndSelect('ccm.reactions', 'ccmr')
+      .leftJoinAndSelect('ccc.reactions', 'ccmcr')
 
       .where('content.id = :id', { id })
       .getOne()

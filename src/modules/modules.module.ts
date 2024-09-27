@@ -9,6 +9,7 @@ import { ContentModule } from './content/content.module';
 import { CommentModule } from './comment/comment.module';
 import { MinioModule } from './minio/minio.module';
 import { ProfileModule } from './profile/profile.module';
+import { ReactionModule } from './reaction/reaction.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProfileModule } from './profile/profile.module';
     CommentModule,
     MinioModule,
     ProfileModule,
+    ReactionModule,
   ],
 })
 export class ModulesModule {}
