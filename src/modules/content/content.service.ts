@@ -161,6 +161,7 @@ export class ContentService extends AbstractService<Content> {
           contentId: id,
         },
       )
+      .leftJoinAndSelect('cr.reactor', 'ccm_reactor')
 
       .leftJoinAndSelect(
         'content.comments',
@@ -170,9 +171,16 @@ export class ContentService extends AbstractService<Content> {
           contentId: id,
         },
       )
+
+      .addOrderBy('ccm.createdAt', Direction.ASC)
+
+      .leftJoinAndSelect('ccm.creator', 'ccm_creator')
       .leftJoinAndSelect('ccm.children', 'ccc')
+      .leftJoinAndSelect('ccc.creator', 'ccc_creator')
       .leftJoinAndSelect('ccm.reactions', 'ccmr')
+      .leftJoinAndSelect('ccmr.reactor', 'ccmr_reactor')
       .leftJoinAndSelect('ccc.reactions', 'ccmcr')
+      .leftJoinAndSelect('ccmcr.reactor', 'ccmcr_reactor')
 
       .where('content.id = :id', { id })
       .getOne()

@@ -30,6 +30,8 @@ export class ReactionService extends AbstractService<Reaction> {
     await this.contentService.validateExist({ id: contentId })
     await this.commentService.validateExist({ id: commentId })
 
+    await this.validateDuplicate({ createdBy: userId, commentId, contentId })
+
     await this.save({
       ...body,
       createdBy: userId,

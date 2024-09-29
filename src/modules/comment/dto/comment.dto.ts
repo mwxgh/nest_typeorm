@@ -4,6 +4,7 @@ import { CommentPriorityList, CommentStatusList } from '@/constants'
 import { AbstractDtoWithCU } from '@/shared/common/dto'
 import { Comment } from '../entities/comment.entity'
 import { ReactionDto } from '@/modules/reaction/dto'
+import { UserDto } from '@/modules/user/dto'
 
 export class CommentDto extends AbstractDtoWithCU {
   @Expose()
@@ -31,6 +32,18 @@ export class CommentDto extends AbstractDtoWithCU {
   acceptedBy: number
 
   @Expose()
+  @ApiProperty()
+  createdAt: Date
+
+  @Expose()
+  @ApiProperty()
+  updatedAt: Date
+
+  @Expose()
+  @ApiProperty({ type: () => UserDto })
+  creator?: UserDto
+
+  @Expose()
   @ApiProperty({ type: () => ReactionDto, isArray: true })
   reactions: ReactionDto[]
 
@@ -47,6 +60,7 @@ export class CommentDto extends AbstractDtoWithCU {
     this.status = CommentStatusList[comment.status]
     this.priority = CommentPriorityList[comment.priority]
     this.acceptedBy = comment.acceptedBy
+    this.creator = comment.creator?.toDto() || undefined
     this.reactions = comment.reactions?.toDtos()
     this.children =
       comment.children?.map((child) => new CommentDto(child)) || undefined
