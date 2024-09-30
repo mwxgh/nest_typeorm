@@ -114,9 +114,9 @@ export class MediaService extends AbstractService<Media> {
     userId: number
     body: UpdateMediaDto
   }): Promise<void> {
-    const media = await this.findById(id)
+    await this.existsBy({ id })
 
-    await this.updateBy(media.id, {
+    await this.updateBy(id, {
       ...body,
       properties: body.properties ? JSON.stringify(body.properties) : undefined,
       updatedBy: userId,

@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -12,16 +14,26 @@ import {
 import AbstractService from '@/shared/services/abstract.service'
 import { Comment } from './entities/comment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { EntityManager, IsNull, Repository, SelectQueryBuilder } from 'typeorm'
+import {
+  DataSource,
+  EntityManager,
+  IsNull,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm'
 import { trim } from 'lodash'
 import { Direction } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
+import { ReactionService } from '../reaction/reaction.service'
 
 @Injectable()
 export class CommentService extends AbstractService<Comment> {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    @Inject(forwardRef(() => ReactionService))
+    private readonly reactionService: ReactionService,
+    private readonly dataSource: DataSource,
   ) {
     super(commentRepository)
   }
@@ -157,9 +169,9 @@ export class CommentService extends AbstractService<Comment> {
     userId: number
     body: UpdateCommentDto
   }): Promise<void> {
-    const comment: Comment = await this.findById(id)
+    await this.existsBy({ id })
 
-    await this.updateBy(comment.id, { ...body, updatedBy: userId })
+    await this.updateBy(id, { ...body, updatedBy: userId })
   }
 
   async deleteBy({ id }: { id: number }) {
@@ -168,10 +180,23 @@ export class CommentService extends AbstractService<Comment> {
       select: ['id'],
     })
 
-    await this.softDelete(commentsToRemove.map((i) => i.id))
+    const commentIds = commentsToRemove.map((comment) => comment.id)
+
+    try {
+      await this.dataSource.transaction(async (entityManager) => {
+        await entityManager.softDelete(Comment, commentIds)
+
+        await this.reactionService.deleteCascade({
+          commentIds,
+          entityManager,
+        })
+      })
+    } catch (error) {
+      throw new Error(`Error during comment deletion process`)
+    }
   }
 
-  async deleteContentCascade({
+  async deleteCascade({
     contentId,
     entityManager,
   }: {

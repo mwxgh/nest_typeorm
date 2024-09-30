@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -23,6 +25,7 @@ import {
 import { TagRelationService } from '../tag/tag-relation.service'
 import { MediaRelationService } from '../media/media-relation.service'
 import { CommentService } from '../comment/comment.service'
+import { ReactionService } from '../reaction/reaction.service'
 
 @Injectable()
 export class ContentService extends AbstractService<Content> {
@@ -32,7 +35,10 @@ export class ContentService extends AbstractService<Content> {
     private readonly categoryRelationService: CategoryRelationService,
     private readonly tagRelationService: TagRelationService,
     private readonly mediaRelationService: MediaRelationService,
+    @Inject(forwardRef(() => CommentService))
     private readonly commentService: CommentService,
+    @Inject(forwardRef(() => ReactionService))
+    private readonly reactionService: ReactionService,
     private readonly dataSource: DataSource,
   ) {
     super(contentRepository)
@@ -323,39 +329,48 @@ export class ContentService extends AbstractService<Content> {
       | UpdateContentTypeDto
       | UpdateContentPriorityDto
   }): Promise<void> {
-    const content = await this.findById(id)
+    await this.existsBy({ id })
 
-    await this.updateBy({ id: content.id }, { ...body, updatedBy: userId })
+    await this.updateBy(id, { ...body, updatedBy: userId })
   }
 
   async deleteBy({ id }: { id: number }): Promise<void> {
-    const content = await this.findById(id)
+    await this.existsBy({ id })
 
-    await this.dataSource.transaction(async (entityManager) => {
-      await entityManager.softDelete(Content, { id: content.id })
+    try {
+      await this.dataSource.transaction(async (entityManager) => {
+        await entityManager.softDelete(Content, { id })
 
-      await this.commentService.deleteContentCascade({
-        contentId: content.id,
-        entityManager,
+        await this.commentService.deleteCascade({
+          contentId: id,
+          entityManager,
+        })
+
+        await this.reactionService.deleteCascade({
+          contentId: id,
+          entityManager,
+        })
+
+        await this.categoryRelationService.unassignRelations({
+          relationId: id,
+          type: RelationTypeEnum.Content,
+          entityManager,
+        })
+
+        await this.tagRelationService.unassignRelations({
+          relationId: id,
+          type: RelationTypeEnum.Content,
+          entityManager,
+        })
+
+        await this.mediaRelationService.unassignRelations({
+          relationId: id,
+          type: RelationTypeEnum.Content,
+          entityManager,
+        })
       })
-
-      await this.categoryRelationService.unassignRelations({
-        relationId: content.id,
-        type: RelationTypeEnum.Content,
-        entityManager,
-      })
-
-      await this.tagRelationService.unassignRelations({
-        relationId: content.id,
-        type: RelationTypeEnum.Content,
-        entityManager,
-      })
-
-      await this.mediaRelationService.unassignRelations({
-        relationId: content.id,
-        type: RelationTypeEnum.Content,
-        entityManager,
-      })
-    })
+    } catch (error) {
+      throw new Error(`Error during content deletion process`)
+    }
   }
 }

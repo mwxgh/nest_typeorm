@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { ContentService } from './content.service'
 import { ContentController } from './content.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -7,6 +7,7 @@ import { CategoryModule } from '../category/category.module'
 import { TagModule } from '../tag/tag.module'
 import { MediaModule } from '../media/media.module'
 import { CommentModule } from '../comment/comment.module'
+import { ReactionModule } from '../reaction/reaction.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CommentModule } from '../comment/comment.module'
     TagModule,
     MediaModule,
     CommentModule,
+    forwardRef(() => ReactionModule),
   ],
   controllers: [ContentController],
   providers: [ContentService],

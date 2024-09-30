@@ -83,26 +83,30 @@ export class TagService extends AbstractService<Tag> {
     userId: number
     body: UpdateTagDto
   }): Promise<void> {
-    const tag = await this.findById(id)
+    await this.existsBy({ id })
 
     if (body.name)
       Object.assign(body, {
         slug: await this.generateSlug(body.name),
       })
 
-    await this.updateBy(tag.id, { ...body, updatedBy: userId })
+    await this.updateBy(id, { ...body, updatedBy: userId })
   }
 
   async deleteBy({ id }: { id: number }): Promise<void> {
-    const tag = await this.findById(id)
+    await this.existsBy({ id })
 
-    await this.dataSource.transaction(async (entityManager) => {
-      await entityManager.softDelete(Tag, { id: tag.id })
+    try {
+      await this.dataSource.transaction(async (entityManager) => {
+        await entityManager.softDelete(Tag, { id })
 
-      await this.tagRelationService.unassignRelations({
-        tagIds: [tag.id],
-        entityManager,
+        await this.tagRelationService.unassignRelations({
+          tagIds: [id],
+          entityManager,
+        })
       })
-    })
+    } catch (error) {
+      throw new Error(`Error during tag deletion process`)
+    }
   }
 }

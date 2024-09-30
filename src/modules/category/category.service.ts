@@ -181,15 +181,19 @@ export class CategoryService extends AbstractService<Category> {
   }
 
   async deleteBy({ id }: { id: number }): Promise<void> {
-    const category = await this.findById(id)
+    await this.existsBy({ id })
 
-    await this.dataSource.transaction(async (entityManager) => {
-      await entityManager.softDelete(Category, { id: category.id })
+    try {
+      await this.dataSource.transaction(async (entityManager) => {
+        await entityManager.softDelete(Category, { id: id })
 
-      await this.categoryRelationService.unassignRelations({
-        categoryIds: [category.id],
-        entityManager,
+        await this.categoryRelationService.unassignRelations({
+          categoryIds: [id],
+          entityManager,
+        })
       })
-    })
+    } catch (error) {
+      throw new Error(`Error during category deletion process`)
+    }
   }
 }
