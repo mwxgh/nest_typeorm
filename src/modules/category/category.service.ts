@@ -8,7 +8,7 @@ import { Category } from './entities/category.entity'
 import AbstractService from '@/shared/services/abstract.service'
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm'
 import { PageDto } from '@/shared/common/dto'
-import { Direction } from '@/constants'
+import { DefaultDirection } from '@/constants'
 import { trim } from 'lodash'
 import {
   CategoriesPageOptionsDto,
@@ -76,7 +76,7 @@ export class CategoryService extends AbstractService<Category> {
 
     return queryBuilder.orderBy(
       `category.${orderBy ?? 'createdAt'}`,
-      order ?? Direction.ASC,
+      order ?? DefaultDirection,
     )
   }
 

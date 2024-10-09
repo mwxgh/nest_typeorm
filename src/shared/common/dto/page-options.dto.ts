@@ -1,4 +1,4 @@
-import { Direction } from '@/constants'
+import { DefaultDirection, Direction } from '@/constants'
 import {
   EnumFieldOptional,
   EscapeString,
@@ -8,9 +8,9 @@ import {
 
 export class PageOptionsDto {
   @EnumFieldOptional(() => Direction, {
-    default: Direction.ASC,
+    default: DefaultDirection,
   })
-  readonly order: Direction = Direction.ASC
+  readonly order: Direction = DefaultDirection
 
   @NumberFieldOptional({
     minimum: 1,

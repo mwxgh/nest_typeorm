@@ -68,7 +68,7 @@ export class CategoryController {
   }
 
   @Put(':id')
-  @Auth(RoleEnum.BaseAdmin)
+  @Auth(RoleEnum.BaseAdmin, RoleEnum.Supervisor)
   @ApiAuth(undefined, { summary: 'Update category by id' })
   update(
     @Param('id', PositiveNumberPipe) id: number,

@@ -43,6 +43,7 @@ export class AuthService {
   async signUp(data: UserSignUpDto): Promise<LoginResponseDto> {
     const existUser = await this.userService.findOneBy({
       username: data.username,
+      email: data.email,
     })
 
     if (existUser) {

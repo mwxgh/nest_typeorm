@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, SelectQueryBuilder } from 'typeorm'
 import AbstractService from '@/shared/services/abstract.service'
 import { Media } from './entities/media.entity'
-import { BaseStatusEnum, Direction } from '@/constants'
+import { BaseStatusEnum, DefaultDirection } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
 import { trim } from 'lodash'
 import { Logger } from 'winston'
@@ -76,7 +76,7 @@ export class MediaService extends AbstractService<Media> {
 
     return queryBuilder.orderBy(
       `media.${orderBy ?? 'createdAt'}`,
-      order ?? Direction.ASC,
+      order ?? DefaultDirection,
     )
   }
 

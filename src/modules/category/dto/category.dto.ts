@@ -33,6 +33,8 @@ export class CategoryDto extends AbstractDtoWithCU {
     this.parentId = category.parentId
     this.status = BaseStatusList[category.status]
     this.children =
-      category.children?.map((child) => new CategoryDto(child)) || undefined
+      category.children && category.children.length > 0
+        ? category.children.map((child) => new CategoryDto(child))
+        : undefined
   }
 }

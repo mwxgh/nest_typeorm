@@ -23,7 +23,7 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  @Auth(RoleEnum.BaseAdmin)
+  @Auth(...AllRoles)
   @ApiAuth(undefined, { summary: 'Create new tag' })
   create(
     @CurrentUserId() userId: number,

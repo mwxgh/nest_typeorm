@@ -61,8 +61,10 @@ export class CommentDto extends AbstractDtoWithCU {
     this.priority = CommentPriorityList[comment.priority]
     this.acceptedBy = comment.acceptedBy
     this.creator = comment.creator?.toDto() || undefined
-    this.reactions = comment.reactions?.toDtos()
+    this.reactions = comment.reactions?.toDtos() || undefined
     this.children =
-      comment.children?.map((child) => new CommentDto(child)) || undefined
+      comment.children && comment.children.length > 0
+        ? comment.children.map((child) => new CommentDto(child))
+        : undefined
   }
 }

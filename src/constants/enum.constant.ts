@@ -30,6 +30,12 @@ export const AllRoles: RoleEnum[] = [
   RoleEnum.NormalUser,
 ]
 
+export const ManagementRoles: RoleEnum[] = [
+  RoleEnum.BaseAdmin,
+  RoleEnum.Supervisor,
+  RoleEnum.Operator,
+]
+
 export enum BaseStatusEnum {
   Inactive,
   Active,
@@ -58,6 +64,12 @@ export enum ContentStatusEnum {
   Hide,
   Expired,
 }
+
+export const ExcludedContentStatuses: ContentStatusEnum[] = [
+  ContentStatusEnum.Rejected,
+  ContentStatusEnum.Hide,
+  ContentStatusEnum.Expired,
+]
 
 export enum ContentPriorityEnum {
   Low,

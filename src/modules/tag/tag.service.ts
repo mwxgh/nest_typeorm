@@ -4,7 +4,7 @@ import { Tag } from './entities/tag.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm'
 import { trim } from 'lodash'
-import { Direction } from '@/constants'
+import { DefaultDirection } from '@/constants'
 import { PageDto } from '@/shared/common/dto'
 import { CreateTagDto, TagDto, TagsPageOptionsDto, UpdateTagDto } from './dto'
 import { TagRelationService } from './tag-relation.service'
@@ -45,7 +45,7 @@ export class TagService extends AbstractService<Tag> {
 
     return queryBuilder.orderBy(
       `tag.${orderBy ?? 'createdAt'}`,
-      order ?? Direction.ASC,
+      order ?? DefaultDirection,
     )
   }
 
