@@ -1,4 +1,8 @@
-import { ConflictException, NotFoundException } from '@nestjs/common'
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common'
 import {
   DeepPartial,
   FindManyOptions,
@@ -125,6 +129,17 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
       | FindOptionsWhere<TEntity>,
   ): Promise<UpdateResult> {
     return this.repository.softDelete(criteria)
+  }
+
+  async validatePermission(
+    where: FindOptionsWhere<TEntity>,
+    operatorRole: number,
+  ): Promise<void> {
+    const data = await this.findOneByOrFail(where)
+
+    if (data.createdBy && data.createdBy < operatorRole) {
+      throw new ForbiddenException('Cannot execute with a higher role level')
+    }
   }
 
   /**

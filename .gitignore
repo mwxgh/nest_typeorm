@@ -56,3 +56,4 @@ gkc_*
 # NPM
 yarn.lock
 package-lock.json
+bun.lockb
