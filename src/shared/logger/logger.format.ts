@@ -18,7 +18,17 @@ export const loggerFormat = (asyncContext: AsyncRequestContext) =>
       domain = 'N/A',
       userId = 'N/A',
       method = 'N/A',
-    } = context || asyncContext.getRequestIdStore() || {}
+    } = (context as {
+      contextId?: string
+      endpoint?: string
+      ip?: string
+      device?: string
+      domain?: string
+      userId?: string
+      method?: string
+    }) ||
+    asyncContext.getRequestIdStore() ||
+    {}
 
     // Define color functions based on log level
     const colorForLevel =
@@ -52,10 +62,11 @@ export const loggerFormat = (asyncContext: AsyncRequestContext) =>
 
     // Highlight SQL queries
     const formattedMessage =
+      typeof message === 'string' &&
       level === LoggerConstant.infoLevel &&
       message.startsWith(LoggerConstant.queryPrefix)
         ? PlatformTools.highlightSql(message)
-        : message
+        : String(message)
 
     // Return formatted log message
     return `[${timestamp}] ${formattedContext.contextId} ${formattedLevel} ${formattedContext.domain} ${formattedContext.userId} ${formattedContext.ip} ${formattedContext.method} ${formattedContext.endpoint} ${formattedContext.device} - ${formattedMessage}`

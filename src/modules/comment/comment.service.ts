@@ -192,7 +192,7 @@ export class CommentService extends AbstractService<Comment> {
         })
       })
     } catch (error) {
-      throw new Error(`Error during comment deletion process`)
+      throw new Error(`Error ${error} during comment deletion process`)
     }
   }
 

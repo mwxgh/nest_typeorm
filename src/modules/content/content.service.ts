@@ -370,7 +370,7 @@ export class ContentService extends AbstractService<Content> {
         })
       })
     } catch (error) {
-      throw new Error(`Error during content deletion process`)
+      throw new Error(`Error ${error} during content deletion process`)
     }
   }
 }

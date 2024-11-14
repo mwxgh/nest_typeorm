@@ -111,9 +111,8 @@ export class QueryLogger extends AdvancedConsoleLogger {
 
   private replaceHiddenText(fields: string[], parameters: string[]): string[] {
     fields.forEach((item, index) => {
-      if (AppConstant.blackListField.includes(item)) {
-        parameters[index] &&
-          (parameters[index] = replaceHiddenText(parameters[index]))
+      if (AppConstant.blackListField.includes(item) && parameters[index]) {
+        parameters[index] = replaceHiddenText(parameters[index])
       }
     })
 

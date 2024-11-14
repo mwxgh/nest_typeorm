@@ -106,7 +106,7 @@ export class TagService extends AbstractService<Tag> {
         })
       })
     } catch (error) {
-      throw new Error(`Error during tag deletion process`)
+      throw new Error(`Error ${error} during tag deletion process`)
     }
   }
 }

@@ -36,7 +36,9 @@ export class CategoryService extends AbstractService<Category> {
     userId: number
     body: CreateCategoryDto
   }) {
-    body.parentId && (await this.validateExist({ id: body.parentId }))
+    if (body.parentId) {
+      await this.validateExist({ id: body.parentId })
+    }
 
     const data = Object.assign(body, {
       slug: await this.generateSlug(body.name),
@@ -193,7 +195,7 @@ export class CategoryService extends AbstractService<Category> {
         })
       })
     } catch (error) {
-      throw new Error(`Error during category deletion process`)
+      throw new Error(`Error ${error} during category deletion process`)
     }
   }
 }
