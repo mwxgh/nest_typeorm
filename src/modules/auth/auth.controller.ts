@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Post, Request } from '@nestjs/common'
 import { ApiBody, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import {
@@ -7,13 +7,12 @@ import {
   Public,
 } from '@/shared/decorators'
 import { ValidationMessage } from '@/messages'
-import { LocalAuthGuard } from './guards/local-auth.guard'
 import { LoginResponseDto, UserLoginDto, UserSignUpDto } from './dto'
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('/sign-up')
   @Public()
@@ -27,10 +26,15 @@ export class AuthController {
   @Post('/login')
   @Public()
   @ApiPublic(LoginResponseDto, { summary: 'Login' })
-  @UseGuards(LocalAuthGuard)
   @ApiBody({ type: UserLoginDto })
   @ApiBadRequestResponseWrap({ message: ValidationMessage.loginFail })
   async login(@Body() data: UserLoginDto): Promise<LoginResponseDto> {
     return this.authService.login(data)
+  }
+
+  @Delete('/logout')
+  @ApiPublic(undefined, { summary: 'Logout' })
+  async logout(@Request() req: any): Promise<void> {
+    return req.logout();
   }
 }

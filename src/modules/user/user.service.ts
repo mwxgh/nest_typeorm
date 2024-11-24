@@ -55,10 +55,11 @@ export class UserService extends AbstractService<User> {
         'Cannot create user with a higher role level',
       )
     }
+    const password = await this.hashData(AppConstant.defaultPassword)
 
     await this.save({
       ...body,
-      password: this.hashPassword(AppConstant.defaultPassword),
+      password,
       createdBy: userId,
       updatedBy: userId,
     })
@@ -186,12 +187,16 @@ export class UserService extends AbstractService<User> {
 
     const user = await this.findBy({ id })
 
-    if (this.hashPassword(currentPassword) !== user.password) {
+    const hashCurrentPassword = await this.hashData(currentPassword)
+
+    if (hashCurrentPassword !== user.password) {
       throw new BadRequestException('Current password incorrect')
     }
 
+    const password = await this.hashData(newPassword)
+
     await this.updateBy(user.id, {
-      password: this.hashPassword(newPassword),
+      password,
       updatedBy: id,
     })
   }

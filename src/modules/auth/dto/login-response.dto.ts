@@ -8,5 +8,9 @@ export class LoginResponseDto {
 
   @ApiProperty()
   @Expose()
-  readonly token: string
+  readonly accessToken: string
+
+  @ApiProperty()
+  @Expose()
+  readonly refreshToken: string
 }

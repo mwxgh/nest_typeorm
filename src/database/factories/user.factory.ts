@@ -1,8 +1,6 @@
-import * as bcrypt from 'bcrypt'
 import { setSeederFactory } from 'typeorm-extension'
 import { RoleEnum, UserLockedEnum, BaseStatusEnum } from '@/constants'
 import { User } from '@/modules/user/entities/user.entity'
-import { hashMD5 } from '@/shared/utils'
 
 export default setSeederFactory(User, async (faker) => {
   const user = new User()
@@ -20,7 +18,7 @@ export default setSeederFactory(User, async (faker) => {
     UserLockedEnum.Locked,
     UserLockedEnum.Unlocked,
   ])
-  user.password = bcrypt.hashSync(hashMD5('Aa@123456'), 10)
+  user.password = 'Aa@123456'
   user.status = faker.helpers.arrayElement([
     BaseStatusEnum.Active,
     BaseStatusEnum.Inactive,

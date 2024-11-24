@@ -23,7 +23,6 @@ export const AppConstant = {
   },
   defaultPassword: 'Aa@123456',
   defaultUserId: 0,
-  saltOrRounds: 10,
   retryAttempts: 3,
   awsS3PresignedExpiresIn: 1800,
   maxParamLength: 1000,

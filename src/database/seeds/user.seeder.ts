@@ -1,6 +1,5 @@
 import { RoleEnum } from '@/constants'
 import { User } from '@/modules/user/entities/user.entity'
-import { hash } from 'bcrypt'
 import { DataSource } from 'typeorm'
 import { Seeder, SeederFactoryManager } from 'typeorm-extension'
 
@@ -13,7 +12,7 @@ export default class UserSeeder implements Seeder {
 
     const data = {
       username: 'admin',
-      password: await hash('Aa@123456', 10),
+      password: 'Aa@123456',
       role: RoleEnum.BaseAdmin,
       isActivated: true,
     }

@@ -16,6 +16,7 @@ export const setupSwagger = (app: INestApplication): void => {
     .setDescription(
       `[REST Resource Naming Guide](https://restfulapi.net/resource-naming/)`,
     )
+    .addBearerAuth()
     .setVersion('1.0')
 
   const document = SwaggerModule.createDocument(app, documentBuilder.build())

@@ -19,6 +19,7 @@ export default () => ({
     privateKey: process.env.JWT_PRIVATE_KEY,
     secret: process.env.JWT_SECRET,
     ttl: process.env.JWT_TTL,
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
     refreshTtl: process.env.JWT_REFRESH_TTL,
     algorithm: process.env.JWT_ALGORITHM || 'HS256',
   },
