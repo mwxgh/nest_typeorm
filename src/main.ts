@@ -20,6 +20,17 @@ import { AsyncRequestContext } from './modules/async-context-request'
 import { ResponseLoggerInterceptor } from './shared/interceptors/response.interceptor'
 import { TimeoutInterceptor } from './shared/interceptors/timeout.interceptor'
 import { ConfigService } from '@nestjs/config'
+import {
+  BadRequestFilter,
+  EntityNotfoundFilter,
+  ForbiddenFilter,
+  InternalServerFilter,
+  QueryFailedFilter,
+  UnauthorizedFilter,
+  UnprocessableFilter,
+} from './shared/filters'
+// import { AuthenticatedGuard } from './modules/auth/guards/authenticated.guard'
+import { LoggerRequestGuard } from './shared/guards/logger-request.guard'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -50,13 +61,29 @@ async function bootstrap() {
     new TimeoutInterceptor(appConfigForTimeOut),
   )
 
+  app.useGlobalFilters(
+    new InternalServerFilter(filterParam),
+    new BadRequestFilter(filterParam),
+    new QueryFailedFilter(filterParam),
+    new UnprocessableFilter(filterParam),
+    new UnauthorizedFilter(filterParam),
+    new EntityNotfoundFilter(filterParam),
+    new ForbiddenFilter(filterParam),
+  )
+
+  app.useGlobalGuards(
+    new LoggerRequestGuard(filterParam),
+    // todo : authenticate with passport to active AuthenticatedGuard
+    // new AuthenticatedGuard(app.get(Reflector)),
+  )
+
   // Enable CORS
   app.enableCors({
     origin:
       appConfig.env === AppConstant.serverDev
         ? [appConfig.url, 'https://localhost:3000']
         : (appConfig.url as any),
-    methods: 'GET,PUT,POST,DELETE',
+    methods: 'GET,POST,PUT,PATCH,DELETE',
     allowedHeaders: [
       'Content-Type',
       'csrf-token',
@@ -71,12 +98,6 @@ async function bootstrap() {
   app.setGlobalPrefix('v1', {
     exclude: [{ path: 'health', method: RequestMethod.GET }],
   })
-
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      excludeExtraneousValues: true,
-    }),
-  )
 
   // Use global pipes
   app.useGlobalPipes(

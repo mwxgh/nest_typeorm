@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Post, Request } from '@nestjs/common'
+import { Body, Controller, Delete, Post } from '@nestjs/common'
 import { ApiBody, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import {
   ApiBadRequestResponseWrap,
   ApiPublic,
+  CurrentUserId,
   Public,
 } from '@/shared/decorators'
 import { ValidationMessage } from '@/messages'
@@ -12,7 +13,7 @@ import { LoginResponseDto, UserLoginDto, UserSignUpDto } from './dto'
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/sign-up')
   @Public()
@@ -34,7 +35,7 @@ export class AuthController {
 
   @Delete('/logout')
   @ApiPublic(undefined, { summary: 'Logout' })
-  async logout(@Request() req: any): Promise<void> {
-    return req.logout();
+  async logout(@CurrentUserId() userId: number): Promise<void> {
+    return this.authService.logout(userId)
   }
 }

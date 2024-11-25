@@ -2,11 +2,9 @@
 import { Inject, Logger } from '@nestjs/common'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { AdvancedConsoleLogger, LoggerOptions } from 'typeorm'
-
 import { AppConstant } from '@/constants/app.constant'
 import { LoggerConstant } from '@/constants/logger.constant'
 import { AsyncRequestContext } from '@/modules/async-context-request'
-
 import { replaceHiddenText } from '../utils'
 import config from '@/config/config'
 

@@ -1,6 +1,6 @@
 import { ExportConstant } from '@/constants'
-import { AsyncRequestContext } from '@/modules/async-context-request'
-import { Logger } from 'winston'
+import type { AsyncRequestContext } from '@/modules/async-context-request'
+import type { Logger } from 'winston'
 
 export type ExceptionFilterType = {
   asyncRequestContext: AsyncRequestContext

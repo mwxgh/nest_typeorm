@@ -13,7 +13,7 @@ import {
 } from './dto'
 import { Logger } from 'winston'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import * as argon2 from 'argon2';
+import * as argon2 from 'argon2'
 import config from '@config/config'
 
 const { secret, ttl, refreshSecret, refreshTtl } = config().jwt
@@ -25,10 +25,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   async hashData(data: string): Promise<string> {
-    return argon2.hash(data);
+    return argon2.hash(data)
   }
 
   async validateLogin(username: string, password: string): Promise<User> {
@@ -70,7 +70,10 @@ export class AuthService {
     await this.userService.save(user)
     const loginResponse = await this.generateTokens(user)
 
-    await this.updateRefreshToken(loginResponse.userId, loginResponse.refreshToken)
+    await this.updateRefreshToken(
+      loginResponse.userId,
+      loginResponse.refreshToken,
+    )
 
     return loginResponse
   }
@@ -84,18 +87,16 @@ export class AuthService {
   }
 
   async logout(userId: number) {
-
-    return this.userService.updateBy(userId, { refreshToken: null });
+    await this.userService.updateBy(userId, { refreshToken: null })
   }
 
   async updateRefreshToken(userId: number, newRefreshToken: string) {
     const refreshToken = await this.hashData(newRefreshToken)
 
     await this.userService.updateBy(userId, {
-      refreshToken
-    });
+      refreshToken,
+    })
   }
-
 
   async generateTokens(user: User): Promise<LoginResponseDto> {
     const payload: JwtStrategyDto = {
@@ -106,26 +107,20 @@ export class AuthService {
     }
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        payload,
-        {
-          secret: secret,
-          expiresIn: ttl,
-        },
-      ),
-      this.jwtService.signAsync(
-        payload,
-        {
-          secret: refreshSecret,
-          expiresIn: refreshTtl,
-        },
-      ),
-    ]);
+      this.jwtService.signAsync(payload, {
+        secret: secret,
+        expiresIn: ttl,
+      }),
+      this.jwtService.signAsync(payload, {
+        secret: refreshSecret,
+        expiresIn: refreshTtl,
+      }),
+    ])
 
     return plainToInstance(LoginResponseDto, {
       userId: user.id,
       accessToken,
-      refreshToken
+      refreshToken,
     })
   }
 }

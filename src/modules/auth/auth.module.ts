@@ -8,12 +8,13 @@ import { AccessTokenStrategy } from './strategies/accessToken.strategy'
 import { RefreshTokenStrategy } from './strategies/refreshToken.strategy.ts'
 
 @Module({
-  imports: [
-    UserModule,
-    ConfigModule,
-    JwtModule.register({})
+  imports: [UserModule, ConfigModule, JwtModule.register({})],
+  providers: [
+    AuthService,
+    JwtService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
   ],
-  providers: [AuthService, JwtService, AccessTokenStrategy, RefreshTokenStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

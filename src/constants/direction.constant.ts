@@ -3,5 +3,4 @@ export enum Direction {
   DESC = 'DESC',
 }
 
-
 export const DefaultDirection = Direction.ASC

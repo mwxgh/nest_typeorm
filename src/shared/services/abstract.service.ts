@@ -16,7 +16,7 @@ import {
 } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { default as slugify } from 'slugify'
-import * as argon2 from 'argon2';
+import * as argon2 from 'argon2'
 
 export type HierarchicalEntity = {
   id: number
@@ -26,7 +26,7 @@ export type HierarchicalEntity = {
 }
 
 export abstract class AbstractService<TEntity extends ObjectLiteral> {
-  constructor(protected readonly repository: Repository<TEntity>) { }
+  constructor(protected readonly repository: Repository<TEntity>) {}
 
   async find(options?: FindManyOptions<TEntity>): Promise<TEntity[]> {
     return this.repository.find(options)
@@ -187,7 +187,7 @@ export abstract class AbstractService<TEntity extends ObjectLiteral> {
   }
 
   async hashData(data: string): Promise<string> {
-    return argon2.hash(data);
+    return argon2.hash(data)
   }
 
   convertToEntities<T extends HierarchicalEntity>(
