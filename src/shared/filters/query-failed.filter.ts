@@ -1,12 +1,9 @@
 import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { Catch, HttpStatus } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
-import { STATUS_CODES } from 'http';
 import { QueryFailedError } from 'typeorm';
-
 import { AppConstant } from '@/constants';
-import { ValidationMessage } from '@/languages';
-
+import { ErrorMessage } from '@/messages';
 import { ExceptionFilterType } from '../interfaces';
 
 @Catch(QueryFailedError)
@@ -18,8 +15,7 @@ export class QueryFailedFilter implements ExceptionFilter<QueryFailedError> {
     host: ArgumentsHost,
   ) {
     const { logger, asyncRequestContext } = this.filterParam;
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<FastifyReply>();
+    const response = host.switchToHttp().getResponse<FastifyReply>();
 
     const status =
       exception.driverError?.name === AppConstant.uniqueQueryCode
@@ -37,12 +33,18 @@ export class QueryFailedFilter implements ExceptionFilter<QueryFailedError> {
       asyncRequestContext.getRequestIdStore(),
     );
 
+    console.log('query-fail__________________')
+
+    const error = {
+      statusCode: status,
+      message:
+        exception.message && exception.message !== 'Internal Server'
+          ? exception.message
+          : ErrorMessage[status],
+    };
+
     asyncRequestContext.exit();
 
-    return response.code(status).send({
-      statusCode: status,
-      error: STATUS_CODES[status],
-      message: ValidationMessage.badRequestError,
-    });
+    return response.code(status).send(error);
   }
 }

@@ -21,16 +21,16 @@ export class AuthenticatedGuard implements CanActivate {
 
     console.log(request, 'here_____________________________')
 
-    request.logout()
 
-    // if (request.isAuthenticated()) {
-    //   if (request.user.sessionId !== request.session.sessionId) {
-    //     request.logout()
-    //     throw new UserLoggedException()
-    //   }
 
-    //   return true
-    // }
+    if (request.isAuthenticated()) {
+      if (request.user.sessionId !== request.session.sessionId) {
+        request.logout()
+        throw new UserLoggedException()
+      }
+
+      return true
+    }
 
     throw new UserLoggedException()
   }

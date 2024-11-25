@@ -9,13 +9,13 @@ import {
 import { FastifyReply } from 'fastify';
 import { EntityNotFoundError } from 'typeorm';
 import { LoggerConstant } from '@/constants/logger.constant';
-import { ErrorMessage } from '@/languages';
+import { ErrorMessage } from '@/messages';
 import { ExceptionFilterType } from '../interfaces';
 import { createStore } from '../utils';
 
 @Catch(EntityNotFoundError, NotFoundException)
 export class EntityNotfoundFilter implements ExceptionFilter<HttpException> {
-  constructor(private readonly filterParam: ExceptionFilterType) {}
+  constructor(private readonly filterParam: ExceptionFilterType) { }
 
   catch(_: HttpException, host: ArgumentsHost) {
     const { logger, asyncRequestContext } = this.filterParam;

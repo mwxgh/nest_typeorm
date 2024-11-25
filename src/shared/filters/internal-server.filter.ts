@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 import { ExceptionFilterType } from '../interfaces';
-import { AppConstant } from '@/constants';
+import { ErrorMessage } from '@/messages';
 
 @Catch()
 export class InternalServerFilter implements ExceptionFilter<HttpException> {
@@ -24,9 +24,14 @@ export class InternalServerFilter implements ExceptionFilter<HttpException> {
       asyncRequestContext.getRequestIdStore(),
     );
 
+    console.log('internal_______________')
+
     const error = {
       statusCode: status,
-      message: AppConstant.forbiddenError,
+      message:
+        exception.message && exception.message !== 'Internal Server'
+          ? exception.message
+          : ErrorMessage[status],
     };
 
     asyncRequestContext.exit();
