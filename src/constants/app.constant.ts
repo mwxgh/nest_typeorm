@@ -27,4 +27,5 @@ export const AppConstant = {
   awsS3PresignedExpiresIn: 1800,
   maxParamLength: 1000,
   maxRecordHandleOnce: 1000,
+  forbiddenError: 'Forbidden'
 }

@@ -5,7 +5,7 @@ import { UserLoggedException } from '@/exceptions'
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, [
@@ -19,14 +19,18 @@ export class AuthenticatedGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest()
 
-    if (request.isAuthenticated()) {
-      if (request.user.sessionId !== request.session.sessionId) {
-        request.logout()
-        throw new UserLoggedException()
-      }
+    console.log(request, 'here_____________________________')
 
-      return true
-    }
+    request.logout()
+
+    // if (request.isAuthenticated()) {
+    //   if (request.user.sessionId !== request.session.sessionId) {
+    //     request.logout()
+    //     throw new UserLoggedException()
+    //   }
+
+    //   return true
+    // }
 
     throw new UserLoggedException()
   }
