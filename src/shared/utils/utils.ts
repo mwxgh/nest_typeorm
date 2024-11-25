@@ -1,5 +1,4 @@
 import * as moment from 'moment-timezone'
-
 import { AppConstant, RegexConstant } from '@/constants'
 
 export const getVariableName = <TResult>(getVar: () => TResult): string => {

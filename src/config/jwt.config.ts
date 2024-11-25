@@ -1,4 +1,3 @@
-
 import { ExtractJwt } from 'passport-jwt'
 import config from './config'
 
@@ -15,4 +14,3 @@ export const refreshJwtStrategyConfig = {
   secretOrKey: refreshSecret,
   ignoreExpiration: false,
 }
-

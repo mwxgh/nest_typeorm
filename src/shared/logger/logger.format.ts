@@ -1,7 +1,6 @@
 import { green, red, white, yellow } from 'cli-color'
 import { PlatformTools } from 'typeorm/platform/PlatformTools'
 import { format } from 'winston'
-
 import { AppConstant } from '@/constants'
 import { LoggerConstant } from '@/constants/logger.constant'
 import { AsyncRequestContext } from '@/modules/async-context-request'

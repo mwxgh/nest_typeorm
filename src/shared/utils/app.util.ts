@@ -1,5 +1,9 @@
 import { AppConstant } from '@/constants'
 import * as crypto from 'crypto'
+import { ObjectType, StoreContextType } from '../interfaces'
+import { AsyncRequestContext } from '@/modules/async-context-request'
+import { isEmpty } from 'lodash'
+import { v4 } from 'uuid'
 
 export const replaceHiddenText = (
   text: string,
@@ -92,4 +96,40 @@ export const promiseAllConcurrency = async <T>(
     throw errors[0]
   }
   return result
+}
+
+export const buildLogParameters = (params: ObjectType): ObjectType => {
+  AppConstant.blackListField.forEach((item) => {
+    if (params[item]) {
+      params[item] = replaceHiddenText(params[item])
+    }
+  })
+
+  return params
+}
+
+export const createStore = (
+  req: any,
+  asyncRequestContext: AsyncRequestContext,
+): StoreContextType => {
+  let store = asyncRequestContext.getRequestIdStore()
+
+  if (isEmpty(store)) {
+    const requestId = v4()
+
+    const logContext: StoreContextType = {
+      contextId: requestId,
+      ip: req.headers['x-forwarded-for'] || req.ip,
+      endpoint: req.raw?.url || req.originalUrl,
+      device: req.headers['user-agent'],
+      domain: req.hostname,
+      userId: req.user?.id,
+      method: req.method,
+    }
+
+    asyncRequestContext.set(logContext)
+    store = logContext
+  }
+
+  return store
 }

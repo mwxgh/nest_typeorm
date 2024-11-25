@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common'
-
 import { LoggerConstant } from '@/constants/logger.constant'
 
 export const ProcessLogger = (logger: Logger) => {

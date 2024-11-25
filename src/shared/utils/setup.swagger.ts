@@ -1,6 +1,5 @@
 import type { INestApplication } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-
 import config from '@/config/config'
 import { AppConstant } from '@constants/app.constant'
 
