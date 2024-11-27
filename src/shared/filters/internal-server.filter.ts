@@ -15,7 +15,7 @@ export class InternalServerFilter implements ExceptionFilter<HttpException> {
 
   catch(exception: TypeError, host: ArgumentsHost) {
     const { logger, asyncRequestContext } = this.filterParam
-    const status = HttpStatus.INTERNAL_SERVER_ERROR
+    const statusCode = HttpStatus.INTERNAL_SERVER_ERROR
     const response = host.switchToHttp().getResponse<FastifyReply>()
 
     logger.error(
@@ -25,15 +25,15 @@ export class InternalServerFilter implements ExceptionFilter<HttpException> {
     )
 
     const error = {
-      statusCode: status,
+      statusCode,
       message:
         exception.message && exception.message !== 'Internal Server'
           ? exception.message
-          : ErrorMessage[status],
+          : ErrorMessage[statusCode],
     }
 
     asyncRequestContext.exit()
 
-    return response.code(status).send(error)
+    return response.code(statusCode).send(error)
   }
 }

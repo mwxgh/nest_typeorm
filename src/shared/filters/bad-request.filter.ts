@@ -7,7 +7,6 @@ import {
   HttpStatus,
 } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
-import { LoggerConstant } from '@/constants/logger.constant'
 import { ErrorMessage } from '@/messages'
 import { ExceptionFilterType } from '../interfaces'
 
@@ -17,22 +16,22 @@ export class BadRequestFilter implements ExceptionFilter<HttpException> {
 
   catch(exception: HttpException, host: ArgumentsHost) {
     const { logger, asyncRequestContext } = this.filterParam
-    const status = HttpStatus.BAD_REQUEST
+    const statusCode = HttpStatus.BAD_REQUEST
 
     logger.error(
-      LoggerConstant.badRequest,
+      ErrorMessage[statusCode],
       asyncRequestContext.getRequestIdStore(),
     )
 
     const response = host.switchToHttp().getResponse<FastifyReply>()
     asyncRequestContext.exit()
 
-    return response.code(status).send({
-      statusCode: status,
+    return response.code(statusCode).send({
+      statusCode,
       message:
         exception.message && exception.message !== 'Bad Request'
           ? exception.message
-          : ErrorMessage[status],
+          : ErrorMessage[statusCode],
     })
   }
 }

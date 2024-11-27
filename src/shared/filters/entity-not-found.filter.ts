@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
 import { EntityNotFoundError } from 'typeorm'
-import { LoggerConstant } from '@/constants/logger.constant'
 import { ErrorMessage } from '@/messages'
 import { ExceptionFilterType } from '../interfaces'
 import { createStore } from '../utils'
@@ -19,21 +18,20 @@ export class EntityNotfoundFilter implements ExceptionFilter<HttpException> {
 
   catch(_: HttpException, host: ArgumentsHost) {
     const { logger, asyncRequestContext } = this.filterParam
-    const status = HttpStatus.NOT_FOUND
-    const response = host.switchToHttp().getResponse<FastifyReply>()
-    const req = host.switchToHttp().getRequest()
 
+    const statusCode = HttpStatus.NOT_FOUND
+    const req = host.switchToHttp().getRequest()
     const store = createStore(req, asyncRequestContext)
 
-    logger.warn(LoggerConstant.notFound, store)
+    logger.warn(ErrorMessage[statusCode], store)
 
-    const error = {
-      statusCode: status,
-      message: ErrorMessage[status],
-    }
+    const response = host.switchToHttp().getResponse<FastifyReply>()
 
     asyncRequestContext.exit()
 
-    return response.code(status).send(error)
+    return response.code(statusCode).send({
+      statusCode,
+      message: ErrorMessage[statusCode],
+    })
   }
 }

@@ -7,7 +7,6 @@ import {
   HttpStatus,
 } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
-import { LoggerConstant } from '@/constants'
 import { ErrorMessage } from '@/messages'
 import { ExceptionFilterType } from '../interfaces'
 
@@ -17,24 +16,23 @@ export class ForbiddenFilter implements ExceptionFilter<HttpException> {
 
   catch(exception: HttpException, host: ArgumentsHost) {
     const { logger, asyncRequestContext } = this.filterParam
-    const status = HttpStatus.FORBIDDEN
-    const response = host.switchToHttp().getResponse<FastifyReply>()
+    const statusCode = HttpStatus.FORBIDDEN
 
     logger.error(
-      LoggerConstant.forbidden,
+      ErrorMessage[statusCode],
       asyncRequestContext.getRequestIdStore(),
     )
 
-    const error = {
-      statusCode: status,
-      message:
-        exception.message && exception.message !== 'Forbidden'
-          ? exception.message
-          : ErrorMessage[status],
-    }
+    const response = host.switchToHttp().getResponse<FastifyReply>()
 
     asyncRequestContext.exit()
 
-    return response.code(status).send(error)
+    return response.code(statusCode).send({
+      statusCode,
+      message:
+        exception.message && exception.message !== 'Forbidden'
+          ? exception.message
+          : ErrorMessage[statusCode],
+    })
   }
 }

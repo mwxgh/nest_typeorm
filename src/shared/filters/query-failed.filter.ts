@@ -17,7 +17,7 @@ export class QueryFailedFilter implements ExceptionFilter<QueryFailedError> {
     const { logger, asyncRequestContext } = this.filterParam
     const response = host.switchToHttp().getResponse<FastifyReply>()
 
-    const status =
+    const statusCode =
       exception.driverError?.name === AppConstant.uniqueQueryCode
         ? HttpStatus.CONFLICT
         : HttpStatus.INTERNAL_SERVER_ERROR
@@ -27,22 +27,18 @@ export class QueryFailedFilter implements ExceptionFilter<QueryFailedError> {
       null,
       asyncRequestContext.getRequestIdStore(),
     )
+
     logger.error(
       exception.stack || exception.toString(),
       null,
       asyncRequestContext.getRequestIdStore(),
     )
 
-    const error = {
-      statusCode: status,
-      message:
-        exception.message && exception.message !== 'Internal Server'
-          ? exception.message
-          : ErrorMessage[status],
-    }
-
     asyncRequestContext.exit()
 
-    return response.code(status).send(error)
+    return response.code(statusCode).send({
+      statusCode,
+      message: ErrorMessage[statusCode],
+    })
   }
 }
