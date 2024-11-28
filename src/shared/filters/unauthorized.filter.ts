@@ -10,8 +10,10 @@ import { ErrorMessage } from '@/messages'
 import { ExceptionFilterType } from '../interfaces'
 
 @Catch(UnauthorizedException)
-export class UnauthorizedFilter implements ExceptionFilter<UnauthorizedException> {
-  constructor(private readonly filterParam: ExceptionFilterType) { }
+export class UnauthorizedFilter
+  implements ExceptionFilter<UnauthorizedException>
+{
+  constructor(private readonly filterParam: ExceptionFilterType) {}
 
   catch(_: UnauthorizedException, host: ArgumentsHost) {
     const { logger, asyncRequestContext } = this.filterParam
@@ -27,7 +29,7 @@ export class UnauthorizedFilter implements ExceptionFilter<UnauthorizedException
 
     return response.code(statusCode).send({
       statusCode,
-      message: ErrorMessage[statusCode]
+      message: ErrorMessage[statusCode],
     })
   }
 }

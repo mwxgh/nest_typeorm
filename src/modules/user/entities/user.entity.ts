@@ -22,7 +22,7 @@ import { Reaction } from '@/modules/reaction/entities/reaction.entity'
 export class User
   extends AbstractEntityWithCU<UserDto>
   implements IAbstractEntity<UserDto>
-  {
+{
   @Column({
     type: 'tinyint',
     unsigned: true,
@@ -76,7 +76,7 @@ export class User
     name: 'refresh_token',
     type: 'varchar',
     length: EntityConstant.EntityShortLength,
-    nullable: true
+    nullable: true,
   })
   refreshToken?: string | null
 
