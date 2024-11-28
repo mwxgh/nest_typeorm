@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common'
-import { ValidationMessage } from '@/messages'
+import { ValidationCustomLogicMessage } from '@/messages'
 
 export class LoginFailException extends BadRequestException {
   constructor(error?: string) {
-    super(ValidationMessage.loginFail, error)
+    super(ValidationCustomLogicMessage.loginFail, error)
   }
 }

@@ -7,7 +7,7 @@ import {
   CurrentUserId,
   Public,
 } from '@/shared/decorators'
-import { ValidationMessage } from '@/messages'
+import { ValidationCustomLogicMessage } from '@/messages'
 import { LoginResponseDto, UserLoginDto, UserSignUpDto } from './dto'
 
 @ApiTags('Auth')
@@ -19,7 +19,7 @@ export class AuthController {
   @Public()
   @ApiPublic(LoginResponseDto, { summary: 'Sign up' })
   @ApiBody({ type: UserSignUpDto })
-  @ApiBadRequestResponseWrap({ message: ValidationMessage.signUpFail })
+  @ApiBadRequestResponseWrap({ message: ValidationCustomLogicMessage.signUpFail })
   async signUp(@Body() data: UserSignUpDto): Promise<LoginResponseDto> {
     return this.authService.signUp(data)
   }
@@ -28,7 +28,7 @@ export class AuthController {
   @Public()
   @ApiPublic(LoginResponseDto, { summary: 'Login' })
   @ApiBody({ type: UserLoginDto })
-  @ApiBadRequestResponseWrap({ message: ValidationMessage.loginFail })
+  @ApiBadRequestResponseWrap({ message: ValidationCustomLogicMessage.loginFail })
   async login(@Body() data: UserLoginDto): Promise<LoginResponseDto> {
     return this.authService.login(data)
   }

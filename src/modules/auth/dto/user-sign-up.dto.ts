@@ -13,9 +13,9 @@ export class UserSignUpDto {
   @EmailField()
   readonly email: string
 
-  @StringField()
+  @StringField({ maxLength: 20 })
   readonly firstName: string
 
-  @StringField()
+  @StringField({ maxLength: 20 })
   readonly lastName: string
 }

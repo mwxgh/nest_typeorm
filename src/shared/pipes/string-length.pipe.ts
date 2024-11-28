@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
-import { ValidationMessage } from '@/messages'
+import { ValidationLogicMessage } from '@/messages'
 
 @Injectable()
 export class StringLengthPipe implements PipeTransform<string> {
@@ -15,11 +15,11 @@ export class StringLengthPipe implements PipeTransform<string> {
     let msg: string = ''
 
     if (value.length < this.length) {
-      msg = ValidationMessage.minLength
+      msg = ValidationLogicMessage.minLength
     }
 
     if (value.length > this.length) {
-      msg = ValidationMessage.maxLength
+      msg = ValidationLogicMessage.maxLength
     }
 
     if (msg) {

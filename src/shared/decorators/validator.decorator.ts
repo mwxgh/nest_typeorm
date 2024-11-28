@@ -27,7 +27,11 @@ import {
 import * as moment from 'moment-timezone'
 
 import { AppConstant, ExportConstant, RegexConstant } from '@/constants'
-import { ValidationMessage } from '@/messages'
+import {
+  ValidationCustomLogicMessage,
+  ValidationLogicMessage,
+  ValidationTypeMessage,
+} from '@/messages'
 
 export const IsPassword = (
   validationOptions?: ValidationOptions,
@@ -40,7 +44,7 @@ export const IsPassword = (
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.passwordRule,
+        message: ValidationTypeMessage.isPassword,
       },
       validator: {
         validate(value: string) {
@@ -57,7 +61,7 @@ export const IsPhoneNumber = (
   },
 ): PropertyDecorator => {
   return isPhoneNumber(validationOptions?.region, {
-    message: ValidationMessage.phoneRule,
+    message: ValidationTypeMessage.isPhoneNumber,
     ...validationOptions,
   })
 }
@@ -82,34 +86,37 @@ export const AllowBlank = (options?: ValidationOptions): PropertyDecorator => {
 export const IsInt = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsInt({ message: ValidationMessage.isInt, ...makeOption(options) })
+  _IsInt({ message: ValidationTypeMessage.isInt, ...makeOption(options) })
 
 export const IsNotEmpty = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _IsNotEmpty({
-    message: ValidationMessage.isNotEmpty,
+    message: ValidationTypeMessage.isNotEmpty,
     ...makeOption(options),
   })
 
 export const IsBoolean = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsBoolean({ message: ValidationMessage.isBoolean, ...makeOption(options) })
+  _IsBoolean({
+    message: ValidationTypeMessage.isBoolean,
+    ...makeOption(options),
+  })
 
 export const IsDate = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _IsDate({
     message:
-      (options as ValidationOptions)?.message || ValidationMessage.isDate,
+      (options as ValidationOptions)?.message || ValidationTypeMessage.isDate,
     ...makeOption(options),
   })
 
 export const IsString = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsString({ message: ValidationMessage.isString, ...makeOption(options) })
+  _IsString({ message: ValidationTypeMessage.isString, ...makeOption(options) })
 
 export const IsNumberString = (
   options?: validator.IsNumericOptions,
@@ -117,27 +124,33 @@ export const IsNumberString = (
 ): PropertyDecorator =>
   _IsNumberString(
     { ...options },
-    { message: ValidationMessage.isNumberString, ...makeOption(validOptions) },
+    {
+      message: ValidationTypeMessage.isNumberString,
+      ...makeOption(validOptions),
+    },
   )
 
 export const IsAlphanumeric = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _IsAlphanumeric('en-US', {
-    message: ValidationMessage.isAlphaNumeric,
+    message: ValidationTypeMessage.isAlphaNumeric,
     ...makeOption(options),
   })
 
 export const IsNumber = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
-  _IsNumber({}, { message: ValidationMessage.isNumber, ...makeOption(options) })
+  _IsNumber(
+    {},
+    { message: ValidationTypeMessage.isNumber, ...makeOption(options) },
+  )
 
 export const IsPositive = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _IsPositive({
-    message: ValidationMessage.isPositive,
+    message: ValidationTypeMessage.isPositive,
     ...makeOption(options),
   })
 
@@ -145,14 +158,14 @@ export const IsArray = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _IsArray({
-    message: ValidationMessage.isArray,
+    message: ValidationTypeMessage.isArray,
     ...makeOption(options),
   })
 
 export const IsTime = (validationOptions?: ValidationOptions) => {
   return Matches(RegexConstant.isTime, {
     ...validationOptions,
-    message: ValidationMessage.isTime,
+    message: ValidationTypeMessage.isTime,
   })
 }
 
@@ -161,7 +174,7 @@ export const ArrayMinSize = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _ArrayMinSize(minValue, {
-    message: ValidationMessage.arrayMinSize,
+    message: ValidationLogicMessage.arrayMinSize,
     ...makeOption(
       typeof options === 'string'
         ? options
@@ -174,7 +187,7 @@ export const ArrayMaxSize = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _ArrayMaxSize(maxValue, {
-    message: ValidationMessage.arrayMaxSize,
+    message: ValidationLogicMessage.arrayMaxSize,
     ...makeOption(
       typeof options === 'string'
         ? options
@@ -190,7 +203,7 @@ export const ArrayUnique = (property?: string): PropertyDecorator => {
       target: object.constructor,
       constraints: [],
       options: {
-        message: ValidationMessage.arrayUnique,
+        message: ValidationLogicMessage.arrayUnique,
       },
       validator: {
         validate(value: [{ [key: string]: any } | any]): boolean {
@@ -213,7 +226,8 @@ export const Max = (
 ): PropertyDecorator =>
   _Max(maxValue, {
     message:
-      (options as ValidationOptions).message || ValidationMessage.isLessThan,
+      (options as ValidationOptions).message ||
+      ValidationLogicMessage.isLessThan,
     ...makeOption(
       typeof options === 'string'
         ? options
@@ -227,7 +241,8 @@ export const Min = (
 ): PropertyDecorator =>
   _Min(minValue, {
     message:
-      (options as ValidationOptions).message || ValidationMessage.isGreaterThan,
+      (options as ValidationOptions).message ||
+      ValidationLogicMessage.isGreaterThan,
     ...makeOption(
       typeof options === 'string'
         ? options
@@ -240,7 +255,7 @@ export const MaxLength = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _MaxLength(maxValue, {
-    message: ValidationMessage.maxLength,
+    message: ValidationLogicMessage.maxLength,
     ...makeOption(
       typeof options === 'string'
         ? options
@@ -253,7 +268,7 @@ export const MinLength = (
   options?: string | ValidationOptions,
 ): PropertyDecorator =>
   _MinLength(minValue, {
-    message: ValidationMessage.minLength,
+    message: ValidationLogicMessage.minLength,
     ...makeOption(
       typeof options === 'string'
         ? options
@@ -266,7 +281,7 @@ export const IsEnum = (
   options?: string | ValidationOptions,
 ): PropertyDecorator => {
   return _IsEnum(enumValue, {
-    message: ValidationMessage.invalid,
+    message: ValidationTypeMessage.isInvalid,
     ...makeOption(options),
   })
 }
@@ -281,7 +296,7 @@ export const IsLessOrEqual =
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.isLessOrEqual.replace(
+        message: ValidationLogicMessage.isLessOrEqual.replace(
           '$argument',
           'something to less or equal',
         ),
@@ -313,7 +328,7 @@ export const IsGreaterOrEqual =
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.isGreaterOrEqual,
+        message: ValidationLogicMessage.isGreaterOrEqual,
       },
       validator: {
         validate(value: any, args: any) {
@@ -348,7 +363,7 @@ export const IsLaterWithDateOrTimeOnly =
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.isLaterWithDateOrTimeOnly,
+        message: ValidationCustomLogicMessage.isLaterWithDateOrTimeOnly,
       },
       validator: {
         validate(value: any, args: any) {
@@ -382,7 +397,7 @@ export const IsEarlierWithDateOrTimeOnly = (
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.timeEarlierThanField.replace(
+        message: ValidationLogicMessage.timeEarlierThanField.replace(
           '$field',
           targetFieldName ?? targetField,
         ),
@@ -419,7 +434,7 @@ export const IsLaterWithDateTimeConcat = (
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.isLaterWithDateOrTimeOnly,
+        message: ValidationCustomLogicMessage.isLaterWithDateOrTimeOnly,
       },
       validator: {
         validate(_value: any, args: any) {
@@ -447,7 +462,10 @@ export const IsTimeString = (
 ): PropertyDecorator => {
   return Matches(regex, {
     ...validationOptions,
-    message: ValidationMessage.isTimeStringFormat.replace('$format', format),
+    message: ValidationTypeMessage.isTimeStringFormat.replace(
+      '$format',
+      format,
+    ),
   })
 }
 
@@ -457,7 +475,7 @@ export const IsPhoneString = (
 ): PropertyDecorator => {
   return Matches(regex, {
     ...validationOptions,
-    message: ValidationMessage.validPhoneDigit,
+    message: ValidationTypeMessage.isValidPhoneDigit,
   })
 }
 
@@ -473,7 +491,7 @@ export const IsConstraintField = (
       constraints: [fieldConstraint],
       options: {
         ...validationOptions,
-        message: ValidationMessage.isNotEmpty.replace(
+        message: ValidationTypeMessage.isNotEmpty.replace(
           '$field',
           fieldConstraint,
         ),
@@ -502,7 +520,7 @@ export const IsUntilCurrentTime = (
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.untilCurrentTime,
+        message: ValidationCustomLogicMessage.untilCurrentTime,
       },
       validator: {
         validate(value: any, args: any) {
@@ -570,7 +588,7 @@ export const IsHexColorString = (
 ): PropertyDecorator => {
   return Matches(regex, {
     ...validationOptions,
-    message: ValidationMessage.isHexColorStringFormat,
+    message: ValidationTypeMessage.isHexColorStringFormat,
   })
 }
 
@@ -579,7 +597,7 @@ export const IsJSON = (
 ): PropertyDecorator => {
   return _IsJSON({
     ...makeOption(options),
-    message: ValidationMessage.isJsonString,
+    message: ValidationTypeMessage.isJsonString,
   })
 }
 
@@ -595,7 +613,7 @@ export const IsEmailMatchWith = (
       constraints: [],
       options: {
         ...validationOptions,
-        message: ValidationMessage.emailMatchWith,
+        message: ValidationCustomLogicMessage.emailMatchWith,
       },
       validator: {
         validate(value: any, args: any) {

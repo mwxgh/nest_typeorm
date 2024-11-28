@@ -1,5 +1,5 @@
-export const ValidationMessage = {
-  invalid: '$field has an invalid value',
+export const ValidationTypeMessage = {
+  isInvalid: '$field has an invalid value',
   isInt: '$field must be an integer.',
   isNotEmpty: '$field must be input',
   isAlphaNumeric: '$field must be alphabets and numbers',
@@ -14,24 +14,30 @@ export const ValidationMessage = {
   isTimeStringFormat: '$field must be a time string format',
   isEmail: '$field must be an email',
   isJsonString: '$field must be a json string',
+  isHexColorStringFormat: '$field must be hex color format',
+  isValidPhoneDigit: 'Please enter a valid phone number',
+  isPassword:
+    'Please use at least 10 characters, including uppercase letters, lowercase letters, numbers, and symbols.',
+  isPhoneNumber: 'Only numbers and $1~$2 numbers can be used.',
+}
+
+export const ValidationLogicMessage = {
   arrayMaxSize: '$field must contain not more than $1 elements',
   arrayMinSize: '$field must contain at least $1 elements',
   arrayUnique: '$field must contain element unique',
-  isHexColorStringFormat: '$field must be hex color format',
-  isInvalidDataWithStatus:
-    'There are some invalid data with user retirement status',
   isLessOrEqual: '$field must be less than or equal $argument',
   isGreaterOrEqual: '$field must be greater than or equal $argument',
   isLessThan: '$field must be less than $1',
   isGreaterThan: '$field must be greater than $1',
-  passwordRule:
-    'Please use at least 10 characters, including uppercase letters, lowercase letters, numbers, and symbols.',
-  maxLength: 'MaxLength',
-  phoneRule: 'Only half-width numbers and $1~$2 numbers can be used.',
-  minLength: 'MinLength',
-  isLaterWithDateOrTimeOnly: 'Cannot enter a time before the start time',
+  maxLength: '$field exceeds the maximum length of $1 characters.',
+  minLength: '$field must be at least $1 characters long.',
   timeEarlierThanField: 'Please enter a date earlier than $field',
-  validPhoneDigit: 'ValidPhoneDigit',
+}
+
+export const ValidationCustomLogicMessage = {
+  isInvalidDataWithStatus:
+    'There are some invalid data with user retirement status',
+  isLaterWithDateOrTimeOnly: 'Cannot enter a time before the start time',
   untilCurrentTime: 'Input is possible up to the current time',
   maxUploadFile: 'Only 10 file upload buttons are available',
   emailMatchWith: 'Does not match the email address entered',
